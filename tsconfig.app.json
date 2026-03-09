@@ -5,19 +5,14 @@
   "compilerOptions": {
     "outDir": "./out-tsc/app",
     "rootDir": "./src",
-    "types": [
-      "@angular/localize"
-    ],
+    "types": ["@angular/localize"],
     "paths": {
-      "@docs-components/*": [
-        "./src/components/*"
-      ]
+      "@core/*": ["./src/app/core/*"],
+      "@features/*": ["./src/app/features/*"],
+      "@shared/*": ["./src/app/shared/*"],
+      "@env/*": ["./src/environments/*"]
     }
   },
-  "files": [
-    "src/main.ts"
-  ],
-  "include": [
-    "src/**/*.d.ts"
-  ]
+  "files": ["src/main.ts"],
+  "include": ["src/**/*.ts"]
 }
