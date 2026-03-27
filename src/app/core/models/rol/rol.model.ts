@@ -1,0 +1,5 @@
+export enum RolCompeticion {
+  ADMIN_COMPETICION = 'ADMIN_COMPETICION',
+  ARBITRO = 'ARBITRO',
+  ESPECTADOR = 'ESPECTADOR'
+}
