@@ -11,9 +11,6 @@
 npm-debug.log
 yarn-error.log
 
-# profiling files
-chrome-profiler-events*.json
-
 # IDEs and editors
 .idea/
 .project
@@ -29,10 +26,10 @@ chrome-profiler-events*.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+!.vscode/mcp.json
 .history/*
 
 # Miscellaneous
-.npmrc
 /.angular/cache
 .sass-cache/
 /connect.lock
@@ -40,6 +37,7 @@ chrome-profiler-events*.json
 /libpeerconnection.log
 testem.log
 /typings
+__screenshots__/
 
 # System files
 .DS_Store
