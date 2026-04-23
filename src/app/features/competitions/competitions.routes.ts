@@ -12,6 +12,11 @@ export const COMPETITION_ROUTES: Routes = [
       import('./new/new-competition.page').then((m) => m.NewCompetitionPage),
   },
   {
+    path: ':competicionId/edit',
+    loadComponent: () =>
+      import('./edit/edit-competition.page').then((m) => m.EditCompetitionPage),
+  },
+  {
     path: ':competicionId',
     children: [
       {

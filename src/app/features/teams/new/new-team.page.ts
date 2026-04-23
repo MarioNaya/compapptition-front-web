@@ -36,6 +36,7 @@ export class NewTeamPage {
     nombre: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(60)]],
     descripcion: [''],
     tipo: [TipoEquipo.GESTIONADO, [Validators.required]],
+    escudoUrl: ['', [Validators.maxLength(512)]],
   });
 
   submit(): void {
@@ -44,12 +45,13 @@ export class NewTeamPage {
       return;
     }
     this.loading.set(true);
-    const { nombre, descripcion, tipo } = this.form.getRawValue();
+    const { nombre, descripcion, tipo, escudoUrl } = this.form.getRawValue();
     this.service
       .create$({
         nombre,
         descripcion: descripcion || undefined,
         tipo,
+        escudoUrl: escudoUrl || undefined,
       })
       .subscribe({
         next: (equipo) => {

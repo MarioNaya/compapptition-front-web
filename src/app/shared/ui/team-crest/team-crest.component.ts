@@ -11,7 +11,7 @@ export type CrestSize = 'sm' | 'md' | 'lg' | 'xl';
 })
 export class TeamCrestComponent {
   readonly name = input.required<string>();
-  readonly imageBytes = input<string | null>(null);
+  readonly imageUrl = input<string | null>(null);
   readonly size = input<CrestSize>('md');
 
   readonly initials = computed(() => {
@@ -21,8 +21,8 @@ export class TeamCrestComponent {
     return (first + second).toUpperCase();
   });
 
-  readonly imageUrl = computed(() => {
-    const bytes = this.imageBytes();
-    return bytes ? `data:image/png;base64,${bytes}` : null;
+  readonly hasImage = computed(() => {
+    const u = this.imageUrl();
+    return typeof u === 'string' && u.trim().length > 0;
   });
 }

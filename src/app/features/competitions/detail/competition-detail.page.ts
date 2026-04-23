@@ -138,6 +138,12 @@ export class CompetitionDetailPage implements OnInit {
     this.router.navigate(['/app/competitions', c.id, 'events', 'new']);
   }
 
+  goEdit(): void {
+    const c = this.competicion();
+    if (!c) return;
+    this.router.navigate(['/app/competitions', c.id, 'edit']);
+  }
+
   async askDelete(): Promise<void> {
     const c = this.competicion();
     const user = this.auth.currentUser();

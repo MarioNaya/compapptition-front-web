@@ -8,7 +8,7 @@ import {
   CompeticionSimple,
   EstadoCompeticion,
 } from '@core/models/competicion/competicion.model';
-import { CompeticionCreateRequest } from '@core/models/competicion/competicion.requests';
+import { CompeticionCreateRequest, CompeticionUpdateRequest } from '@core/models/competicion/competicion.requests';
 import { PageableRequest, toPageableParams } from '@core/http/pageable';
 
 export interface CompeticionFilters extends PageableRequest {
@@ -70,6 +70,12 @@ export class CompeticionService {
 
   create$(req: CompeticionCreateRequest): Observable<Competicion> {
     return this.http.post<Competicion>(this.base, req);
+  }
+
+  update$(id: number, req: CompeticionUpdateRequest, usuarioId: number): Observable<Competicion> {
+    return this.http.put<Competicion>(`${this.base}/${id}`, req, {
+      params: { usuarioId: String(usuarioId) },
+    });
   }
 
   delete$(id: number, usuarioId: number): Observable<void> {

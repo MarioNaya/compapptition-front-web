@@ -11,7 +11,7 @@ export type AvatarSize = 'sm' | 'md' | 'lg';
 })
 export class AvatarComponent {
   readonly name = input.required<string>();
-  readonly imageBytes = input<string | null>(null);
+  readonly imageUrl = input<string | null>(null);
   readonly size = input<AvatarSize>('md');
 
   readonly initials = computed(() => {
@@ -21,8 +21,8 @@ export class AvatarComponent {
     return (first + second).toUpperCase();
   });
 
-  readonly imageUrl = computed(() => {
-    const b = this.imageBytes();
-    return b ? `data:image/png;base64,${b}` : null;
+  readonly hasImage = computed(() => {
+    const u = this.imageUrl();
+    return typeof u === 'string' && u.trim().length > 0;
   });
 }

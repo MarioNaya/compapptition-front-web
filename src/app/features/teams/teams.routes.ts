@@ -10,6 +10,10 @@ export const TEAM_ROUTES: Routes = [
     loadComponent: () => import('./new/new-team.page').then((m) => m.NewTeamPage),
   },
   {
+    path: ':id/edit',
+    loadComponent: () => import('./edit/edit-team.page').then((m) => m.EditTeamPage),
+  },
+  {
     path: ':id',
     loadComponent: () => import('./detail/team-detail.page').then((m) => m.TeamDetailPage),
   },

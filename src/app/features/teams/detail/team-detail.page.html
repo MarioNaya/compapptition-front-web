@@ -7,13 +7,16 @@
       [title]="e.nombre"
       [subtitle]="e.descripcion ?? null"
     >
+      <app-button variant="ghost" (clicked)="goEdit()">
+        <app-icon name="edit" [size]="14" /> Editar
+      </app-button>
       <app-button variant="orange-ghost" (clicked)="askDelete()">
         <app-icon name="trash" [size]="14" /> Eliminar
       </app-button>
     </app-page-header>
 
     <section class="hero card">
-      <app-team-crest [name]="e.nombre" [imageBytes]="e.escudoUrl ?? null" size="xl" />
+      <app-team-crest [name]="e.nombre" [imageUrl]="e.escudoUrl ?? null" size="xl" />
       <div class="hero-meta">
         <div class="meta-row">
           <span class="label h-display">Jugadores</span>
@@ -22,7 +25,88 @@
       </div>
     </section>
 
-    <h2 class="h-display section-title">Plantilla</h2>
+    <div class="plantilla-head">
+      <h2 class="h-display section-title">Plantilla</h2>
+      <app-button variant="primary" (clicked)="toggleAdd()">
+        <app-icon [name]="showAdd() ? 'x' : 'plus'" [size]="14" />
+        {{ showAdd() ? 'Cerrar' : 'Añadir jugador' }}
+      </app-button>
+    </div>
+
+    @if (showAdd()) {
+      <section class="add-panel card">
+        @if (!selected()) {
+          <h3 class="h-display panel-title">1. Busca el jugador</h3>
+          <app-search-bar
+            [value]="search()"
+            placeholder="Nombre o apellidos…"
+            (valueChange)="onSearchChange($event)"
+          />
+
+          @if (searching()) {
+            <div class="search-state"><app-spinner size="sm" /> Buscando…</div>
+          } @else if (results().length === 0 && search().length > 0) {
+            <div class="search-state muted">Sin resultados para "{{ search() }}"</div>
+          } @else if (results().length > 0) {
+            <ul class="results">
+              @for (j of results(); track j.id) {
+                <li class="result-row" (click)="selectPlayer(j)" (keydown.enter)="selectPlayer(j)" tabindex="0">
+                  <app-team-crest [name]="j.nombre" [imageUrl]="j.fotoUrl ?? null" size="sm" />
+                  <div class="info">
+                    <span class="name">{{ j.nombre }}{{ j.apellidos ? ' ' + j.apellidos : '' }}</span>
+                    @if (j.posicion) {
+                      <span class="mono meta">{{ j.posicion }}</span>
+                    }
+                  </div>
+                  <app-icon name="chev-r" [size]="14" />
+                </li>
+              }
+            </ul>
+          }
+        } @else {
+          <h3 class="h-display panel-title">2. Confirma la incorporación</h3>
+          <div class="selected-player">
+            <app-team-crest
+              [name]="selected()!.nombre"
+              [imageUrl]="selected()!.fotoUrl ?? null"
+              size="md"
+            />
+            <div class="info">
+              <span class="name">{{ selected()!.nombre }}{{ selected()!.apellidos ? ' ' + selected()!.apellidos : '' }}</span>
+              @if (selected()!.posicion) {
+                <span class="mono meta">{{ selected()!.posicion }}</span>
+              }
+            </div>
+            <button type="button" class="link-btn" (click)="backToSearch()">Cambiar</button>
+          </div>
+
+          <div class="dorsal-row">
+            <label for="dorsal-input" class="label h-display">Dorsal (opcional)</label>
+            <input
+              id="dorsal-input"
+              class="input"
+              type="number"
+              min="1"
+              max="99"
+              placeholder="Ej. 10"
+              [value]="dorsal() ?? ''"
+              (input)="onDorsalChange($any($event.target).value)"
+            />
+          </div>
+
+          <div class="panel-actions">
+            <app-button variant="ghost" (clicked)="backToSearch()">Atrás</app-button>
+            <app-button variant="primary" (clicked)="addPlayer()" [disabled]="adding()">
+              @if (adding()) {
+                <app-spinner size="sm" />
+              } @else {
+                Añadir a la plantilla
+              }
+            </app-button>
+          </div>
+        }
+      </section>
+    }
 
     <app-data-table
       [columns]="columns"
@@ -31,7 +115,7 @@
       [clickable]="true"
       (rowClick)="openJugador($event)"
       emptyTitle="Aún no hay jugadores"
-      emptySubtitle="Añade jugadores desde el perfil de cada uno o desde este equipo (próximamente)."
+      emptySubtitle='Pulsa "Añadir jugador" para incorporar a un jugador existente a la plantilla.'
     />
   } @else {
     <app-empty-state

@@ -17,8 +17,8 @@
       <app-team-pair
         [home]="e.equipoLocal?.nombre ?? 'TBD'"
         [away]="e.equipoVisitante?.nombre ?? 'TBD'"
-        [homeCrest]="e.equipoLocal?.escudo ?? null"
-        [awayCrest]="e.equipoVisitante?.escudo ?? null"
+        [homeCrest]="e.equipoLocal?.escudoUrl ?? null"
+        [awayCrest]="e.equipoVisitante?.escudoUrl ?? null"
         size="lg"
       />
 
@@ -74,7 +74,7 @@
       <app-empty-state
         icon="stats"
         title="Estadísticas del partido"
-        subtitle="El formulario para registrar estadísticas de jugador por partido llegará en la siguiente iteración."
+        subtitle="El registro manual de estadísticas por jugador necesita un endpoint backend POST /estadisticas que aún no está implementado. Los rankings acumulados en el tab Estadísticas de la competición sí funcionan."
       />
     </section>
   } @else {

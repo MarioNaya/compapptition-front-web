@@ -1,0 +1,129 @@
+<div class="container edit-comp fade-in">
+  @if (loading()) {
+    <div class="loading-box"><app-spinner size="md" label="Cargando competición" /></div>
+  } @else if (notFound()) {
+    <app-empty-state
+      icon="x"
+      title="Competición no encontrada"
+      subtitle="La competición que intentas editar ya no está disponible."
+    />
+  } @else if (competicion(); as c) {
+    <app-page-header
+      eyebrow="Editar"
+      [title]="'Editar ' + c.nombre"
+      subtitle="Modifica los datos, la visibilidad y las reglas. El deporte no se puede cambiar."
+    />
+
+    <form class="form card" [formGroup]="form" (ngSubmit)="submit()">
+      <section class="group">
+        <h3 class="group-title">Datos básicos</h3>
+
+        <app-form-field label="Nombre" [control]="form.controls.nombre">
+          <input class="input" type="text" formControlName="nombre" />
+        </app-form-field>
+
+        <app-form-field label="Descripción" [control]="form.controls.descripcion">
+          <textarea class="textarea" formControlName="descripcion" rows="3"></textarea>
+        </app-form-field>
+
+        <div class="readonly-row">
+          <span class="readonly-label">Deporte</span>
+          <span class="readonly-value">{{ c.deporteNombre }}</span>
+        </div>
+      </section>
+
+      <section class="group">
+        <h3 class="group-title">Visibilidad</h3>
+        <div class="toggles">
+          <label class="toggle">
+            <input type="checkbox" formControlName="publica" />
+            <span>
+              <strong>Pública</strong>
+              <span class="hint">Visible en el listado público.</span>
+            </span>
+          </label>
+          <label class="toggle">
+            <input type="checkbox" formControlName="inscripcionAbierta" />
+            <span>
+              <strong>Inscripciones abiertas</strong>
+              <span class="hint">Permite inscribir equipos en estado ACTIVA.</span>
+            </span>
+          </label>
+          <label class="toggle">
+            <input type="checkbox" formControlName="estadisticasActivas" />
+            <span>
+              <strong>Estadísticas activas</strong>
+              <span class="hint">Registra estadísticas de jugadores por partido.</span>
+            </span>
+          </label>
+        </div>
+      </section>
+
+      <section class="group" formGroupName="configuracion">
+        <h3 class="group-title">Formato y reglas</h3>
+
+        <app-form-field label="Formato" [control]="form.controls.configuracion.controls.formato">
+          <select class="select" formControlName="formato">
+            @for (f of formatos; track f.value) {
+              <option [value]="f.value">{{ f.label }}</option>
+            }
+          </select>
+        </app-form-field>
+
+        @if (showLigaFields()) {
+          <div class="row">
+            <app-form-field label="Puntos por victoria" [control]="form.controls.configuracion.controls.puntosVictoria">
+              <input class="input" type="number" min="0" max="10" formControlName="puntosVictoria" />
+            </app-form-field>
+            <app-form-field label="Puntos por empate" [control]="form.controls.configuracion.controls.puntosEmpate">
+              <input class="input" type="number" min="0" max="10" formControlName="puntosEmpate" />
+            </app-form-field>
+            <app-form-field label="Puntos por derrota" [control]="form.controls.configuracion.controls.puntosDerrota">
+              <input class="input" type="number" min="0" max="10" formControlName="puntosDerrota" />
+            </app-form-field>
+          </div>
+        }
+
+        @if (showPlayoffFields()) {
+          <div class="row">
+            <app-form-field
+              label="Equipos en playoff"
+              [control]="form.controls.configuracion.controls.numEquiposPlayoff"
+            >
+              <input class="input" type="number" min="2" max="64" formControlName="numEquiposPlayoff" />
+            </app-form-field>
+            <app-form-field
+              label="Partidos por eliminatoria"
+              [control]="form.controls.configuracion.controls.partidosEliminatoria"
+            >
+              <input class="input" type="number" min="1" max="7" formControlName="partidosEliminatoria" />
+            </app-form-field>
+          </div>
+        }
+      </section>
+
+      <section class="group">
+        <h3 class="group-title">Fechas <span class="optional">(opcional)</span></h3>
+        <div class="row">
+          <app-form-field label="Fecha inicio" [control]="form.controls.fechaInicio">
+            <input class="input" type="date" formControlName="fechaInicio" />
+          </app-form-field>
+          <app-form-field label="Fecha fin" [control]="form.controls.fechaFin">
+            <input class="input" type="date" formControlName="fechaFin" />
+          </app-form-field>
+        </div>
+      </section>
+
+      <div class="actions">
+        <app-button variant="ghost" type="button" (clicked)="cancel()">Cancelar</app-button>
+        <app-button variant="primary" type="submit" [disabled]="saving()">
+          @if (saving()) {
+            <app-spinner size="sm" />
+          } @else {
+            Guardar cambios
+          }
+        </app-button>
+      </div>
+    </form>
+  }
+</div>

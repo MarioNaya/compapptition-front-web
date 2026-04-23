@@ -34,7 +34,7 @@
             <ul class="result-list">
               @for (e of availableResults(); track e.id) {
                 <li class="result-row" (click)="selectTeam(e)" (keydown.enter)="selectTeam(e)" tabindex="0">
-                  <app-team-crest [name]="e.nombre" [imageBytes]="e.escudoUrl ?? null" size="sm" />
+                  <app-team-crest [name]="e.nombre" [imageUrl]="e.escudoUrl ?? null" size="sm" />
                   <div class="info">
                     <span class="name">{{ e.nombre }}</span>
                     <span class="mono meta">{{ e.tipo }} · {{ e.numJugadores }} jugadores</span>
@@ -50,7 +50,7 @@
         <div class="selected-team">
           <app-team-crest
             [name]="selectedEquipo()!.nombre"
-            [imageBytes]="selectedEquipo()!.escudoUrl ?? null"
+            [imageUrl]="selectedEquipo()!.escudoUrl ?? null"
             size="md"
           />
           <div class="info">

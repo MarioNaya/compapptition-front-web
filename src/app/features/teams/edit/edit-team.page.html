@@ -1,0 +1,55 @@
+<div class="container edit-team fade-in">
+  @if (loading()) {
+    <div class="loading-box"><app-spinner size="md" label="Cargando equipo" /></div>
+  } @else if (notFound()) {
+    <app-empty-state
+      icon="x"
+      title="Equipo no encontrado"
+      subtitle="El equipo que intentas editar ya no está disponible."
+    />
+  } @else if (equipo(); as e) {
+    <app-page-header
+      eyebrow="Editar"
+      [title]="'Editar ' + e.nombre"
+      subtitle="Modifica el nombre, la descripción o el escudo."
+    />
+
+    <form class="form card" [formGroup]="form" (ngSubmit)="submit()">
+      <div class="preview">
+        <app-team-crest
+          [name]="form.controls.nombre.value || e.nombre"
+          [imageUrl]="form.controls.escudoUrl.value || null"
+          size="xl"
+        />
+        <span class="preview-label">Vista previa</span>
+      </div>
+
+      <app-form-field label="Nombre" [control]="form.controls.nombre">
+        <input class="input" type="text" formControlName="nombre" />
+      </app-form-field>
+
+      <app-form-field label="Descripción" [control]="form.controls.descripcion">
+        <textarea class="textarea" formControlName="descripcion" rows="3"></textarea>
+      </app-form-field>
+
+      <app-form-field
+        label="URL del escudo"
+        [control]="form.controls.escudoUrl"
+        hint="Pega la URL completa de la imagen (p.ej. https://res.cloudinary.com/…/escudo.png)."
+      >
+        <input class="input" type="url" formControlName="escudoUrl" placeholder="https://…" />
+      </app-form-field>
+
+      <div class="actions">
+        <app-button variant="ghost" type="button" (clicked)="cancel()">Cancelar</app-button>
+        <app-button variant="primary" type="submit" [disabled]="saving()">
+          @if (saving()) {
+            <app-spinner size="sm" />
+          } @else {
+            Guardar cambios
+          }
+        </app-button>
+      </div>
+    </form>
+  }
+</div>

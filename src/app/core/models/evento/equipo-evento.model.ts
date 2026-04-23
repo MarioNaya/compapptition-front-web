@@ -1,7 +1,7 @@
 export interface EquipoEvento {
   id: number;
   nombre: string;
-  /** Escudo del equipo en base64 (byte[] serializado por Jackson) */
-  escudo?: string;
+  /** URL del escudo del equipo (string servido por backend tras migración byte[] → URL). */
+  escudoUrl?: string;
   esLocal?: boolean;
 }

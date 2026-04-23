@@ -1,6 +1,6 @@
 <div class="avatar" [class]="'avatar-' + size()">
-  @if (imageUrl(); as url) {
-    <img [src]="url" [alt]="name()" />
+  @if (hasImage()) {
+    <img [src]="imageUrl()" [alt]="name()" />
   } @else {
     <span class="initials">{{ initials() }}</span>
   }

@@ -1,5 +1,5 @@
 <article class="card card-hover team-card" (click)="open()" (keydown.enter)="open()" tabindex="0">
-  <app-team-crest [name]="equipo().nombre" [imageBytes]="equipo().escudoUrl ?? null" size="lg" />
+  <app-team-crest [name]="equipo().nombre" [imageUrl]="equipo().escudoUrl ?? null" size="lg" />
 
   <div class="info">
     <h3 class="name h-display">{{ equipo().nombre }}</h3>

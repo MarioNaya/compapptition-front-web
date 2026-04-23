@@ -10,6 +10,11 @@
       [subtitle]="c.descripcion ?? null"
     >
       <app-status-tag [state]="c.estado" />
+      @if (canManage()) {
+        <app-button variant="ghost" (clicked)="goEdit()">
+          <app-icon name="edit" [size]="14" /> Editar
+        </app-button>
+      }
       @if (canManage() && c.estado !== EstadoCompeticion.FINALIZADA) {
         <app-button variant="ghost" (clicked)="goCalendar()">
           <app-icon name="calendar" [size]="14" /> Generar calendario

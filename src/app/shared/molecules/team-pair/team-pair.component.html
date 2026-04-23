@@ -1,7 +1,7 @@
 <div class="team-pair" [class]="'size-' + size()">
-  <app-team-crest [name]="home()" [imageBytes]="homeCrest()" [size]="size()" />
+  <app-team-crest [name]="home()" [imageUrl]="homeCrest()" [size]="size()" />
   <span class="name">{{ home() }}</span>
   <span class="vs h-display">vs</span>
   <span class="name">{{ away() }}</span>
-  <app-team-crest [name]="away()" [imageBytes]="awayCrest()" [size]="size()" />
+  <app-team-crest [name]="away()" [imageUrl]="awayCrest()" [size]="size()" />
 </div>

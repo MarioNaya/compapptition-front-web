@@ -25,6 +25,14 @@
       </select>
     </app-form-field>
 
+    <app-form-field
+      label="URL del escudo"
+      [control]="form.controls.escudoUrl"
+      hint="Opcional. Puedes añadirlo o cambiarlo después desde la edición del equipo."
+    >
+      <input class="input" type="url" formControlName="escudoUrl" placeholder="https://…" />
+    </app-form-field>
+
     <div class="actions">
       <app-button variant="ghost" type="button" (clicked)="cancel()">Cancelar</app-button>
       <app-button variant="primary" type="submit" [disabled]="loading()">
