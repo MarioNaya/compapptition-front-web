@@ -25,13 +25,16 @@
       </select>
     </app-form-field>
 
-    <app-form-field
-      label="URL del escudo"
-      [control]="form.controls.escudoUrl"
-      hint="Opcional. Puedes añadirlo o cambiarlo después desde la edición del equipo."
-    >
-      <input class="input" type="url" formControlName="escudoUrl" placeholder="https://…" />
-    </app-form-field>
+    <div class="preview-row">
+      <app-image-upload
+        [currentUrl]="form.controls.escudoUrl.value || null"
+        folder="escudos"
+        label="Subir escudo"
+        (urlChanged)="onEscudoUploaded($event)"
+        (cleared)="onEscudoCleared()"
+      />
+      <p class="hint">Opcional. Puedes cambiarlo luego desde la edición del equipo.</p>
+    </div>
 
     <div class="actions">
       <app-button variant="ghost" type="button" (clicked)="cancel()">Cancelar</app-button>

@@ -7,6 +7,7 @@ import { ButtonComponent } from '@shared/ui/button/button.component';
 import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';
 import { PageHeaderComponent } from '@shared/molecules/page-header/page-header.component';
 import { FormFieldComponent } from '@shared/molecules/form-field/form-field.component';
+import { ImageUploadComponent } from '@shared/organisms/image-upload/image-upload.component';
 import { ToastService } from '@shared/services/toast.service';
 import { EquipoService } from '@features/teams/services/equipo.service';
 
@@ -19,6 +20,7 @@ import { EquipoService } from '@features/teams/services/equipo.service';
     SpinnerComponent,
     PageHeaderComponent,
     FormFieldComponent,
+    ImageUploadComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './new-team.page.html',
@@ -63,6 +65,14 @@ export class NewTeamPage {
           this.toast.error(err.message ?? 'No se pudo crear el equipo');
         },
       });
+  }
+
+  onEscudoUploaded(url: string): void {
+    this.form.controls.escudoUrl.setValue(url);
+  }
+
+  onEscudoCleared(): void {
+    this.form.controls.escudoUrl.setValue('');
   }
 
   cancel(): void {

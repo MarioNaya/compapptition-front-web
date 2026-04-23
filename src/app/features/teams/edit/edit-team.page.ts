@@ -6,10 +6,10 @@ import { Equipo } from '@core/models/equipo/equipo.model';
 import { ApiError } from '@core/http/api-error.model';
 import { ButtonComponent } from '@shared/ui/button/button.component';
 import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';
-import { TeamCrestComponent } from '@shared/ui/team-crest/team-crest.component';
 import { PageHeaderComponent } from '@shared/molecules/page-header/page-header.component';
 import { FormFieldComponent } from '@shared/molecules/form-field/form-field.component';
 import { EmptyStateComponent } from '@shared/molecules/empty-state/empty-state.component';
+import { ImageUploadComponent } from '@shared/organisms/image-upload/image-upload.component';
 import { ToastService } from '@shared/services/toast.service';
 import { EquipoService } from '@features/teams/services/equipo.service';
 
@@ -20,10 +20,10 @@ import { EquipoService } from '@features/teams/services/equipo.service';
     ReactiveFormsModule,
     ButtonComponent,
     SpinnerComponent,
-    TeamCrestComponent,
     PageHeaderComponent,
     FormFieldComponent,
     EmptyStateComponent,
+    ImageUploadComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './edit-team.page.html',
@@ -78,6 +78,16 @@ export class EditTeamPage implements OnInit {
         else this.toast.error(err.message ?? 'Error al cargar el equipo');
       },
     });
+  }
+
+  onEscudoUploaded(url: string): void {
+    this.form.controls.escudoUrl.setValue(url);
+    this.form.controls.escudoUrl.markAsDirty();
+  }
+
+  onEscudoCleared(): void {
+    this.form.controls.escudoUrl.setValue('');
+    this.form.controls.escudoUrl.markAsDirty();
   }
 
   submit(): void {

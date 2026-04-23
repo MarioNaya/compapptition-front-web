@@ -33,3 +33,10 @@ export enum TipoValor {
   BOOLEANO = 'BOOLEANO',
   TIEMPO = 'TIEMPO'
 }
+
+export interface EstadisticaCreateRequest {
+  eventoId: number;
+  jugadorId: number;
+  tipoEstadisticaId: number;
+  valor: number;
+}

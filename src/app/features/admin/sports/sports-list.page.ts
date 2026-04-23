@@ -11,6 +11,7 @@ import { EmptyStateComponent } from '@shared/molecules/empty-state/empty-state.c
 import { FormFieldComponent } from '@shared/molecules/form-field/form-field.component';
 import { DataTableComponent } from '@shared/components/data-table/data-table.component';
 import { ColumnDef } from '@shared/components/data-table/data-table.types';
+import { ImageUploadComponent } from '@shared/organisms/image-upload/image-upload.component';
 import { ToastService } from '@shared/services/toast.service';
 import { ConfirmDialogService } from '@shared/services/confirm-dialog.service';
 import { DeporteService, DeporteRequest } from './services/deporte.service';
@@ -28,6 +29,7 @@ import { DeporteService, DeporteRequest } from './services/deporte.service';
     EmptyStateComponent,
     FormFieldComponent,
     DataTableComponent,
+    ImageUploadComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './sports-list.page.html',
@@ -99,6 +101,14 @@ export class SportsListPage implements OnInit {
   cancel(): void {
     this.showForm.set(false);
     this.editing.set(null);
+  }
+
+  onIconoUploaded(url: string): void {
+    this.form.controls.iconoUrl.setValue(url);
+  }
+
+  onIconoCleared(): void {
+    this.form.controls.iconoUrl.setValue('');
   }
 
   submit(): void {

@@ -22,9 +22,16 @@
       <textarea class="textarea" formControlName="descripcion"></textarea>
     </app-form-field>
     <div class="two-cols">
-      <app-form-field label="URL del icono" [control]="form.controls.iconoUrl">
-        <input class="input" type="url" formControlName="iconoUrl" placeholder="https://…" />
-      </app-form-field>
+      <div class="icon-upload-cell">
+        <app-image-upload
+          [currentUrl]="form.controls.iconoUrl.value || null"
+          folder="iconos"
+          shape="square"
+          label="Subir icono"
+          (urlChanged)="onIconoUploaded($event)"
+          (cleared)="onIconoCleared()"
+        />
+      </div>
       <app-form-field label="Activo" [control]="form.controls.activo">
         <select class="select" formControlName="activo">
           <option [value]="true">Activo</option>

@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '@env/environment';
 import {
   EstadisticaAcumulada,
+  EstadisticaCreateRequest,
   EstadisticaJugador,
 } from '@core/models/estadistica/estadistica.model';
 
@@ -50,5 +51,9 @@ export class EstadisticaService {
     return this.http.get<EstadisticaAcumulada[]>(
       `${this.base}/competicion/${competicionId}/ranking/${tipoEstadisticaId}`,
     );
+  }
+
+  crear$(req: EstadisticaCreateRequest): Observable<EstadisticaJugador> {
+    return this.http.post<EstadisticaJugador>(this.base, req);
   }
 }

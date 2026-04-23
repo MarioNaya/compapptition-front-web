@@ -1,0 +1,35 @@
+<div class="image-upload">
+  <div class="preview" [class]="'shape-' + shape()">
+    @if (uploading()) {
+      <div class="overlay"><app-spinner size="sm" /></div>
+    } @else if (currentUrl()) {
+      <img [src]="currentUrl()" alt="Imagen actual" />
+    } @else {
+      <div class="placeholder">
+        <app-icon name="upload" [size]="24" />
+      </div>
+    }
+  </div>
+
+  <div class="actions">
+    <label class="pick-btn" [class.disabled]="uploading()">
+      <app-icon name="upload" [size]="14" />
+      {{ currentUrl() ? 'Cambiar' : label() }}
+      <input
+        type="file"
+        accept="image/jpeg,image/png,image/webp,image/gif"
+        (change)="onFileSelected($event)"
+        [disabled]="uploading()"
+        hidden
+      />
+    </label>
+
+    @if (currentUrl()) {
+      <button type="button" class="clear-btn" (click)="clear()" [disabled]="uploading()">
+        <app-icon name="trash" [size]="14" /> Quitar
+      </button>
+    }
+  </div>
+
+  <p class="hint mono">JPG · PNG · WebP · GIF. Máx 5 MB.</p>
+</div>
