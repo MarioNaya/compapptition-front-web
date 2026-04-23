@@ -1,0 +1,14 @@
+<div class="toast-host" role="region" aria-label="Notificaciones">
+  @for (t of toasts(); track t.id) {
+    <div class="toast" [class]="'toast-' + t.variant" role="alert">
+      <app-icon
+        [name]="t.variant === 'success' ? 'check' : t.variant === 'error' ? 'x' : 'bell'"
+        [size]="16"
+      />
+      <span class="msg">{{ t.message }}</span>
+      <button class="close" type="button" (click)="dismiss(t.id)" aria-label="Cerrar">
+        <app-icon name="x" [size]="14" />
+      </button>
+    </div>
+  }
+</div>

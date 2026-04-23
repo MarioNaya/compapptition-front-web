@@ -1,0 +1,13 @@
+<div class="tabs" role="tablist">
+  @for (option of options(); track option.value) {
+    <button
+      role="tab"
+      class="tab"
+      [class.active]="option.value === value()"
+      [attr.aria-selected]="option.value === value()"
+      (click)="select(option)"
+    >
+      {{ option.label }}
+    </button>
+  }
+</div>

@@ -1,0 +1,9 @@
+<div class="glow-card" [class.glow-pulse]="pulse()">
+  <span class="notch-tag">{{ tag() }}</span>
+  <div class="top-right">
+    <ng-content select="[slot=top-right]" />
+  </div>
+  <div class="body">
+    <ng-content />
+  </div>
+</div>

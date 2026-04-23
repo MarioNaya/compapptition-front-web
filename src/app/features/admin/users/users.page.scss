@@ -1,0 +1,77 @@
+:host {
+  display: block;
+}
+
+.search-form {
+  padding: 24px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  align-items: end;
+  max-width: 640px;
+  margin-bottom: 24px;
+}
+
+.user-card {
+  padding: 28px;
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+
+  .info {
+    flex: 1;
+    min-width: 0;
+
+    .name {
+      font-size: 22px;
+      margin: 0 0 4px 0;
+      color: var(--text-pri);
+    }
+
+    .username {
+      color: var(--accent-hi);
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      margin: 0 0 6px 0;
+    }
+
+    .email {
+      color: var(--text-sec);
+      font-size: 13px;
+      margin: 0 0 12px 0;
+    }
+
+    .flags {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+
+      .meta {
+        color: var(--text-mute);
+        font-size: 11px;
+        letter-spacing: 0.08em;
+      }
+    }
+  }
+}
+
+.info-note {
+  margin-top: 16px;
+  padding: 16px 20px;
+  background: rgba(255, 122, 26, 0.04);
+  border: 1px solid rgba(255, 122, 26, 0.2);
+  border-radius: var(--radius-md);
+
+  .hint {
+    color: var(--text-sec);
+    font-size: 12px;
+    line-height: 1.6;
+    margin: 0;
+
+    strong {
+      color: var(--accent-hi);
+      font-weight: 600;
+    }
+  }
+}

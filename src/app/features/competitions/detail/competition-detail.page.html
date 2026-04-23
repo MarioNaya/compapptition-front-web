@@ -1,0 +1,88 @@
+<div class="container detail fade-in">
+  @if (loading() && !competicion()) {
+    <div class="loading-box">
+      <app-spinner size="md" label="Cargando competición" />
+    </div>
+  } @else if (competicion(); as c) {
+    <app-page-header
+      [eyebrow]="c.deporteNombre"
+      [title]="c.nombre"
+      [subtitle]="c.descripcion ?? null"
+    >
+      <app-status-tag [state]="c.estado" />
+      @if (canManage() && c.estado !== EstadoCompeticion.FINALIZADA) {
+        <app-button variant="ghost" (clicked)="goCalendar()">
+          <app-icon name="calendar" [size]="14" /> Generar calendario
+        </app-button>
+        <app-button variant="ghost" (clicked)="goNewEvent()">
+          <app-icon name="plus" [size]="14" /> Nuevo partido
+        </app-button>
+      }
+      @if (canActivate()) {
+        <app-button variant="primary" (clicked)="changeEstado(EstadoCompeticion.ACTIVA)">
+          <app-icon name="check" [size]="14" /> Abrir competición
+        </app-button>
+      }
+      @if (canFinalize()) {
+        <app-button variant="ghost" (clicked)="changeEstado(EstadoCompeticion.FINALIZADA)">
+          <app-icon name="flag" [size]="14" /> Finalizar
+        </app-button>
+      }
+      @if (canManage()) {
+        <app-button variant="orange-ghost" (clicked)="askDelete()">
+          <app-icon name="trash" [size]="14" /> Eliminar
+        </app-button>
+      }
+    </app-page-header>
+
+    <section class="meta">
+      <div class="meta-item">
+        <span class="label h-display">Creador</span>
+        <span class="value">{{ c.creadorUsername }}</span>
+      </div>
+      <div class="meta-item">
+        <span class="label h-display">Equipos</span>
+        <span class="value">{{ c.numEquipos }}</span>
+      </div>
+      @if (c.configuracion?.formato; as f) {
+        <div class="meta-item">
+          <span class="label h-display">Formato</span>
+          <span class="value">{{ f }}</span>
+        </div>
+      }
+      <div class="meta-item">
+        <span class="label h-display">Visibilidad</span>
+        <span class="value">{{ c.publica ? 'Pública' : 'Privada' }}</span>
+      </div>
+    </section>
+
+    <app-tabs
+      [options]="tabs"
+      [value]="activeTab()"
+      (valueChange)="onTabChange($event)"
+    />
+
+    <div class="tab-body">
+      @switch (activeTab()) {
+        @case ('matches') {
+          <app-matches-tab [competicionId]="c.id" />
+        }
+        @case ('standings') {
+          <app-standings-tab [competicionId]="c.id" />
+        }
+        @case ('teams') {
+          <app-teams-tab [competicionId]="c.id" [estado]="c.estado" />
+        }
+        @case ('stats') {
+          <app-stats-tab [competicionId]="c.id" />
+        }
+      }
+    </div>
+  } @else {
+    <app-empty-state
+      icon="x"
+      title="Competición no encontrada"
+      subtitle="La competición que buscas ya no está disponible."
+    />
+  }
+</div>

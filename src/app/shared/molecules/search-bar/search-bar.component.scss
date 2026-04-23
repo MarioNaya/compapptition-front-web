@@ -1,0 +1,46 @@
+:host {
+  display: block;
+}
+
+.search-bar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.input-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+
+  .lead-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--accent-hi);
+    pointer-events: none;
+  }
+
+  .input {
+    padding-left: 32px;
+  }
+}
+
+.filter-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  color: var(--text-sec);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 120ms ease;
+
+  &:hover {
+    border-color: rgba(255, 122, 26, 0.4);
+    color: var(--accent-hi);
+  }
+}

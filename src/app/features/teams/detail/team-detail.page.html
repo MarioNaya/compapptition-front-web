@@ -1,0 +1,43 @@
+<div class="container detail fade-in">
+  @if (loading() && !equipo()) {
+    <div class="loading-box"><app-spinner size="md" label="Cargando equipo" /></div>
+  } @else if (equipo(); as e) {
+    <app-page-header
+      [eyebrow]="e.tipo"
+      [title]="e.nombre"
+      [subtitle]="e.descripcion ?? null"
+    >
+      <app-button variant="orange-ghost" (clicked)="askDelete()">
+        <app-icon name="trash" [size]="14" /> Eliminar
+      </app-button>
+    </app-page-header>
+
+    <section class="hero card">
+      <app-team-crest [name]="e.nombre" [imageBytes]="e.escudoUrl ?? null" size="xl" />
+      <div class="hero-meta">
+        <div class="meta-row">
+          <span class="label h-display">Jugadores</span>
+          <span class="value">{{ e.numJugadores }}</span>
+        </div>
+      </div>
+    </section>
+
+    <h2 class="h-display section-title">Plantilla</h2>
+
+    <app-data-table
+      [columns]="columns"
+      [rows]="jugadores()"
+      [rowKey]="rowKey"
+      [clickable]="true"
+      (rowClick)="openJugador($event)"
+      emptyTitle="Aún no hay jugadores"
+      emptySubtitle="Añade jugadores desde el perfil de cada uno o desde este equipo (próximamente)."
+    />
+  } @else {
+    <app-empty-state
+      icon="x"
+      title="Equipo no encontrado"
+      subtitle="El equipo que buscas ya no está disponible."
+    />
+  }
+</div>

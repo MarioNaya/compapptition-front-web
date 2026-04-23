@@ -1,0 +1,28 @@
+<app-page-header
+  eyebrow="Panel"
+  title="Panel de administración"
+  subtitle="Gestión global de deportes, tipos de estadística, usuarios y logs del sistema."
+/>
+
+<div class="grid">
+  <a class="tile card card-hover" routerLink="/admin/sports">
+    <app-icon name="trophy" [size]="22" />
+    <h3 class="h-display">Deportes</h3>
+    <p>Alta, edición y eliminación de deportes del sistema.</p>
+  </a>
+  <a class="tile card card-hover" routerLink="/admin/stat-types">
+    <app-icon name="flag" [size]="22" />
+    <h3 class="h-display">Tipos estadística</h3>
+    <p>Define los parámetros que se registran en cada deporte.</p>
+  </a>
+  <a class="tile card card-hover" routerLink="/admin/users">
+    <app-icon name="users" [size]="22" />
+    <h3 class="h-display">Usuarios</h3>
+    <p>Busca usuarios, consulta su perfil y gestiona su estado.</p>
+  </a>
+  <a class="tile card card-hover" routerLink="/admin/logs">
+    <app-icon name="inbox" [size]="22" />
+    <h3 class="h-display">Logs de auditoría</h3>
+    <p>Historial de modificaciones por usuario, entidad o competición.</p>
+  </a>
+</div>

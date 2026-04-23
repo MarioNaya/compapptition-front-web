@@ -1,0 +1,80 @@
+:host {
+  display: block;
+}
+
+.invitation-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 20px;
+  align-items: center;
+  padding: 20px;
+}
+
+.icon-box {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-xl);
+  background: rgba(255, 122, 26, 0.08);
+  border: 1px solid rgba(255, 122, 26, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-hi);
+}
+
+.body {
+  min-width: 0;
+}
+
+.from {
+  margin: 0 0 4px 0;
+  color: var(--text-sec);
+  font-size: 13px;
+
+  strong {
+    color: var(--text-pri);
+    font-weight: 600;
+  }
+}
+
+.competition {
+  font-size: 20px;
+  margin: 0 0 6px 0;
+  color: var(--text-pri);
+}
+
+.rol {
+  margin: 0 0 8px 0;
+  color: var(--accent-hi);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+}
+
+.when {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-mute);
+  font-size: 11px;
+  font-family: var(--font-mono);
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+@media (max-width: 640px) {
+  .invitation-card {
+    grid-template-columns: auto 1fr;
+  }
+
+  .actions {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+  }
+}

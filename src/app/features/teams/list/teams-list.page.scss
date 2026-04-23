@@ -1,0 +1,25 @@
+:host {
+  display: block;
+}
+
+.teams {
+  padding-top: 48px;
+  padding-bottom: 80px;
+}
+
+.toolbar {
+  margin-bottom: 28px;
+  max-width: 520px;
+}
+
+.loading-box {
+  padding: 80px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}

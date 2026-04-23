@@ -1,0 +1,44 @@
+:host {
+  display: block;
+}
+
+.new-event {
+  padding-top: 48px;
+  padding-bottom: 80px;
+}
+
+.loading-box {
+  padding: 60px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.warning {
+  padding: 28px;
+  color: var(--warning);
+  max-width: 560px;
+}
+
+.form {
+  max-width: 640px;
+  padding: 32px;
+  display: grid;
+  gap: 18px;
+}
+
+.two-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+
+  @media (max-width: 540px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+}

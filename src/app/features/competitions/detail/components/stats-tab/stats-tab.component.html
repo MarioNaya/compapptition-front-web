@@ -1,0 +1,33 @@
+@if (loadingTipos()) {
+  <div class="loading-box"><app-spinner size="md" label="Cargando tipos de estadística" /></div>
+} @else if (tipos().length === 0) {
+  <app-empty-state
+    icon="stats"
+    title="Sin tipos de estadística"
+    subtitle="Este deporte aún no tiene tipos de estadística definidos. Un admin puede añadirlos desde el panel."
+  />
+} @else {
+  <section class="type-switcher">
+    <span class="label h-display">Ranking por:</span>
+    <div class="chips">
+      @for (t of tipos(); track t.id) {
+        <button
+          type="button"
+          class="type-chip"
+          [class.active]="t.id === selectedTipoId()"
+          (click)="selectTipo(t.id)"
+        >{{ t.nombre }}</button>
+      }
+    </div>
+  </section>
+
+  <app-data-table
+    [columns]="columns"
+    [rows]="rankingWithPos()"
+    [rowKey]="rowKey"
+    [rowClass]="rowClass"
+    [loading]="loadingRanking()"
+    emptyTitle="Sin estadísticas registradas"
+    emptySubtitle="Registra estadísticas en los partidos para ver el ranking."
+  />
+}

@@ -1,0 +1,20 @@
+@if (active(); as a) {
+  <div class="backdrop" (click)="cancel()"></div>
+  <div class="dialog card" role="dialog" aria-modal="true" [attr.aria-labelledby]="'cd-title'">
+    <h3 id="cd-title" class="title h-display">{{ a.title }}</h3>
+    @if (a.message; as m) {
+      <p class="message">{{ m }}</p>
+    }
+    <div class="actions">
+      <app-button variant="ghost" (clicked)="cancel()">
+        {{ a.cancelLabel ?? 'Cancelar' }}
+      </app-button>
+      <app-button
+        [variant]="a.destructive ? 'orange-ghost' : 'primary'"
+        (clicked)="confirm()"
+      >
+        {{ a.confirmLabel ?? 'Confirmar' }}
+      </app-button>
+    </div>
+  </div>
+}

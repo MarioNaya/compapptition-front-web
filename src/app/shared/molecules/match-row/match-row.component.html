@@ -1,0 +1,38 @@
+<div class="card match-row" (click)="open()" (keydown.enter)="open()" tabindex="0">
+  <div class="date">
+    <span class="mono dow">{{ (evento().fechaHora | date: 'EEE dd MMM' : '' : 'es') | uppercase }}</span>
+    <span class="mono hour">{{ evento().fechaHora | date: 'HH:mm' : '' : 'es' }}</span>
+  </div>
+
+  <div class="teams">
+    <div class="side side-home">
+      <app-team-crest [name]="evento().equipoLocal?.nombre ?? '—'" size="sm" />
+      <span class="name">{{ evento().equipoLocal?.nombre ?? 'TBD' }}</span>
+    </div>
+
+    <div class="score">
+      @if (evento().resultadoLocal != null && evento().resultadoVisitante != null) {
+        <span class="score-num">{{ evento().resultadoLocal }}</span>
+        <span class="sep">·</span>
+        <span class="score-num">{{ evento().resultadoVisitante }}</span>
+      } @else {
+        <span class="vs h-display">vs</span>
+      }
+    </div>
+
+    <div class="side side-away">
+      <span class="name">{{ evento().equipoVisitante?.nombre ?? 'TBD' }}</span>
+      <app-team-crest [name]="evento().equipoVisitante?.nombre ?? '—'" size="sm" />
+    </div>
+  </div>
+
+  <div class="tail">
+    @if (evento().lugar; as l) {
+      <span class="venue">
+        <app-icon name="pin" [size]="13" />
+        {{ l }}
+      </span>
+    }
+    <app-status-tag [state]="evento().estado" />
+  </div>
+</div>

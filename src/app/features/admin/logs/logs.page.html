@@ -1,0 +1,71 @@
+<app-page-header
+  eyebrow="Admin · Auditoría"
+  title="Logs de modificación"
+  subtitle="Consulta el historial de acciones por usuario o por competición."
+/>
+
+<section class="mode-switcher">
+  <button
+    type="button"
+    class="mode-chip"
+    [class.active]="mode() === 'usuario'"
+    (click)="setMode('usuario')"
+  >
+    <app-icon name="user" [size]="14" /> Por usuario
+  </button>
+  <button
+    type="button"
+    class="mode-chip"
+    [class.active]="mode() === 'competicion'"
+    (click)="setMode('competicion')"
+  >
+    <app-icon name="trophy" [size]="14" /> Por competición
+  </button>
+</section>
+
+<form class="search-form card" [formGroup]="form" (ngSubmit)="search(0)">
+  <app-form-field
+    [label]="mode() === 'usuario' ? 'ID de usuario' : 'ID de competición'"
+    [control]="form.controls.id"
+    [hint]="mode() === 'usuario'
+      ? 'Solo ADMIN_SISTEMA o tu propio ID'
+      : 'Solo el creador de la competición puede ver sus logs'"
+  >
+    <input class="input" type="number" min="1" formControlName="id" />
+  </app-form-field>
+  <app-button variant="primary" type="submit" [disabled]="loading()">
+    @if (loading()) {
+      <app-spinner size="sm" />
+    } @else {
+      <app-icon name="search" [size]="14" /> Consultar
+    }
+  </app-button>
+</form>
+
+@if (searched() && !loading() && logs().length === 0) {
+  <app-empty-state icon="inbox" title="Sin resultados" subtitle="No hay logs para ese ID." />
+}
+
+@if (logs().length > 0) {
+  <div class="results">
+    <app-data-table
+      [columns]="columns"
+      [rows]="logs()"
+      [rowKey]="rowKey"
+    />
+
+    <div class="pager">
+      <span class="mono pager-info">
+        Página {{ page() + 1 }} / {{ totalPages() }} · {{ totalElements() }} registros
+      </span>
+      <div class="pager-actions">
+        <app-button variant="ghost" (clicked)="prev()" [disabled]="!hasPrev()">
+          <app-icon name="chev-l" [size]="14" /> Anterior
+        </app-button>
+        <app-button variant="ghost" (clicked)="next()" [disabled]="!hasNext()">
+          Siguiente <app-icon name="chev-r" [size]="14" />
+        </app-button>
+      </div>
+    </div>
+  </div>
+}

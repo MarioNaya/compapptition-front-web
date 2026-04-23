@@ -1,0 +1,212 @@
+// Layout
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 32px;
+  width: 100%;
+}
+
+// Typography utilities
+.h-display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 26px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--accent-hi);
+  text-shadow: 0 0 24px rgba(255, 122, 26, 0.5);
+}
+
+// Backgrounds
+.dot-bg {
+  background-image: radial-gradient(rgba(255, 122, 26, 0.18) 1px, transparent 1px);
+  background-size: 10px 10px;
+  background-position: 0 0;
+}
+
+.dot-bg-dense {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 8px 8px;
+}
+
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+// Cards
+.card {
+  background: var(--bg-1);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+}
+
+.card-hover {
+  transition:
+    border-color 150ms ease,
+    transform 150ms ease,
+    box-shadow 150ms ease;
+
+  &:hover {
+    border-color: rgba(255, 122, 26, 0.45);
+    box-shadow: 0 0 30px -12px rgba(255, 122, 26, 0.4);
+  }
+}
+
+// Signature glow card — anchor visual element
+.glow-card {
+  position: relative;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(180deg, #1c130d 0%, #140d09 100%);
+  border: 1px solid rgba(255, 122, 26, 0.5);
+  box-shadow:
+    0 0 0 1px rgba(255, 122, 26, 0.25),
+    0 0 40px -8px rgba(255, 122, 26, 0.55),
+    0 0 80px -20px rgba(255, 122, 26, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-image: radial-gradient(rgba(255, 122, 26, 0.14) 1px, transparent 1px);
+    background-size: 10px 10px;
+    mask-image: linear-gradient(180deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0) 100%);
+    -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0) 100%);
+    pointer-events: none;
+  }
+}
+
+// Notch tag (corner label for glow-card)
+.notch-tag {
+  position: absolute;
+  top: -12px;
+  left: 24px;
+  background: linear-gradient(180deg, #2a1a0f, #1a0f08);
+  border: 1px solid rgba(255, 122, 26, 0.6);
+  padding: 6px 18px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent-hi);
+  box-shadow: 0 0 16px -2px rgba(255, 122, 26, 0.5);
+}
+
+// Form fields (globals — usables en `<input class="input">` o vía wrappers)
+.field-label {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-sec);
+  margin-bottom: 10px;
+}
+
+.input,
+.select,
+.textarea {
+  width: 100%;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 11px 14px;
+  font-size: 14px;
+  font-family: var(--font-body);
+  color: var(--text-pri);
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease;
+
+  &:focus {
+    outline: none;
+    border-color: rgba(255, 122, 26, 0.55);
+    box-shadow: 0 0 0 3px rgba(255, 122, 26, 0.15);
+  }
+
+  &::placeholder {
+    color: var(--text-mute);
+  }
+
+  // Anula el fondo blanco de Chrome autofill manteniendo el tono marrón
+  &:-webkit-autofill,
+  &:-webkit-autofill:hover,
+  &:-webkit-autofill:focus,
+  &:-webkit-autofill:active {
+    -webkit-text-fill-color: var(--text-pri);
+    -webkit-box-shadow: 0 0 0 1000px var(--bg-2) inset;
+    caret-color: var(--text-pri);
+    transition: background-color 5000s ease-in-out 0s;
+  }
+
+  &.input-invalid {
+    border-color: rgba(239, 68, 68, 0.55);
+
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+    }
+  }
+}
+
+.textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.field-error {
+  display: block;
+  margin-top: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--danger);
+}
+
+// Divider
+.divider {
+  height: 1px;
+  background: var(--line);
+  margin: 24px 0;
+  border: 0;
+}
+
+.v-divider {
+  width: 1px;
+  align-self: stretch;
+  background: var(--line);
+}
+
+// Scrollbar
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-0);
+}
+::-webkit-scrollbar-thumb {
+  background: #2a211c;
+  border-radius: 10px;
+
+  &:hover {
+    background: #3a2e26;
+  }
+}

@@ -1,0 +1,74 @@
+:host {
+  display: block;
+}
+
+.mode-switcher {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.mode-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-1);
+  border: 1px solid var(--line);
+  color: var(--text-sec);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 120ms ease;
+
+  &:hover {
+    border-color: rgba(255, 122, 26, 0.4);
+    color: var(--text-pri);
+  }
+
+  &.active {
+    background: rgba(255, 122, 26, 0.12);
+    border-color: rgba(255, 122, 26, 0.45);
+    color: var(--accent-hi);
+  }
+}
+
+.search-form {
+  padding: 24px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  align-items: end;
+  max-width: 520px;
+  margin-bottom: 24px;
+}
+
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pager {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  .pager-info {
+    color: var(--text-mute);
+    font-size: 12px;
+    letter-spacing: 0.05em;
+  }
+
+  .pager-actions {
+    display: flex;
+    gap: 10px;
+  }
+}

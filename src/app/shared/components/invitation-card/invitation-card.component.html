@@ -1,0 +1,52 @@
+<article class="card invitation-card">
+  <div class="icon-box">
+    <app-icon name="mail" [size]="22" />
+  </div>
+
+  <div class="body">
+    <p class="from">
+      @if (direction() === 'received') {
+        De <strong>{{ invitacion().emisorUsername }}</strong>
+      } @else {
+        Para <strong>{{ invitacion().destinatarioUsername ?? '—' }}</strong>
+      }
+    </p>
+    <h3 class="competition h-display">
+      {{ invitacion().competicionNombre ?? invitacion().equipoNombre ?? 'Invitación' }}
+    </h3>
+    <p class="rol mono">Rol: {{ invitacion().rolOfrecido }}</p>
+    <p class="when">
+      <app-icon name="clock" [size]="12" />
+      {{ invitacion().fechaCreacion | date: 'dd MMM yyyy HH:mm' : '' : 'es' }}
+    </p>
+  </div>
+
+  <div class="actions">
+    @switch (invitacion().estado) {
+      @case (EstadoInvitacion.PENDIENTE) {
+        @if (direction() === 'received') {
+          <app-button variant="primary" (clicked)="accept()">
+            <app-icon name="check" [size]="14" /> Aceptar
+          </app-button>
+          <app-button variant="ghost" (clicked)="reject()">
+            <app-icon name="x" [size]="14" /> Rechazar
+          </app-button>
+        } @else {
+          <app-tag variant="gray">Pendiente</app-tag>
+          <app-button variant="ghost" (clicked)="cancel()">
+            <app-icon name="trash" [size]="14" /> Cancelar
+          </app-button>
+        }
+      }
+      @case (EstadoInvitacion.ACEPTADA) {
+        <app-tag variant="green">Aceptada</app-tag>
+      }
+      @case (EstadoInvitacion.RECHAZADA) {
+        <app-tag variant="red">Rechazada</app-tag>
+      }
+      @case (EstadoInvitacion.EXPIRADA) {
+        <app-tag variant="gray">Expirada</app-tag>
+      }
+    }
+  </div>
+</article>

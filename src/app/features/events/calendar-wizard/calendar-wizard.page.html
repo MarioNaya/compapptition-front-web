@@ -1,0 +1,65 @@
+<div class="container wizard fade-in">
+  <app-page-header
+    eyebrow="Calendario"
+    title="Generar calendario"
+    subtitle="Elige el formato y parámetros. El backend creará los partidos automáticamente."
+  />
+
+  <div class="mode-switcher">
+    <button
+      class="mode-chip"
+      [class.active]="mode() === 'league'"
+      type="button"
+      (click)="setMode('league')"
+    >
+      <app-icon name="trophy" [size]="14" /> Liga round-robin
+    </button>
+    <button
+      class="mode-chip"
+      [class.active]="mode() === 'playoff'"
+      type="button"
+      (click)="setMode('playoff')"
+    >
+      <app-icon name="flag" [size]="14" /> Playoff seeded
+    </button>
+  </div>
+
+  <form class="form card" [formGroup]="form" (ngSubmit)="generate()">
+    <app-form-field
+      label="Fecha de inicio"
+      [control]="form.controls.fechaInicio"
+      hint="Cuándo se disputa la primera jornada"
+    >
+      <input class="input" type="datetime-local" formControlName="fechaInicio" />
+    </app-form-field>
+
+    <app-form-field
+      label="Días entre jornadas"
+      [control]="form.controls.diasJornada"
+      hint="7 = semanal · 3 = mitad de semana"
+    >
+      <input class="input" type="number" min="1" formControlName="diasJornada" />
+    </app-form-field>
+
+    @if (mode() === 'playoff') {
+      <app-form-field
+        label="Ronda inicial (opcional)"
+        [control]="form.controls.rondaInicial"
+        hint="Si se omite, se calcula como maxJornada + 1"
+      >
+        <input class="input" type="number" min="1" formControlName="rondaInicial" />
+      </app-form-field>
+    }
+
+    <div class="actions">
+      <app-button variant="ghost" type="button" (clicked)="cancel()">Cancelar</app-button>
+      <app-button variant="primary" type="submit" [disabled]="saving()">
+        @if (saving()) {
+          <app-spinner size="sm" />
+        } @else {
+          <app-icon name="calendar" [size]="14" /> Generar
+        }
+      </app-button>
+    </div>
+  </form>
+</div>

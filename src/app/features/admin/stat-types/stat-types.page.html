@@ -1,0 +1,97 @@
+<app-page-header
+  eyebrow="Admin · Tipos estadística"
+  title="Tipos de estadística"
+  subtitle="Define los parámetros que los anotadores pueden registrar por deporte."
+>
+  @if (selectedDeporte() && !showForm()) {
+    <app-button variant="primary" (clicked)="startCreate()">
+      <app-icon name="plus" [size]="14" /> Nuevo tipo
+    </app-button>
+  }
+</app-page-header>
+
+<section class="sport-switcher">
+  <span class="label h-display">Deporte:</span>
+  <div class="chips">
+    @for (d of deportes(); track d.id) {
+      <button
+        type="button"
+        class="sport-chip"
+        [class.active]="d.id === selectedDeporteId()"
+        (click)="selectDeporte(d.id)"
+      >{{ d.nombre }}</button>
+    }
+  </div>
+</section>
+
+@if (showForm()) {
+  <form class="form card" [formGroup]="form" (ngSubmit)="submit()">
+    <h3 class="h-display form-title">
+      {{ editing() ? 'Editar tipo' : 'Nuevo tipo' }} · {{ selectedDeporte()?.nombre }}
+    </h3>
+    <app-form-field label="Nombre" [control]="form.controls.nombre">
+      <input class="input" type="text" formControlName="nombre" />
+    </app-form-field>
+    <app-form-field label="Descripción" [control]="form.controls.descripcion">
+      <textarea class="textarea" formControlName="descripcion"></textarea>
+    </app-form-field>
+    <div class="two-cols">
+      <app-form-field label="Tipo de valor" [control]="form.controls.tipoValor">
+        <select class="select" formControlName="tipoValor">
+          <option value="ENTERO">Entero</option>
+          <option value="DECIMAL">Decimal</option>
+          <option value="BOOLEANO">Booleano</option>
+          <option value="TIEMPO">Tiempo</option>
+        </select>
+      </app-form-field>
+      <app-form-field label="Orden" [control]="form.controls.orden">
+        <input class="input" type="number" formControlName="orden" />
+      </app-form-field>
+    </div>
+    <div class="actions">
+      <app-button variant="ghost" type="button" (clicked)="cancel()">Cancelar</app-button>
+      <app-button variant="primary" type="submit" [disabled]="saving()">
+        @if (saving()) {
+          <app-spinner size="sm" />
+        } @else {
+          Guardar
+        }
+      </app-button>
+    </div>
+  </form>
+}
+
+@if (loading()) {
+  <div class="loading-box"><app-spinner size="md" label="Cargando tipos" /></div>
+} @else if (tipos().length === 0) {
+  <app-empty-state
+    icon="flag"
+    title="Sin tipos"
+    [subtitle]="selectedDeporte() ? 'Este deporte aún no tiene tipos de estadística.' : 'Selecciona un deporte primero.'"
+  />
+} @else {
+  <div class="grid">
+    @for (t of tipos(); track t.id) {
+      <div class="tipo-card card">
+        <div class="top">
+          <span class="h-display name">{{ t.nombre }}</span>
+          <span class="mono tipo-valor">{{ t.tipoValor }}</span>
+        </div>
+        @if (t.descripcion) {
+          <p class="desc">{{ t.descripcion }}</p>
+        }
+        <div class="bottom">
+          <span class="orden mono">orden: {{ t.orden }}</span>
+          <div class="actions-inline">
+            <button type="button" class="mini-btn" (click)="startEdit(t)" title="Editar">
+              <app-icon name="edit" [size]="12" />
+            </button>
+            <button type="button" class="mini-btn danger" (click)="askDelete(t)" title="Eliminar">
+              <app-icon name="trash" [size]="12" />
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+}

@@ -1,0 +1,64 @@
+<div class="container new-event fade-in">
+  <app-page-header
+    eyebrow="Crear"
+    title="Nuevo partido"
+    subtitle="Añade un partido manualmente a la competición."
+  />
+
+  @if (loadingTeams()) {
+    <div class="loading-box"><app-spinner size="md" label="Cargando equipos" /></div>
+  } @else if (equipos().length < 2) {
+    <div class="card warning">
+      <p class="mono">Necesitas al menos 2 equipos inscritos en la competición para crear un partido.</p>
+    </div>
+  } @else {
+    <form class="form card" [formGroup]="form" (ngSubmit)="submit()">
+      <app-form-field label="Jornada" [control]="form.controls.jornada">
+        <input class="input" type="number" min="1" formControlName="jornada" />
+      </app-form-field>
+
+      <app-form-field label="Fecha y hora" [control]="form.controls.fechaHora">
+        <input class="input" type="datetime-local" formControlName="fechaHora" />
+      </app-form-field>
+
+      <app-form-field label="Lugar" [control]="form.controls.lugar">
+        <input class="input" type="text" formControlName="lugar" placeholder="p.ej. La Granja CDM" />
+      </app-form-field>
+
+      <div class="two-cols">
+        <app-form-field label="Equipo local" [control]="form.controls.equipoLocalId">
+          <select class="select" formControlName="equipoLocalId">
+            <option [value]="0" disabled>Selecciona equipo</option>
+            @for (e of equipos(); track e.id) {
+              <option [value]="e.id">{{ e.nombre }}</option>
+            }
+          </select>
+        </app-form-field>
+
+        <app-form-field label="Equipo visitante" [control]="form.controls.equipoVisitanteId">
+          <select class="select" formControlName="equipoVisitanteId">
+            <option [value]="0" disabled>Selecciona equipo</option>
+            @for (e of equipos(); track e.id) {
+              <option [value]="e.id">{{ e.nombre }}</option>
+            }
+          </select>
+        </app-form-field>
+      </div>
+
+      <app-form-field label="Observaciones" [control]="form.controls.observaciones">
+        <textarea class="textarea" formControlName="observaciones" placeholder="Notas, árbitro, etc."></textarea>
+      </app-form-field>
+
+      <div class="actions">
+        <app-button variant="ghost" type="button" (clicked)="cancel()">Cancelar</app-button>
+        <app-button variant="primary" type="submit" [disabled]="saving()">
+          @if (saving()) {
+            <app-spinner size="sm" />
+          } @else {
+            Crear partido
+          }
+        </app-button>
+      </div>
+    </form>
+  }
+</div>

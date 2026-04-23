@@ -1,0 +1,54 @@
+<div class="container competitions fade-in">
+  <app-page-header
+    eyebrow="Competiciones"
+    title="Todas las competiciones"
+    subtitle="Explora las ligas y torneos públicos o gestiona las tuyas."
+  >
+    <app-button variant="primary" (clicked)="goToNew()">
+      <app-icon name="plus" [size]="14" /> Nueva competición
+    </app-button>
+  </app-page-header>
+
+  <section class="toolbar">
+    <app-search-bar
+      [value]="search()"
+      placeholder="Buscar por nombre, deporte…"
+      (valueChange)="onSearchChange($event)"
+    />
+
+    <div class="filters" role="tablist" aria-label="Filtrar por estado">
+      @for (f of filters; track f.value) {
+        <button
+          class="filter-chip"
+          [class.active]="activeFilter() === f.value"
+          role="tab"
+          [attr.aria-selected]="activeFilter() === f.value"
+          (click)="setFilter(f.value)"
+          type="button"
+        >{{ f.label }}</button>
+      }
+    </div>
+  </section>
+
+  @if (loading() && list().length === 0) {
+    <div class="loading-box">
+      <app-spinner size="md" label="Cargando competiciones" />
+    </div>
+  } @else if (filteredList().length === 0) {
+    <app-empty-state
+      icon="trophy"
+      title="Sin resultados"
+      subtitle="No hay competiciones que coincidan con los filtros actuales."
+    >
+      <app-button variant="primary" (clicked)="goToNew()">
+        <app-icon name="plus" [size]="14" /> Crear la primera
+      </app-button>
+    </app-empty-state>
+  } @else {
+    <div class="grid">
+      @for (comp of filteredList(); track comp.id) {
+        <app-competition-card [competicion]="comp" (opened)="openDetail($event)" />
+      }
+    </div>
+  }
+</div>

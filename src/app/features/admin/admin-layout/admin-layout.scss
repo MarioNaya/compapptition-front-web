@@ -1,0 +1,74 @@
+:host {
+  display: block;
+}
+
+.admin-shell {
+  padding-top: 48px;
+  padding-bottom: 80px;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 24px;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sidebar {
+  padding: 20px 16px;
+  align-self: start;
+  position: sticky;
+  top: 88px;
+}
+
+.section-label {
+  color: var(--accent-hi);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  margin: 0 0 12px 12px;
+}
+
+.side-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.side-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  color: var(--text-sec);
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 120ms ease;
+
+  app-icon {
+    color: var(--text-mute);
+  }
+
+  &:hover {
+    color: var(--text-pri);
+    background: rgba(255, 255, 255, 0.02);
+
+    app-icon {
+      color: var(--accent-hi);
+    }
+  }
+
+  &.active {
+    color: var(--accent-hi);
+    background: rgba(255, 122, 26, 0.08);
+    box-shadow: inset 3px 0 0 var(--accent);
+
+    app-icon {
+      color: var(--accent-hi);
+    }
+  }
+}
+
+.content {
+  min-width: 0;
+}

@@ -1,0 +1,104 @@
+:host {
+  display: block;
+}
+
+.detail {
+  padding-top: 48px;
+  padding-bottom: 80px;
+}
+
+.loading-box {
+  padding: 80px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.hero {
+  padding: 32px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 32px;
+  align-items: center;
+  margin-bottom: 32px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.score-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+
+  .score {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 56px;
+    color: var(--accent-hi);
+    line-height: 1;
+    text-shadow: 0 0 24px rgba(255, 122, 26, 0.5);
+
+    &.pending {
+      font-size: 32px;
+      color: var(--text-sec);
+      text-shadow: none;
+    }
+  }
+
+  .hint {
+    color: var(--text-mute);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+}
+
+.result-section {
+  padding: 28px;
+  margin-bottom: 24px;
+}
+
+.section-title {
+  font-size: 18px;
+  margin: 0 0 20px 0;
+  color: var(--text-pri);
+}
+
+.result-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.score-inputs {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: end;
+  gap: 16px;
+
+  .sep {
+    font-size: 32px;
+    color: var(--text-mute);
+    padding-bottom: 8px;
+    text-align: center;
+  }
+}
+
+.score-input {
+  font-size: 22px;
+  font-family: var(--font-display);
+  text-align: center;
+  font-weight: 700;
+  color: var(--accent-hi);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.empty-stats {
+  margin-top: 16px;
+}

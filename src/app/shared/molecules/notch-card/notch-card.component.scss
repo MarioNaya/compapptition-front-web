@@ -1,0 +1,24 @@
+:host {
+  display: block;
+  position: relative;
+}
+
+.glow-card {
+  padding: 26px;
+  position: relative;
+}
+
+.top-right {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.body {
+  position: relative;
+  z-index: 1;
+}

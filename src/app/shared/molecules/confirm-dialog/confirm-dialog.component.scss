@@ -1,0 +1,55 @@
+:host {
+  display: contents;
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 90;
+  animation: fade-in 180ms ease;
+}
+
+.dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 91;
+  padding: 28px;
+  min-width: 360px;
+  max-width: 480px;
+  background: var(--bg-1);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-modal);
+  animation: fade-in 200ms ease;
+}
+
+.title {
+  font-size: 22px;
+  margin: 0 0 10px 0;
+  color: var(--text-pri);
+}
+
+.message {
+  margin: 0 0 24px 0;
+  color: var(--text-sec);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

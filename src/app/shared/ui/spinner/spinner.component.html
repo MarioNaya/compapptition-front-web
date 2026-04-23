@@ -1,0 +1,6 @@
+<div class="spinner-wrap" [class]="'spinner-' + size()" role="status" [attr.aria-label]="label() ?? 'Cargando'">
+  <div class="ring"></div>
+  @if (label(); as l) {
+    <span class="label mono">{{ l }}</span>
+  }
+</div>

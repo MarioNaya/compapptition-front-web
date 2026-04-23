@@ -1,0 +1,55 @@
+<app-page-header
+  eyebrow="Admin · Usuarios"
+  title="Gestión de usuarios"
+  subtitle="Busca un usuario por su username para consultar su perfil y estado."
+/>
+
+<form class="search-form card" [formGroup]="searchForm" (ngSubmit)="search()">
+  <app-form-field label="Username" [control]="searchForm.controls.username">
+    <input class="input" type="text" formControlName="username" placeholder="p.ej. alberto.m" />
+  </app-form-field>
+  <app-button variant="primary" type="submit" [disabled]="loading()">
+    @if (loading()) {
+      <app-spinner size="sm" />
+    } @else {
+      <app-icon name="search" [size]="14" /> Buscar
+    }
+  </app-button>
+</form>
+
+@if (searched() && !loading() && !usuario()) {
+  <app-empty-state
+    icon="user"
+    title="Usuario no encontrado"
+    subtitle="Prueba con otro username."
+  />
+}
+
+@if (usuario(); as u) {
+  <article class="user-card card">
+    <app-avatar [name]="displayName || u.username" size="lg" />
+    <div class="info">
+      <h3 class="h-display name">{{ displayName || u.username }}</h3>
+      <p class="username mono">&#64;{{ u.username }}</p>
+      <p class="email">{{ u.email }}</p>
+      <div class="flags">
+        @if (u.activo) {
+          <app-tag variant="green">Activo</app-tag>
+        } @else {
+          <app-tag variant="red">Inactivo</app-tag>
+        }
+        @if (u.fechaCreacion) {
+          <span class="mono meta">Alta: {{ u.fechaCreacion }}</span>
+        }
+      </div>
+    </div>
+  </article>
+
+  <section class="info-note">
+    <p class="mono hint">
+      La asignación y revocación de roles por competición se gestiona desde la propia competición
+      (tab <strong>Equipos</strong> y flujo de invitaciones). El borrado/desactivación directa
+      de usuarios está pendiente.
+    </p>
+  </section>
+}

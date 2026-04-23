@@ -1,0 +1,18 @@
+<article class="card card-hover team-card" (click)="open()" (keydown.enter)="open()" tabindex="0">
+  <app-team-crest [name]="equipo().nombre" [imageBytes]="equipo().escudoUrl ?? null" size="lg" />
+
+  <div class="info">
+    <h3 class="name h-display">{{ equipo().nombre }}</h3>
+    @if (equipo().descripcion; as d) {
+      <p class="desc">{{ d }}</p>
+    }
+  </div>
+
+  <footer class="meta">
+    <span class="meta-item">
+      <app-icon name="users" [size]="14" />
+      <span>{{ equipo().numJugadores }} jugadores</span>
+    </span>
+    <span class="meta-item mono tipo">{{ equipo().tipo }}</span>
+  </footer>
+</article>

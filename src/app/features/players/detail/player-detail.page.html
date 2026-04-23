@@ -1,0 +1,65 @@
+<div class="container detail fade-in">
+  @if (loading() && !jugador()) {
+    <div class="loading-box"><app-spinner size="md" label="Cargando jugador" /></div>
+  } @else if (jugador(); as j) {
+    <app-page-header
+      [eyebrow]="j.posicion ?? 'Jugador'"
+      [title]="displayName()"
+      [subtitle]="j.dorsal ? 'Dorsal #' + j.dorsal : null"
+    >
+      <app-button variant="orange-ghost" (clicked)="askDelete()">
+        <app-icon name="trash" [size]="14" /> Eliminar
+      </app-button>
+    </app-page-header>
+
+    <section class="hero card">
+      <app-team-crest [name]="displayName()" [imageBytes]="j.fotoUrl ?? null" size="xl" />
+      <div class="hero-info">
+        @if (j.altura) {
+          <div class="info-item">
+            <span class="label h-display">Altura</span>
+            <span class="value">{{ j.altura }} cm</span>
+          </div>
+        }
+        @if (j.peso) {
+          <div class="info-item">
+            <span class="label h-display">Peso</span>
+            <span class="value">{{ j.peso }} kg</span>
+          </div>
+        }
+        @if (j.fechaNacimiento) {
+          <div class="info-item">
+            <span class="label h-display">Nacimiento</span>
+            <span class="value">{{ j.fechaNacimiento }}</span>
+          </div>
+        }
+      </div>
+    </section>
+
+    <h2 class="h-display section-title">Estadísticas acumuladas</h2>
+
+    @if (statsByType().length === 0) {
+      <app-empty-state
+        icon="stats"
+        title="Sin estadísticas registradas"
+        subtitle="Las estadísticas aparecerán cuando se registren en partidos disputados."
+      />
+    } @else {
+      <div class="stats-grid">
+        @for (s of statsByType(); track s.tipoId) {
+          <div class="stat-card card">
+            <span class="stat-name mono">{{ s.tipoNombre }}</span>
+            <span class="stat-total h-display">{{ s.total }}</span>
+            <span class="stat-count">{{ s.count }} partido{{ s.count === 1 ? '' : 's' }}</span>
+          </div>
+        }
+      </div>
+    }
+  } @else {
+    <app-empty-state
+      icon="x"
+      title="Jugador no encontrado"
+      subtitle="El jugador que buscas ya no está disponible."
+    />
+  }
+</div>

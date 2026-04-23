@@ -1,0 +1,66 @@
+<section class="auth-card card">
+  <header class="head">
+    <p class="eyebrow h-display">Crear cuenta</p>
+    <h1 class="title h-display">Únete a Compapption</h1>
+    <p class="subtitle">Crea competiciones, gestiona equipos y sigue cada partido.</p>
+  </header>
+
+  <form class="form" [formGroup]="form" (ngSubmit)="submit()">
+    <app-form-field label="Usuario" [control]="form.controls.username">
+      <input
+        class="input"
+        type="text"
+        formControlName="username"
+        placeholder="p.ej. alberto.m"
+        autocomplete="username"
+      />
+    </app-form-field>
+
+    <app-form-field label="Email" [control]="form.controls.email">
+      <input
+        class="input"
+        type="email"
+        formControlName="email"
+        placeholder="tu@email.com"
+        autocomplete="email"
+      />
+    </app-form-field>
+
+    <app-form-field
+      label="Contraseña"
+      [control]="form.controls.password"
+      hint="Mínimo 8 caracteres"
+    >
+      <input
+        class="input"
+        type="password"
+        formControlName="password"
+        placeholder="••••••••"
+        autocomplete="new-password"
+      />
+    </app-form-field>
+
+    <div class="two-cols">
+      <app-form-field label="Nombre (opcional)" [control]="form.controls.nombre">
+        <input class="input" type="text" formControlName="nombre" autocomplete="given-name" />
+      </app-form-field>
+      <app-form-field label="Apellidos (opcional)" [control]="form.controls.apellidos">
+        <input class="input" type="text" formControlName="apellidos" autocomplete="family-name" />
+      </app-form-field>
+    </div>
+
+    <app-button variant="primary" type="submit" [fullWidth]="true" [disabled]="loading()">
+      @if (loading()) {
+        <app-spinner size="sm" />
+      } @else {
+        Crear cuenta
+      }
+    </app-button>
+  </form>
+
+  <footer class="foot">
+    <p>¿Ya tienes cuenta?
+      <a routerLink="/auth/login" class="accent-link">Inicia sesión</a>
+    </p>
+  </footer>
+</section>

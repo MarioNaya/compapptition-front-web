@@ -1,0 +1,15 @@
+@if (loading()) {
+  <div class="loading-box"><app-spinner size="md" label="Cargando partidos" /></div>
+} @else if (eventos().length === 0) {
+  <app-empty-state
+    icon="calendar"
+    title="Aún no hay partidos"
+    subtitle="Usa el wizard de calendario para generar la agenda de la competición."
+  />
+} @else {
+  <div class="stack">
+    @for (e of eventos(); track e.id) {
+      <app-match-row [evento]="e" (opened)="openEvent($event)" />
+    }
+  </div>
+}

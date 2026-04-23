@@ -1,0 +1,47 @@
+:host {
+  display: inline-block;
+}
+
+.crest {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(135deg, #2a1a0f, #120a06);
+  border: 1px solid rgba(255, 122, 26, 0.25);
+  color: var(--accent-hi);
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.crest-sm {
+  width: 40px;
+  height: 40px;
+  font-size: 14px;
+}
+
+.crest-md {
+  width: 56px;
+  height: 56px;
+  font-size: 18px;
+}
+
+.crest-lg {
+  width: 72px;
+  height: 72px;
+  font-size: 22px;
+}
+
+.crest-xl {
+  width: 104px;
+  height: 104px;
+  font-size: 32px;
+}

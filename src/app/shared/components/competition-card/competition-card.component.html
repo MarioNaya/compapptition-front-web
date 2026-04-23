@@ -1,0 +1,8 @@
+<article class="card card-hover competition-card dot-bg" (click)="open()" (keydown.enter)="open()" tabindex="0">
+  <header class="top">
+    <app-status-tag [state]="competicion().estado" />
+    <span class="sport mono">{{ competicion().deporteNombre }}</span>
+  </header>
+
+  <h3 class="name h-display">{{ competicion().nombre }}</h3>
+</article>

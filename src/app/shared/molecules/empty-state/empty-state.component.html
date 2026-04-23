@@ -1,0 +1,12 @@
+<div class="card empty-state">
+  <div class="icon-box">
+    <app-icon [name]="icon()" [size]="28" />
+  </div>
+  <p class="title h-display">{{ title() }}</p>
+  @if (subtitle(); as s) {
+    <p class="subtitle">{{ s }}</p>
+  }
+  <div class="cta">
+    <ng-content />
+  </div>
+</div>

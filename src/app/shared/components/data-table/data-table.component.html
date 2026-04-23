@@ -1,0 +1,45 @@
+@if (loading()) {
+  <div class="loading-box">
+    <app-spinner size="md" label="Cargando…" />
+  </div>
+} @else if (rows().length === 0) {
+  <app-empty-state [title]="emptyTitle()" [subtitle]="emptySubtitle()" />
+} @else {
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          @for (col of columns(); track col.key) {
+            <th [style.width]="col.width" [style.text-align]="col.align ?? 'start'">
+              {{ col.label }}
+            </th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of rows(); track rowKey()(row); let i = $index) {
+          <tr
+            [class.clickable]="clickable()"
+            [class]="resolveRowClass(row, i) ?? ''"
+            (click)="onRowClick(row)"
+            (keydown.enter)="onRowClick(row)"
+            [attr.tabindex]="clickable() ? 0 : null"
+          >
+            @for (col of columns(); track col.key) {
+              <td [style.text-align]="col.align ?? 'start'">
+                @if (col.cellTemplate) {
+                  <ng-container
+                    [ngTemplateOutlet]="col.cellTemplate"
+                    [ngTemplateOutletContext]="{ $implicit: row, value: cellValue(row, col) }"
+                  />
+                } @else {
+                  {{ cellValue(row, col) }}
+                }
+              </td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

@@ -1,0 +1,131 @@
+:host {
+  display: block;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.navbar {
+  background: rgba(10, 8, 8, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  height: 68px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-pri);
+
+  .accent {
+    color: var(--accent-hi);
+    text-shadow: 0 0 16px rgba(255, 122, 26, 0.5);
+  }
+}
+
+.links {
+  display: flex;
+  gap: 28px;
+  flex: 1;
+  justify-content: center;
+  min-width: 0;
+}
+
+.nav-link {
+  color: var(--text-sec);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 4px;
+  position: relative;
+  transition: color 120ms ease;
+  white-space: nowrap;
+
+  &:hover {
+    color: var(--text-pri);
+  }
+
+  &.active {
+    color: var(--text-pri);
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -2px;
+      height: 2px;
+      border-radius: 2px;
+      background: var(--accent);
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+  }
+}
+
+.tools {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+.icon-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: var(--text-sec);
+  transition: color 120ms ease, background 120ms ease;
+
+  &:hover {
+    color: var(--text-pri);
+    background: rgba(255, 255, 255, 0.04);
+  }
+}
+
+.badge {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+.profile-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 120ms ease;
+
+  &:hover {
+    transform: scale(1.04);
+  }
+}
+
+@media (max-width: 768px) {
+  .links {
+    display: none;
+  }
+}

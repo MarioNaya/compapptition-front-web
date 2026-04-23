@@ -1,0 +1,50 @@
+<section class="auth-card card">
+  <header class="head">
+    <p class="eyebrow h-display">Acceso</p>
+    <h1 class="title h-display">Bienvenido de vuelta</h1>
+    <p class="subtitle">Gestiona tus competiciones, equipos y partidos.</p>
+  </header>
+
+  <form class="form" [formGroup]="form" (ngSubmit)="submit()">
+    <app-form-field
+      label="Usuario o email"
+      [control]="form.controls.usernameOrEmail"
+    >
+      <input
+        class="input"
+        type="text"
+        formControlName="usernameOrEmail"
+        placeholder="tu usuario o tu@email.com"
+        autocomplete="username"
+      />
+    </app-form-field>
+
+    <app-form-field label="Contraseña" [control]="form.controls.password">
+      <input
+        class="input"
+        type="password"
+        formControlName="password"
+        placeholder="Mínimo 8 caracteres"
+        autocomplete="current-password"
+      />
+    </app-form-field>
+
+    <div class="actions">
+      <a routerLink="/auth/forgot-password" class="forgot-link mono">¿Olvidaste la contraseña?</a>
+    </div>
+
+    <app-button variant="primary" type="submit" [fullWidth]="true" [disabled]="loading()">
+      @if (loading()) {
+        <app-spinner size="sm" />
+      } @else {
+        Entrar
+      }
+    </app-button>
+  </form>
+
+  <footer class="foot">
+    <p>¿No tienes cuenta?
+      <a routerLink="/auth/register" class="accent-link">Regístrate</a>
+    </p>
+  </footer>
+</section>

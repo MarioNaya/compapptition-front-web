@@ -1,0 +1,85 @@
+<div class="container dashboard fade-in">
+  <app-page-header
+    eyebrow="Dashboard"
+    [title]="'Hola, ' + displayName()"
+    subtitle="Próximo partido, tus competiciones y los partidos por venir."
+  >
+    <app-button variant="ghost" (clicked)="goCompetitions()">
+      <app-icon name="trophy" [size]="15" /> Competiciones
+    </app-button>
+    <app-button variant="primary" (clicked)="goNewCompetition()">
+      <app-icon name="plus" [size]="15" /> Nueva competición
+    </app-button>
+  </app-page-header>
+
+  @if (loading()) {
+    <div class="loading-box"><app-spinner size="md" label="Cargando tu jornada" /></div>
+  } @else {
+    @if (nextMatch(); as m) {
+      <section class="hero" (click)="openMatch(m)" (keydown.enter)="openMatch(m)" tabindex="0">
+        <app-notch-card tag="Next match">
+          <div class="hero-inner">
+            <app-team-pair
+              [home]="m.equipoLocal?.nombre ?? 'TBD'"
+              [away]="m.equipoVisitante?.nombre ?? 'TBD'"
+              [homeCrest]="m.equipoLocal?.escudo ?? null"
+              [awayCrest]="m.equipoVisitante?.escudo ?? null"
+              size="md"
+            />
+            <div class="hero-meta">
+              <span class="mono when">
+                {{ (m.fechaHora | date: 'EEE dd MMM HH:mm' : '' : 'es') | uppercase }}
+              </span>
+              @if (m.lugar) {
+                <span class="mono venue">
+                  <app-icon name="pin" [size]="12" /> {{ m.lugar }}
+                </span>
+              }
+              <span class="mono comp">{{ m.competicionNombre }}</span>
+            </div>
+          </div>
+        </app-notch-card>
+      </section>
+    } @else {
+      <section class="hero">
+        <app-empty-state
+          icon="calendar"
+          title="Sin partidos próximos"
+          subtitle="Cuando tengas partidos programados en tus competiciones aparecerán aquí."
+        />
+      </section>
+    }
+
+    <section class="section">
+      <h2 class="h-display section-title">Tus competiciones</h2>
+      @if (misCompeticiones().length === 0) {
+        <app-empty-state
+          icon="trophy"
+          title="Aún no participas en ninguna competición"
+          subtitle="Crea una nueva o acepta una invitación para unirte."
+        >
+          <app-button variant="primary" (clicked)="goNewCompetition()">
+            <app-icon name="plus" [size]="14" /> Crear competición
+          </app-button>
+        </app-empty-state>
+      } @else {
+        <div class="comp-grid">
+          @for (c of misCompeticiones(); track c.id) {
+            <app-competition-card [competicion]="c" (opened)="openCompetition($event)" />
+          }
+        </div>
+      }
+    </section>
+
+    @if (proximosEventos().length > 1) {
+      <section class="section">
+        <h2 class="h-display section-title">Próximos partidos</h2>
+        <div class="stack">
+          @for (e of proximosEventos().slice(1); track e.id) {
+            <app-match-row [evento]="e" (opened)="openMatch($event)" />
+          }
+        </div>
+      </section>
+    }
+  }
+</div>

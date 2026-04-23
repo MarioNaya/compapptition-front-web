@@ -1,0 +1,137 @@
+@if (canAddTeam()) {
+  <div class="tab-actions">
+    <app-button variant="ghost" (clicked)="toggleInvite()">
+      <app-icon name="mail" [size]="14" />
+      {{ showInvite() ? 'Cerrar' : 'Invitar equipo existente' }}
+    </app-button>
+    <app-button variant="primary" (clicked)="toggleCreate()">
+      <app-icon name="plus" [size]="14" />
+      {{ showCreate() ? 'Cerrar' : 'Crear equipo nuevo' }}
+    </app-button>
+  </div>
+
+  @if (showInvite()) {
+    <section class="enroll-panel card">
+      @if (!selectedEquipo()) {
+        <h3 class="h-display panel-title">1. Elige el equipo a invitar</h3>
+        <p class="hint mono">
+          Buscaremos entre todos los equipos. Al elegir uno se enviará una invitación al
+          email del manager para unirse a esta competición.
+        </p>
+        <app-search-bar
+          [value]="searchTerm()"
+          placeholder="Busca por nombre…"
+          (valueChange)="onSearchChange($event)"
+        />
+        <div class="results">
+          @if (searching()) {
+            <div class="loading-inline"><app-spinner size="sm" label="Buscando" /></div>
+          } @else if (availableResults().length === 0) {
+            <p class="hint mono">
+              No se encontraron equipos disponibles. Prueba otra búsqueda o crea uno nuevo.
+            </p>
+          } @else {
+            <ul class="result-list">
+              @for (e of availableResults(); track e.id) {
+                <li class="result-row" (click)="selectTeam(e)" (keydown.enter)="selectTeam(e)" tabindex="0">
+                  <app-team-crest [name]="e.nombre" [imageBytes]="e.escudoUrl ?? null" size="sm" />
+                  <div class="info">
+                    <span class="name">{{ e.nombre }}</span>
+                    <span class="mono meta">{{ e.tipo }} · {{ e.numJugadores }} jugadores</span>
+                  </div>
+                  <app-icon name="chev-r" [size]="14" />
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      } @else {
+        <h3 class="h-display panel-title">2. Envía la invitación</h3>
+        <div class="selected-team">
+          <app-team-crest
+            [name]="selectedEquipo()!.nombre"
+            [imageBytes]="selectedEquipo()!.escudoUrl ?? null"
+            size="md"
+          />
+          <div class="info">
+            <span class="name">{{ selectedEquipo()!.nombre }}</span>
+            <span class="mono meta">{{ selectedEquipo()!.tipo }}</span>
+          </div>
+          <button class="link" type="button" (click)="backToSearch()">
+            <app-icon name="chev-l" [size]="12" /> Cambiar
+          </button>
+        </div>
+        <label class="field-label">Email del manager del equipo</label>
+        <div class="row">
+          <input
+            class="input"
+            type="email"
+            placeholder="manager@equipo.com"
+            [value]="managerEmail()"
+            (input)="onEmailChange($any($event.target).value)"
+          />
+          <app-button
+            variant="primary"
+            (clicked)="sendInvitation()"
+            [disabled]="sending() || !managerEmail().trim()"
+          >
+            @if (sending()) {
+              <app-spinner size="sm" />
+            } @else {
+              <app-icon name="mail" [size]="12" /> Enviar invitación
+            }
+          </app-button>
+        </div>
+        <p class="hint mono">
+          El manager recibirá una invitación con rol MANAGER_EQUIPO y podrá aceptarla o
+          rechazarla desde su bandeja. El equipo quedará inscrito solo si acepta.
+        </p>
+      }
+    </section>
+  }
+
+  @if (showCreate()) {
+    <section class="enroll-panel card">
+      <h3 class="h-display panel-title">Crear e inscribir equipo propio</h3>
+      <p class="hint mono">
+        Crea un equipo nuevo bajo tu gestión e inscríbelo directamente (sin invitación).
+      </p>
+      <div class="row">
+        <input
+          class="input"
+          type="text"
+          placeholder="Nombre del equipo"
+          [value]="newTeamName()"
+          (input)="onNameChange($any($event.target).value)"
+        />
+        <app-button
+          variant="primary"
+          (clicked)="createAndEnroll()"
+          [disabled]="creating() || !newTeamName().trim()"
+        >
+          @if (creating()) {
+            <app-spinner size="sm" />
+          } @else {
+            Crear e inscribir
+          }
+        </app-button>
+      </div>
+    </section>
+  }
+}
+
+@if (loading()) {
+  <div class="loading-box"><app-spinner size="md" label="Cargando equipos" /></div>
+} @else if (equipos().length === 0) {
+  <app-empty-state
+    icon="users"
+    title="Aún no hay equipos inscritos"
+    [subtitle]="canAddTeam() ? 'Invita a un equipo existente o crea uno propio desde los botones superiores.' : 'La inscripción de equipos ya no está abierta.'"
+  />
+} @else {
+  <div class="grid">
+    @for (e of equipos(); track e.id) {
+      <app-team-card [equipo]="e" (opened)="openTeam($event)" />
+    }
+  </div>
+}

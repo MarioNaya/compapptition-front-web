@@ -1,9 +1,23 @@
+/**
+ * Proyección ligera devuelta por endpoints de listado (`/publicas/simple`, `/buscar`).
+ */
+export interface CompeticionSimple {
+  id: number;
+  nombre: string;
+  deporteNombre: string;
+  estado: EstadoCompeticion;
+}
+
+/**
+ * Entidad completa devuelta por `/{id}/detalle`.
+ */
 export interface Competicion {
   id: number;
   nombre: string;
   descripcion?: string;
   deporteId: number;
   deporteNombre: string;
+  temporadaActual?: number;
   creadorId: number;
   creadorUsername: string;
   publica: boolean;

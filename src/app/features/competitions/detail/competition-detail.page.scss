@@ -1,0 +1,47 @@
+:host {
+  display: block;
+}
+
+.detail {
+  padding-top: 48px;
+  padding-bottom: 80px;
+}
+
+.loading-box {
+  padding: 80px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 40px;
+  padding: 20px 24px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-1);
+  border: 1px solid var(--line);
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  .label {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--text-sec);
+  }
+
+  .value {
+    color: var(--text-pri);
+    font-size: 16px;
+    font-weight: 600;
+  }
+}
+
+.tab-body {
+  margin-top: 24px;
+}

@@ -1,0 +1,33 @@
+<div class="container players fade-in">
+  <app-page-header
+    eyebrow="Jugadores"
+    title="Buscar jugadores"
+    subtitle="Encuentra jugadores por nombre, apellidos o posición."
+  />
+
+  <section class="toolbar">
+    <app-search-bar
+      [value]="search()"
+      placeholder="Nombre, apellidos o posición…"
+      (valueChange)="onSearchChange($event)"
+    />
+  </section>
+
+  @if (loading() && jugadores().length === 0) {
+    <div class="loading-box"><app-spinner size="md" label="Buscando jugadores" /></div>
+  } @else if (jugadores().length === 0) {
+    <app-empty-state
+      icon="user"
+      title="Sin resultados"
+      subtitle="Prueba con otro término de búsqueda."
+    />
+  } @else {
+    <app-data-table
+      [columns]="columns"
+      [rows]="jugadores()"
+      [rowKey]="rowKey"
+      [clickable]="true"
+      (rowClick)="open($event)"
+    />
+  }
+</div>

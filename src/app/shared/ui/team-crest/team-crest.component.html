@@ -1,0 +1,7 @@
+<div class="crest" [class]="'crest-' + size()">
+  @if (imageUrl(); as url) {
+    <img [src]="url" [alt]="name()" />
+  } @else {
+    <span class="initials">{{ initials() }}</span>
+  }
+</div>

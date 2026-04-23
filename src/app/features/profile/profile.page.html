@@ -1,0 +1,84 @@
+<div class="container profile fade-in">
+  <app-page-header
+    eyebrow="Perfil"
+    [title]="displayName() || 'Perfil'"
+    [subtitle]="user()?.email ?? null"
+  >
+    <app-button variant="ghost" (clicked)="logout()">
+      <app-icon name="logout" [size]="14" /> Cerrar sesión
+    </app-button>
+  </app-page-header>
+
+  <div class="grid">
+    <aside class="side card">
+      <app-avatar [name]="displayName() || '—'" size="lg" />
+      <div class="info">
+        <p class="username mono">{{ '@' + (user()?.username ?? '') }}</p>
+        <p class="email">{{ user()?.email }}</p>
+      </div>
+    </aside>
+
+    <section class="content">
+      <div class="section card">
+        <h2 class="h-display section-title">Datos personales</h2>
+        <form class="form" [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+          <div class="two-cols">
+            <app-form-field label="Nombre" [control]="profileForm.controls.nombre">
+              <input class="input" type="text" formControlName="nombre" autocomplete="given-name" />
+            </app-form-field>
+            <app-form-field label="Apellidos" [control]="profileForm.controls.apellidos">
+              <input class="input" type="text" formControlName="apellidos" autocomplete="family-name" />
+            </app-form-field>
+          </div>
+          <app-form-field label="Email" [control]="profileForm.controls.email">
+            <input class="input" type="email" formControlName="email" autocomplete="email" />
+          </app-form-field>
+          <div class="actions">
+            <app-button variant="primary" type="submit" [disabled]="savingProfile()">
+              @if (savingProfile()) { <app-spinner size="sm" /> } @else { Guardar cambios }
+            </app-button>
+          </div>
+        </form>
+      </div>
+
+      <div class="section card">
+        <h2 class="h-display section-title">Seguridad</h2>
+        <form class="form" [formGroup]="passwordForm" (ngSubmit)="savePassword()">
+          <app-form-field label="Contraseña actual" [control]="passwordForm.controls.passwordActual">
+            <input class="input" type="password" formControlName="passwordActual" autocomplete="current-password" />
+          </app-form-field>
+          <div class="two-cols">
+            <app-form-field
+              label="Nueva contraseña"
+              [control]="passwordForm.controls.passwordNuevo"
+              hint="Mínimo 8 caracteres"
+            >
+              <input class="input" type="password" formControlName="passwordNuevo" autocomplete="new-password" />
+            </app-form-field>
+            <app-form-field label="Confirmar" [control]="passwordForm.controls.confirm">
+              <input class="input" type="password" formControlName="confirm" autocomplete="new-password" />
+            </app-form-field>
+          </div>
+          @if (passwordForm.hasError('mismatch') && passwordForm.controls.confirm.touched) {
+            <p class="field-error">Las contraseñas no coinciden</p>
+          }
+          <div class="actions">
+            <app-button variant="primary" type="submit" [disabled]="savingPassword()">
+              @if (savingPassword()) { <app-spinner size="sm" /> } @else { Actualizar contraseña }
+            </app-button>
+          </div>
+        </form>
+      </div>
+
+      <div class="section card danger">
+        <h2 class="h-display section-title">Zona peligrosa</h2>
+        <p class="danger-text">Desactivar la cuenta te dará de baja. Los datos históricos no se borran.</p>
+        <div class="actions">
+          <app-button variant="orange-ghost" (clicked)="askDeactivate()">
+            <app-icon name="trash" [size]="14" /> Desactivar cuenta
+          </app-button>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

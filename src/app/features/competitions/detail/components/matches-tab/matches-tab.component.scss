@@ -1,0 +1,15 @@
+:host {
+  display: block;
+}
+
+.loading-box {
+  padding: 48px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}

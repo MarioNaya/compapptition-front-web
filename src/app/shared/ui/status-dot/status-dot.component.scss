@@ -1,0 +1,30 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+}
+
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.dot-orange {
+  background: var(--accent);
+  box-shadow: 0 0 8px rgba(255, 122, 26, 0.6);
+}
+
+.dot-green {
+  background: var(--success);
+  box-shadow: 0 0 8px rgba(74, 222, 128, 0.5);
+}
+
+.dot-red {
+  background: var(--danger);
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+}
+
+.dot-gray {
+  background: var(--text-mute);
+}

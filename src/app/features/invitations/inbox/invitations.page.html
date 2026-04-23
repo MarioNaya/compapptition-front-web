@@ -1,0 +1,36 @@
+<div class="container invitations fade-in">
+  <app-page-header
+    eyebrow="Invitaciones"
+    title="Tus invitaciones"
+    subtitle="Gestiona las invitaciones recibidas y sigue las que has enviado."
+  />
+
+  <app-tabs
+    [options]="tabs"
+    [value]="activeTab()"
+    (valueChange)="activeTab.set($any($event))"
+  />
+
+  <div class="tab-body">
+    @if (currentList().length === 0) {
+      <app-empty-state
+        icon="inbox"
+        [title]="activeTab() === 'received' ? 'Sin invitaciones recibidas' : 'Sin invitaciones enviadas'"
+        [subtitle]="activeTab() === 'received'
+          ? 'Cuando recibas una invitación aparecerá aquí.'
+          : 'Desde una competición puedes invitar a otros usuarios con un rol.'"
+      />
+    } @else {
+      <div class="stack">
+        @for (inv of currentList(); track inv.id) {
+          <app-invitation-card
+            [invitacion]="inv"
+            [direction]="activeTab() === 'received' ? 'received' : 'sent'"
+            (accepted)="accept($event)"
+            (rejected)="reject($event)"
+          />
+        }
+      </div>
+    }
+  </div>
+</div>

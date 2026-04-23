@@ -1,0 +1,55 @@
+:host {
+  display: block;
+}
+
+.loading-box {
+  padding: 48px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.type-switcher {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+
+  .label {
+    color: var(--text-sec);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+  }
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.type-chip {
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-1);
+  border: 1px solid var(--line);
+  color: var(--text-sec);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 120ms ease;
+
+  &:hover {
+    color: var(--text-pri);
+    border-color: rgba(255, 122, 26, 0.4);
+  }
+
+  &.active {
+    background: rgba(255, 122, 26, 0.12);
+    border-color: rgba(255, 122, 26, 0.45);
+    color: var(--accent-hi);
+  }
+}

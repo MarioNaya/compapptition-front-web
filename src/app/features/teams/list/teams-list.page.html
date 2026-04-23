@@ -1,0 +1,39 @@
+<div class="container teams fade-in">
+  <app-page-header
+    eyebrow="Equipos"
+    title="Todos los equipos"
+    subtitle="Gestiona tus equipos o explora los de otros organizadores."
+  >
+    <app-button variant="primary" (clicked)="goNew()">
+      <app-icon name="plus" [size]="14" /> Nuevo equipo
+    </app-button>
+  </app-page-header>
+
+  <section class="toolbar">
+    <app-search-bar
+      [value]="search()"
+      placeholder="Buscar por nombre…"
+      (valueChange)="onSearchChange($event)"
+    />
+  </section>
+
+  @if (loading() && equipos().length === 0) {
+    <div class="loading-box"><app-spinner size="md" label="Cargando equipos" /></div>
+  } @else if (equipos().length === 0) {
+    <app-empty-state
+      icon="users"
+      title="Sin equipos"
+      subtitle="Crea el primer equipo para empezar a gestionar plantillas e inscripciones."
+    >
+      <app-button variant="primary" (clicked)="goNew()">
+        <app-icon name="plus" [size]="14" /> Crear equipo
+      </app-button>
+    </app-empty-state>
+  } @else {
+    <div class="grid">
+      @for (e of equipos(); track e.id) {
+        <app-team-card [equipo]="e" (opened)="open($event)" />
+      }
+    </div>
+  }
+</div>

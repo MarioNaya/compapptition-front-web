@@ -1,0 +1,157 @@
+:host {
+  display: block;
+}
+
+.sport-switcher {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+
+  .label {
+    color: var(--text-sec);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+  }
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.sport-chip {
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-1);
+  border: 1px solid var(--line);
+  color: var(--text-sec);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 120ms ease;
+
+  &:hover {
+    color: var(--text-pri);
+    border-color: rgba(255, 122, 26, 0.4);
+  }
+
+  &.active {
+    background: rgba(255, 122, 26, 0.12);
+    border-color: rgba(255, 122, 26, 0.45);
+    color: var(--accent-hi);
+  }
+}
+
+.form {
+  padding: 24px;
+  display: grid;
+  gap: 14px;
+  margin-bottom: 24px;
+  max-width: 640px;
+}
+
+.form-title {
+  font-size: 18px;
+  margin: 0 0 4px 0;
+}
+
+.two-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.loading-box {
+  padding: 60px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.tipo-card {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+
+    .name {
+      font-size: 16px;
+      color: var(--text-pri);
+    }
+
+    .tipo-valor {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      color: var(--accent-hi);
+    }
+  }
+
+  .desc {
+    margin: 0;
+    color: var(--text-sec);
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+
+    .orden {
+      color: var(--text-mute);
+      font-size: 11px;
+    }
+
+    .actions-inline {
+      display: flex;
+      gap: 6px;
+    }
+  }
+}
+
+.mini-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-sec);
+  transition: all 120ms ease;
+
+  &:hover {
+    background: rgba(255, 122, 26, 0.15);
+    color: var(--accent-hi);
+  }
+
+  &.danger:hover {
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--danger);
+  }
+}

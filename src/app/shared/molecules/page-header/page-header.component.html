@@ -1,0 +1,14 @@
+<header class="page-header">
+  <div class="main">
+    @if (eyebrow(); as e) {
+      <p class="eyebrow h-display">{{ e }}</p>
+    }
+    <h1 class="title h-display">{{ title() }}</h1>
+    @if (subtitle(); as s) {
+      <p class="subtitle">{{ s }}</p>
+    }
+  </div>
+  <div class="actions">
+    <ng-content />
+  </div>
+</header>

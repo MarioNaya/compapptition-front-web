@@ -1,0 +1,201 @@
+<div class="container gallery">
+  <app-page-header
+    eyebrow="Dev · Gallery"
+    title="Compapption · UI"
+    subtitle="Biblioteca shared de Fase 1. Referencia visual y funcional contra el prototipo de Claude Design."
+  >
+    <app-button variant="ghost">
+      <app-icon name="filter" [size]="14" /> Filtros
+    </app-button>
+    <app-button variant="primary">
+      <app-icon name="plus" [size]="14" /> Nueva competición
+    </app-button>
+  </app-page-header>
+
+  <section class="section">
+    <h2 class="h-display section-title">Iconos (28)</h2>
+    <div class="icon-grid">
+      @for (name of icons; track name) {
+        <div class="icon-cell">
+          <app-icon [name]="name" [size]="22" />
+          <span class="mono icon-name">{{ name }}</span>
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="h-display section-title">Botones</h2>
+    <div class="row">
+      <app-button variant="primary"><app-icon name="plus" [size]="16" /> Nueva competición</app-button>
+      <app-button variant="ghost">Cancelar</app-button>
+      <app-button variant="orange-ghost"><app-icon name="edit" [size]="14" /> Editar</app-button>
+      <app-button variant="primary" [disabled]="true">Disabled</app-button>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="h-display section-title">Tags y status tags</h2>
+    <div class="row">
+      <app-tag variant="orange">En curso</app-tag>
+      <app-tag variant="green">Inscripción abierta</app-tag>
+      <app-tag variant="gray">Borrador</app-tag>
+      <app-tag variant="red">Rechazado</app-tag>
+    </div>
+    <div class="row mt">
+      <app-status-tag state="BORRADOR" />
+      <app-status-tag state="ACTIVA" />
+      <app-status-tag state="FINALIZADA" />
+      <app-status-tag state="CANCELADA" />
+      <app-status-tag state="PROGRAMADO" />
+      <app-status-tag state="EN_CURSO" />
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="h-display section-title">Status dots · avatares · spinner · position pills</h2>
+    <div class="row dots-row">
+      <span class="dot-pair"><app-status-dot color="orange" /> naranja</span>
+      <span class="dot-pair"><app-status-dot color="green" /> verde</span>
+      <span class="dot-pair"><app-status-dot color="red" /> rojo</span>
+      <span class="dot-pair"><app-status-dot color="gray" /> gris</span>
+    </div>
+    <div class="row mt">
+      <app-avatar name="Alberto Maesto" size="sm" />
+      <app-avatar name="Rubén Casado" size="md" />
+      <app-avatar name="Marta Vegas" size="lg" />
+      <app-spinner size="sm" label="Cargando" />
+      <app-spinner size="md" />
+      <app-spinner size="lg" />
+    </div>
+    <div class="row mt">
+      <app-position-pill [position]="1" />
+      <app-position-pill [position]="2" />
+      <app-position-pill [position]="3" />
+      <app-position-pill [position]="7" />
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="h-display section-title">Team crests</h2>
+    <div class="row crests-row">
+      <app-team-crest name="Nottingham miedo" size="sm" />
+      <app-team-crest name="Solteros UD" size="md" />
+      <app-team-crest name="Corazonistas Ofis" size="lg" />
+      <app-team-crest name="La Granja" size="xl" />
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="h-display section-title">Team pair</h2>
+    <app-team-pair home="Nottingham miedo" away="Solteros UD" size="sm" />
+  </section>
+
+  <section class="section">
+    <h2 class="h-display section-title">Tabs</h2>
+    <app-tabs
+      [options]="tabOptions"
+      [value]="activeTab()"
+      (valueChange)="activeTab.set($event)"
+    />
+    <p class="mono tab-active">active = {{ activeTab() }}</p>
+  </section>
+
+  <section class="section">
+    <h2 class="h-display section-title">Search bar</h2>
+    <app-search-bar
+      [value]="searchValue()"
+      [showFilter]="true"
+      placeholder="Buscar competiciones, equipos o jugadores…"
+      (valueChange)="searchValue.set($event)"
+    />
+    <p class="mono tab-active">query = "{{ searchValue() }}"</p>
+  </section>
+
+  <section class="section">
+    <h2 class="h-display section-title">Notch card + glow signature</h2>
+    <app-notch-card tag="Next match">
+      <app-team-pair home="Nottingham miedo" away="Solteros UD" size="md" />
+      <p class="sub mt-sm">SAT 05 APR 2026 · 20:30 · La Granja CDM</p>
+    </app-notch-card>
+  </section>
+
+  <section class="section">
+    <h2 class="h-display section-title">Form field (reactive forms + errores)</h2>
+    <form [formGroup]="demoForm" class="form-grid">
+      <app-form-field label="Email" [control]="demoForm.controls.email" hint="Usado para notificaciones">
+        <input class="input" type="email" formControlName="email" placeholder="tu@email.com" />
+      </app-form-field>
+      <app-form-field label="Password" [control]="demoForm.controls.password">
+        <input class="input" type="password" formControlName="password" placeholder="Mínimo 8 caracteres" />
+      </app-form-field>
+      <app-button variant="primary">Entrar</app-button>
+    </form>
+  </section>
+
+  <section class="section">
+    <h2 class="h-display section-title">Competition / team cards</h2>
+    <div class="card-grid">
+      <app-competition-card [competicion]="demoCompetition" />
+      <app-team-card [equipo]="demoTeam" />
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="h-display section-title">Match row</h2>
+    <div class="stack">
+      <app-match-row [evento]="demoMatch" />
+      <app-match-row [evento]="demoMatch" />
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="h-display section-title">Invitation card</h2>
+    <div class="stack">
+      <app-invitation-card [invitacion]="demoInvitation" direction="received" />
+      <app-invitation-card [invitacion]="demoInvitation" direction="sent" />
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="h-display section-title">Data table (clasificación demo)</h2>
+    <app-data-table
+      [columns]="standingColumns"
+      [rows]="standings"
+      [rowClass]="standingRowClass"
+      [clickable]="true"
+      emptyTitle="Sin equipos"
+    />
+  </section>
+
+  <section class="section">
+    <h2 class="h-display section-title">Empty state</h2>
+    <app-empty-state
+      icon="inbox"
+      title="Sin invitaciones enviadas"
+      subtitle="Cuando envíes una invitación a otro usuario, aparecerá aquí."
+    >
+      <app-button variant="primary">
+        <app-icon name="plus" [size]="14" /> Enviar invitación
+      </app-button>
+    </app-empty-state>
+  </section>
+
+  <section class="section">
+    <h2 class="h-display section-title">Toasts &amp; confirm dialog (interactivo)</h2>
+    <div class="row">
+      <app-button variant="primary" (clicked)="showSuccess()">
+        <app-icon name="check" [size]="14" /> Success
+      </app-button>
+      <app-button variant="ghost" (clicked)="showError()">
+        <app-icon name="x" [size]="14" /> Error
+      </app-button>
+      <app-button variant="orange-ghost" (clicked)="askDelete()">
+        <app-icon name="trash" [size]="14" /> Confirmar eliminación
+      </app-button>
+    </div>
+  </section>
+</div>
+
+<app-toast-host />
+<app-confirm-dialog />

@@ -1,0 +1,68 @@
+:host {
+  display: block;
+}
+
+.competitions {
+  padding-top: 48px;
+  padding-bottom: 80px;
+}
+
+.toolbar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+.filters {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.filter-chip {
+  padding: 10px 16px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-1);
+  border: 1px solid var(--line);
+  color: var(--text-sec);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: all 120ms ease;
+  cursor: pointer;
+
+  &:hover {
+    border-color: rgba(255, 122, 26, 0.4);
+    color: var(--text-pri);
+  }
+
+  &.active {
+    background: rgba(255, 122, 26, 0.12);
+    border-color: rgba(255, 122, 26, 0.45);
+    color: var(--accent-hi);
+    box-shadow: 0 0 12px -4px rgba(255, 122, 26, 0.5);
+  }
+}
+
+.loading-box {
+  padding: 80px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .toolbar {
+    grid-template-columns: 1fr;
+  }
+}

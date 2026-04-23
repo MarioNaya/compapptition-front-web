@@ -1,0 +1,87 @@
+<div class="container detail fade-in">
+  @if (loading() && !evento()) {
+    <div class="loading-box"><app-spinner size="md" label="Cargando partido" /></div>
+  } @else if (evento(); as e) {
+    <app-page-header
+      [eyebrow]="e.competicionNombre"
+      [title]="'Jornada ' + (e.jornada ?? '—')"
+      [subtitle]="e.lugar ?? null"
+    >
+      <app-status-tag [state]="e.estado" />
+      <app-button variant="orange-ghost" (clicked)="askDelete()">
+        <app-icon name="trash" [size]="14" /> Eliminar
+      </app-button>
+    </app-page-header>
+
+    <section class="hero card">
+      <app-team-pair
+        [home]="e.equipoLocal?.nombre ?? 'TBD'"
+        [away]="e.equipoVisitante?.nombre ?? 'TBD'"
+        [homeCrest]="e.equipoLocal?.escudo ?? null"
+        [awayCrest]="e.equipoVisitante?.escudo ?? null"
+        size="lg"
+      />
+
+      <div class="score-box">
+        @if (e.resultadoLocal != null && e.resultadoVisitante != null) {
+          <span class="score">{{ e.resultadoLocal }} · {{ e.resultadoVisitante }}</span>
+          <span class="hint mono">Resultado final</span>
+        } @else {
+          <span class="score pending h-display">vs</span>
+          <span class="hint mono">
+            {{ (e.fechaHora | date: 'EEE dd MMM HH:mm' : '' : 'es') | uppercase }}
+          </span>
+        }
+      </div>
+    </section>
+
+    @if (canRegister()) {
+      <section class="result-section card">
+        <h2 class="h-display section-title">Registrar resultado</h2>
+        <form class="result-form" [formGroup]="resultForm" (ngSubmit)="submitResult()">
+          <div class="score-inputs">
+            <app-form-field
+              [label]="e.equipoLocal?.nombre ?? 'Local'"
+              [control]="resultForm.controls.resultadoLocal"
+            >
+              <input class="input score-input" type="number" min="0" formControlName="resultadoLocal" />
+            </app-form-field>
+
+            <span class="sep h-display">—</span>
+
+            <app-form-field
+              [label]="e.equipoVisitante?.nombre ?? 'Visitante'"
+              [control]="resultForm.controls.resultadoVisitante"
+            >
+              <input class="input score-input" type="number" min="0" formControlName="resultadoVisitante" />
+            </app-form-field>
+          </div>
+
+          <div class="actions">
+            <app-button variant="primary" type="submit" [disabled]="saving()">
+              @if (saving()) {
+                <app-spinner size="sm" />
+              } @else {
+                <app-icon name="check" [size]="14" /> Guardar resultado
+              }
+            </app-button>
+          </div>
+        </form>
+      </section>
+    }
+
+    <section class="empty-stats">
+      <app-empty-state
+        icon="stats"
+        title="Estadísticas del partido"
+        subtitle="El formulario para registrar estadísticas de jugador por partido llegará en la siguiente iteración."
+      />
+    </section>
+  } @else {
+    <app-empty-state
+      icon="x"
+      title="Partido no encontrado"
+      subtitle="El partido que buscas ya no está disponible."
+    />
+  }
+</div>

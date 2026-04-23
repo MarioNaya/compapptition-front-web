@@ -1,0 +1,39 @@
+<div class="container new-team fade-in">
+  <app-page-header
+    eyebrow="Crear"
+    title="Nuevo equipo"
+    subtitle="Define el equipo. Más tarde podrás añadir jugadores e inscribirlo en competiciones."
+  />
+
+  <form class="form card" [formGroup]="form" (ngSubmit)="submit()">
+    <app-form-field label="Nombre" [control]="form.controls.nombre">
+      <input class="input" type="text" formControlName="nombre" placeholder="p.ej. Nottingham miedo" />
+    </app-form-field>
+
+    <app-form-field label="Descripción" [control]="form.controls.descripcion">
+      <textarea class="textarea" formControlName="descripcion" placeholder="Breve descripción del equipo"></textarea>
+    </app-form-field>
+
+    <app-form-field
+      label="Tipo"
+      [control]="form.controls.tipo"
+      hint="GESTIONADO: tú administras la plantilla. ESTANDAR: un equipo genérico para la competición."
+    >
+      <select class="select" formControlName="tipo">
+        <option value="GESTIONADO">Gestionado</option>
+        <option value="ESTANDAR">Estándar</option>
+      </select>
+    </app-form-field>
+
+    <div class="actions">
+      <app-button variant="ghost" type="button" (clicked)="cancel()">Cancelar</app-button>
+      <app-button variant="primary" type="submit" [disabled]="loading()">
+        @if (loading()) {
+          <app-spinner size="sm" />
+        } @else {
+          Crear equipo
+        }
+      </app-button>
+    </div>
+  </form>
+</div>

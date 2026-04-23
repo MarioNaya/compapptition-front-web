@@ -1,0 +1,47 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.auth-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  background:
+    radial-gradient(800px 500px at 50% -10%, rgba(255, 122, 26, 0.12), transparent 60%),
+    var(--bg-0);
+}
+
+.brand {
+  padding: 28px 32px;
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-pri);
+
+  .accent {
+    color: var(--accent-hi);
+    text-shadow: 0 0 24px rgba(255, 122, 26, 0.5);
+  }
+}
+
+.auth-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+}
+
+.legal {
+  padding: 20px 32px;
+  color: var(--text-mute);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+}

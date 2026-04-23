@@ -1,0 +1,41 @@
+:host {
+  display: block;
+}
+
+.empty-state {
+  padding: 48px;
+  text-align: center;
+}
+
+.icon-box {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-2xl);
+  margin: 0 auto 16px;
+  background: rgba(255, 122, 26, 0.08);
+  border: 1px solid rgba(255, 122, 26, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-hi);
+}
+
+.title {
+  font-size: 22px;
+  margin: 0 0 6px 0;
+  color: var(--text-pri);
+}
+
+.subtitle {
+  color: var(--text-sec);
+  margin: 0;
+  font-size: 14px;
+}
+
+.cta {
+  margin-top: 20px;
+
+  &:empty {
+    display: none;
+  }
+}

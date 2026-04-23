@@ -1,0 +1,22 @@
+<div class="container admin-shell">
+  <aside class="sidebar card">
+    <p class="section-label h-display">Admin</p>
+    <nav class="side-nav">
+      @for (link of links; track link.path) {
+        <a
+          class="side-link"
+          [routerLink]="link.path"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: link.path === '/admin' }"
+        >
+          <app-icon [name]="link.icon" [size]="16" />
+          <span>{{ link.label }}</span>
+        </a>
+      }
+    </nav>
+  </aside>
+
+  <main class="content">
+    <router-outlet />
+  </main>
+</div>

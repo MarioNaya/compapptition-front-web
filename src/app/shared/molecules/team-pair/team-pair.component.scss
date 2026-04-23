@@ -1,0 +1,53 @@
+:host {
+  display: inline-block;
+}
+
+.team-pair {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-pri);
+
+  &.size-md {
+    gap: 12px;
+    .name {
+      font-size: 18px;
+    }
+    .vs {
+      font-size: 18px;
+    }
+  }
+
+  &.size-lg {
+    gap: 14px;
+    .name {
+      font-size: 20px;
+    }
+    .vs {
+      font-size: 20px;
+    }
+  }
+
+  &.size-xl {
+    gap: 18px;
+    .name {
+      font-size: 26px;
+    }
+    .vs {
+      font-size: 24px;
+    }
+  }
+}
+
+.name {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.vs {
+  color: var(--accent-hi);
+  font-size: 14px;
+  padding: 0 4px;
+  font-weight: 700;
+  text-shadow: 0 0 16px rgba(255, 122, 26, 0.5);
+}

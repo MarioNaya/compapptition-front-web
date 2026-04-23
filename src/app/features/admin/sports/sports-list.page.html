@@ -1,0 +1,74 @@
+<app-page-header
+  eyebrow="Admin · Deportes"
+  title="Gestión de deportes"
+  subtitle="Alta, edición y eliminación de los deportes disponibles en el sistema."
+>
+  @if (!showForm()) {
+    <app-button variant="primary" (clicked)="startCreate()">
+      <app-icon name="plus" [size]="14" /> Nuevo deporte
+    </app-button>
+  }
+</app-page-header>
+
+@if (showForm()) {
+  <form class="form card" [formGroup]="form" (ngSubmit)="submit()">
+    <h3 class="h-display form-title">
+      {{ editing() ? 'Editar deporte' : 'Nuevo deporte' }}
+    </h3>
+    <app-form-field label="Nombre" [control]="form.controls.nombre">
+      <input class="input" type="text" formControlName="nombre" />
+    </app-form-field>
+    <app-form-field label="Descripción" [control]="form.controls.descripcion">
+      <textarea class="textarea" formControlName="descripcion"></textarea>
+    </app-form-field>
+    <div class="two-cols">
+      <app-form-field label="Icono" [control]="form.controls.icono">
+        <input class="input" type="text" formControlName="icono" placeholder="p.ej. soccer" />
+      </app-form-field>
+      <app-form-field label="Activo" [control]="form.controls.activo">
+        <select class="select" formControlName="activo">
+          <option [value]="true">Activo</option>
+          <option [value]="false">Inactivo</option>
+        </select>
+      </app-form-field>
+    </div>
+    <div class="actions">
+      <app-button variant="ghost" type="button" (clicked)="cancel()">Cancelar</app-button>
+      <app-button variant="primary" type="submit" [disabled]="saving()">
+        @if (saving()) {
+          <app-spinner size="sm" />
+        } @else {
+          Guardar
+        }
+      </app-button>
+    </div>
+  </form>
+}
+
+@if (loading()) {
+  <div class="loading-box"><app-spinner size="md" label="Cargando deportes" /></div>
+} @else if (deportes().length === 0) {
+  <app-empty-state icon="trophy" title="Sin deportes" subtitle="Crea el primer deporte del sistema." />
+} @else {
+  <app-data-table
+    [columns]="columns"
+    [rows]="deportes()"
+    [rowKey]="rowKey"
+  />
+  <div class="row-actions-hint">
+    <p class="mono hint">Acciones por deporte:</p>
+    <div class="chips">
+      @for (d of deportes(); track d.id) {
+        <span class="chip">
+          {{ d.nombre }}
+          <button type="button" class="mini-btn" (click)="startEdit(d)" title="Editar">
+            <app-icon name="edit" [size]="12" />
+          </button>
+          <button type="button" class="mini-btn danger" (click)="askDelete(d)" title="Eliminar">
+            <app-icon name="trash" [size]="12" />
+          </button>
+        </span>
+      }
+    </div>
+  </div>
+}

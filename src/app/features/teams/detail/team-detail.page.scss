@@ -1,0 +1,52 @@
+:host {
+  display: block;
+}
+
+.detail {
+  padding-top: 48px;
+  padding-bottom: 80px;
+}
+
+.loading-box {
+  padding: 80px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.hero {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 32px;
+  margin-bottom: 40px;
+}
+
+.hero-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.meta-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  .label {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--text-sec);
+  }
+
+  .value {
+    color: var(--accent-hi);
+    font-size: 28px;
+    font-weight: 700;
+    font-family: var(--font-display);
+  }
+}
+
+.section-title {
+  font-size: 20px;
+  margin: 0 0 16px 0;
+  color: var(--text-pri);
+}

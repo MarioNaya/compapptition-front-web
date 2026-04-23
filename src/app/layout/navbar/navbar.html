@@ -1,0 +1,32 @@
+<header class="navbar">
+  <div class="container nav-inner">
+    <a class="brand" routerLink="/dashboard" aria-label="Inicio">
+      <span class="wordmark">COMP<span class="accent">APP</span>TITION</span>
+    </a>
+
+    <nav class="links">
+      @for (link of links; track link.path) {
+        <a
+          class="nav-link"
+          [routerLink]="link.path"
+          routerLinkActive="active"
+        >{{ link.label }}</a>
+      }
+    </nav>
+
+    <div class="tools">
+      <a class="icon-btn" routerLink="/invitations" aria-label="Invitaciones">
+        <app-icon name="bell" [size]="20" />
+        @if (pendingInvitations() > 0) {
+          <span class="badge" aria-hidden="true"></span>
+        }
+      </a>
+      <a class="icon-btn" routerLink="/invitations" aria-label="Mensajes">
+        <app-icon name="mail" [size]="20" />
+      </a>
+      <a class="profile-btn" routerLink="/profile" [attr.aria-label]="'Perfil de ' + userDisplayName()">
+        <app-avatar [name]="userDisplayName() || '—'" size="md" />
+      </a>
+    </div>
+  </div>
+</header>
