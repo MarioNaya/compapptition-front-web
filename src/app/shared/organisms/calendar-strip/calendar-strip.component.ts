@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, HostListener, ViewChild, computed, input, output, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Evento } from '@core/models/evento/evento.model';
@@ -40,7 +40,16 @@ export class CalendarStripComponent {
   readonly windowDays = input<number>(14);
 
   readonly selectedDate = signal<string>(toIso(new Date()));
-  readonly windowStart = signal<Date>(startOfDay(new Date(Date.now() - 2 * DAY_MS)));
+  // Centra el día actual: mitad hacia atrás, mitad hacia delante.
+  readonly windowStart = signal<Date>(
+    startOfDay(new Date(Date.now() - Math.floor(14 / 2) * DAY_MS)),
+  );
+
+  @ViewChild('daysRow') daysRow?: ElementRef<HTMLDivElement>;
+  private dragging = false;
+  private dragStartX = 0;
+  private dragStartScroll = 0;
+  private dragged = false;
 
   readonly selected = output<string>();
 
@@ -96,7 +105,47 @@ export class CalendarStripComponent {
 
   goToday(): void {
     const today = new Date();
-    this.windowStart.set(startOfDay(new Date(today.getTime() - 2 * DAY_MS)));
+    const half = Math.floor(this.windowDays() / 2);
+    this.windowStart.set(startOfDay(new Date(today.getTime() - half * DAY_MS)));
     this.selectDay(toIso(today));
+  }
+
+  /**
+   * Drag horizontal con mouse/touch. Si el usuario arrastra más de 5px, se
+   * considera drag y el click final sobre un día se suprime. Si es un click
+   * puro (sin mover), selectDay se dispara normalmente.
+   */
+  onPointerDown(ev: PointerEvent): void {
+    const row = this.daysRow?.nativeElement;
+    if (!row) return;
+    this.dragging = true;
+    this.dragged = false;
+    this.dragStartX = ev.clientX;
+    this.dragStartScroll = row.scrollLeft;
+    row.setPointerCapture(ev.pointerId);
+  }
+
+  onPointerMove(ev: PointerEvent): void {
+    if (!this.dragging) return;
+    const row = this.daysRow?.nativeElement;
+    if (!row) return;
+    const dx = ev.clientX - this.dragStartX;
+    if (Math.abs(dx) > 5) this.dragged = true;
+    row.scrollLeft = this.dragStartScroll - dx;
+  }
+
+  onPointerUp(ev: PointerEvent): void {
+    const row = this.daysRow?.nativeElement;
+    if (row && row.hasPointerCapture(ev.pointerId)) {
+      row.releasePointerCapture(ev.pointerId);
+    }
+    this.dragging = false;
+    // Reset en el próximo tick — el click sobre el día se dispara después.
+    setTimeout(() => (this.dragged = false), 0);
+  }
+
+  /** Devuelve true si se suprime el click (porque fue un drag). */
+  shouldSuppressClick(): boolean {
+    return this.dragged;
   }
 }

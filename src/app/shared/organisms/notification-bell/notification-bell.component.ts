@@ -5,6 +5,7 @@ import { NotificationService } from '@core/services/notification.service';
 import { Notificacion, TipoNotificacion } from '@core/models/notificacion';
 import { AuthService } from '@core/services/auth.service';
 import { IconComponent } from '@shared/ui/icon/icon.component';
+import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 
 interface NotifView {
   readonly id: number;
@@ -35,7 +36,7 @@ const ICONS: Record<TipoNotificacion, NotifView['icon']> = {
 @Component({
   selector: 'app-notification-bell',
   standalone: true,
-  imports: [RouterLink, DatePipe, IconComponent],
+  imports: [RouterLink, DatePipe, IconComponent, ClickOutsideDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './notification-bell.component.html',
   styleUrl: './notification-bell.component.scss',

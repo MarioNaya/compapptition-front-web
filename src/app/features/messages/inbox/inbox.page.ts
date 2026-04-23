@@ -1,9 +1,8 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
-import { interval, startWith, switchMap, takeUntil } from 'rxjs';
+import { interval, startWith, switchMap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Subject } from 'rxjs';
 import { ConversacionSimple } from '@core/models/mensaje';
 import { ApiError } from '@core/http/api-error.model';
 import { PageHeaderComponent } from '@shared/molecules/page-header/page-header.component';
@@ -31,20 +30,20 @@ import { MensajeriaService } from '@features/messages/services/mensajeria.servic
 export class InboxPage implements OnInit {
   private readonly service = inject(MensajeriaService);
   private readonly toast = inject(ToastService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly loading = signal(true);
   readonly conversaciones = this.service.conversaciones;
 
-  private readonly destroy$ = new Subject<void>();
-
   ngOnInit(): void {
-    // Carga inicial + polling 30s mientras la página esté montada.
+    // Carga inicial inmediata + polling 30s mientras la página esté montada.
+    // takeUntilDestroyed se pasa con el DestroyRef ya inyectado en el field
+    // (llamar inject() dentro del pipe daba problemas fuera de injection context).
     interval(30_000)
       .pipe(
         startWith(0),
         switchMap(() => this.service.listar$()),
-        takeUntil(this.destroy$),
-        takeUntilDestroyed(inject(DestroyRef)),
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
         next: () => this.loading.set(false),

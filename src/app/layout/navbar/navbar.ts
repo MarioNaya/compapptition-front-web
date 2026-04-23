@@ -14,6 +14,7 @@ import { AuthService } from '@core/services/auth.service';
 import { IconComponent } from '@shared/ui/icon/icon.component';
 import { AvatarComponent } from '@shared/ui/avatar/avatar.component';
 import { NotificationBellComponent } from '@shared/organisms/notification-bell/notification-bell.component';
+import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
 import { InvitacionService } from '@features/invitations/services/invitacion.service';
 import { MensajeriaService } from '@features/messages/services/mensajeria.service';
 
@@ -26,7 +27,7 @@ interface NavLink {
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, IconComponent, AvatarComponent, NotificationBellComponent],
+  imports: [RouterLink, RouterLinkActive, IconComponent, AvatarComponent, NotificationBellComponent, ClickOutsideDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss',

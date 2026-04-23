@@ -132,6 +132,9 @@
   font-size: 14px;
   font-family: var(--font-body);
   color: var(--text-pri);
+  // Hace que el calendar picker nativo (type=date/datetime-local) use tema
+  // oscuro coherente con la app en lugar del popup blanco/azul por defecto.
+  color-scheme: dark;
   transition:
     border-color 120ms ease,
     box-shadow 120ms ease;
@@ -162,6 +165,17 @@
 
     &:focus {
       box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+    }
+  }
+
+  // Tonalidad naranja al icono del picker de fecha/hora en Chromium.
+  &::-webkit-calendar-picker-indicator {
+    filter: invert(0.6) sepia(1) saturate(6) hue-rotate(-6deg) brightness(1);
+    cursor: pointer;
+    opacity: 0.85;
+
+    &:hover {
+      opacity: 1;
     }
   }
 }

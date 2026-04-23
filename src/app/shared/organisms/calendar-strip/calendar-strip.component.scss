@@ -81,6 +81,13 @@
   overflow-x: auto;
   padding-bottom: 4px;
   scrollbar-width: thin;
+  cursor: grab;
+  user-select: none;
+  touch-action: pan-x;
+
+  &:active {
+    cursor: grabbing;
+  }
 
   &::-webkit-scrollbar {
     height: 4px;

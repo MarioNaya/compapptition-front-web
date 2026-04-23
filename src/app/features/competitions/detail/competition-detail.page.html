@@ -72,6 +72,9 @@
         @case ('matches') {
           <app-matches-tab [competicionId]="c.id" />
         }
+        @case ('calendar') {
+          <app-calendar-tab [competicionId]="c.id" [canEdit]="canManage()" />
+        }
         @case ('standings') {
           <app-standings-tab [competicionId]="c.id" />
         }

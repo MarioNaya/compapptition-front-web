@@ -85,8 +85,13 @@
     </section>
 
     <div class="grid-2col">
-      <section class="section">
-        <h2 class="h-display section-title">Tus competiciones</h2>
+      <section class="widget card main-widget">
+        <header class="widget-head">
+          <h3>Tus competiciones</h3>
+          @if (misCompeticiones().length > 0) {
+            <span class="count-pill">{{ misCompeticiones().length }}</span>
+          }
+        </header>
         @if (misCompeticiones().length === 0) {
           <app-empty-state
             icon="trophy"

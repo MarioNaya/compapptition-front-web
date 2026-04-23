@@ -1,4 +1,4 @@
-<div class="bell-wrap">
+<div class="bell-wrap" appClickOutside [enabled]="open()" (clickOutside)="close()">
   <button
     class="bell-btn"
     type="button"

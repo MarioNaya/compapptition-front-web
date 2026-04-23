@@ -1,0 +1,61 @@
+<div class="cal-wrap">
+  <header class="cal-head">
+    <div class="title-group">
+      <p class="eyebrow">Calendario</p>
+      <h3 class="h-display">{{ monthLabel() }}</h3>
+    </div>
+    <div class="nav">
+      <button type="button" class="nav-btn" (click)="prevMonth()" aria-label="Mes anterior">
+        <app-icon name="chev-l" [size]="16" />
+      </button>
+      <button type="button" class="today-btn" (click)="today()">Hoy</button>
+      <button type="button" class="nav-btn" (click)="nextMonth()" aria-label="Mes siguiente">
+        <app-icon name="chev-r" [size]="16" />
+      </button>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="loading"><app-spinner size="md" label="Cargando partidos" /></div>
+  } @else {
+    <div class="weekday-row">
+      @for (w of weekdays; track w) {
+        <div class="weekday">{{ w }}</div>
+      }
+    </div>
+
+    <div class="grid">
+      @for (cell of grid(); track cell.iso) {
+        <div
+          class="day"
+          [class.off-month]="!cell.inMonth"
+          [class.is-today]="cell.isToday"
+          [class.clickable]="canEdit() && cell.inMonth"
+          (click)="clickDay(cell)"
+        >
+          <span class="day-num">{{ cell.day }}</span>
+
+          @if (cell.eventos.length > 0) {
+            <ul class="events">
+              @for (ev of cell.eventos.slice(0, 3); track ev.id) {
+                <li class="event" (click)="openEvent(ev, $event)">
+                  <span class="event-time">{{ ev.fechaHora | date: 'HH:mm' }}</span>
+                  <span class="event-label">
+                    {{ ev.equipoLocal?.nombre ?? 'TBD' }} vs {{ ev.equipoVisitante?.nombre ?? 'TBD' }}
+                  </span>
+                </li>
+              }
+              @if (cell.eventos.length > 3) {
+                <li class="more">+ {{ cell.eventos.length - 3 }} más</li>
+              }
+            </ul>
+          } @else if (canEdit() && cell.inMonth) {
+            <span class="add-hint" aria-hidden="true">
+              <app-icon name="plus" [size]="14" />
+            </span>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

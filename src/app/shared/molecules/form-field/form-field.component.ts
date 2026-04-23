@@ -41,7 +41,10 @@ export class FormFieldComponent {
     this.tick();
     const c = this.control();
     if (!c || !c.invalid) return false;
-    return c.touched || c.dirty;
+    // Solo tras perder el foco (blur): touched.
+    // Evita que patchValue o `dirty` programático disparen errores sin
+    // que el usuario haya interactuado realmente con el campo.
+    return c.touched;
   });
 
   readonly errorMessage = computed(() => {

@@ -57,6 +57,16 @@ export class NewEventPage implements OnInit {
         this.loadTeams(id);
       }
     });
+
+    // Precarga fecha si viene por queryParam (click desde calendario).
+    // Formato esperado: ISO YYYY-MM-DD; rellenamos 12:00 como hora por defecto
+    // para que el input datetime-local tenga un valor válido.
+    this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((qp) => {
+      const date = qp.get('date');
+      if (date && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        this.form.controls.fechaHora.setValue(`${date}T12:00`);
+      }
+    });
   }
 
   private loadTeams(competicionId: number): void {

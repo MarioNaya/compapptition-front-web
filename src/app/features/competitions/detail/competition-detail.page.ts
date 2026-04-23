@@ -19,8 +19,9 @@ import { StandingsTabComponent } from './components/standings-tab/standings-tab.
 import { TeamsTabComponent } from './components/teams-tab/teams-tab.component';
 import { StatsTabComponent } from './components/stats-tab/stats-tab.component';
 import { BracketTabComponent } from './components/bracket-tab/bracket-tab.component';
+import { CalendarTabComponent } from './components/calendar-tab/calendar-tab.component';
 
-type DetailTab = 'matches' | 'standings' | 'teams' | 'stats' | 'bracket';
+type DetailTab = 'matches' | 'calendar' | 'standings' | 'teams' | 'stats' | 'bracket';
 
 const PLAYOFF_FORMATS = new Set<FormatoCompeticion>([
   FormatoCompeticion.PLAYOFF,
@@ -44,6 +45,7 @@ const PLAYOFF_FORMATS = new Set<FormatoCompeticion>([
     TeamsTabComponent,
     StatsTabComponent,
     BracketTabComponent,
+    CalendarTabComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './competition-detail.page.html',
@@ -72,12 +74,13 @@ export class CompetitionDetailPage implements OnInit {
   readonly tabs = computed<readonly TabOption[]>(() => {
     const base: TabOption[] = [
       { label: 'Partidos', value: 'matches' },
+      { label: 'Calendario', value: 'calendar' },
       { label: 'Clasificación', value: 'standings' },
       { label: 'Equipos', value: 'teams' },
       { label: 'Estadísticas', value: 'stats' },
     ];
     if (this.hasBracket()) {
-      base.splice(2, 0, { label: 'Cuadro', value: 'bracket' });
+      base.splice(3, 0, { label: 'Cuadro', value: 'bracket' });
     }
     return base;
   });

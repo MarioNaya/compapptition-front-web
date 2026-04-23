@@ -25,7 +25,12 @@
     </nav>
 
     <div class="tools">
-      <div class="create-wrap">
+      <div
+        class="create-wrap"
+        appClickOutside
+        [enabled]="createOpen()"
+        (clickOutside)="createOpen.set(false)"
+      >
         <button
           class="icon-btn create-btn"
           type="button"

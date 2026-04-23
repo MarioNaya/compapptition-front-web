@@ -17,7 +17,14 @@
     </div>
   </header>
 
-  <div class="days-row">
+  <div
+    #daysRow
+    class="days-row"
+    (pointerdown)="onPointerDown($event)"
+    (pointermove)="onPointerMove($event)"
+    (pointerup)="onPointerUp($event)"
+    (pointercancel)="onPointerUp($event)"
+  >
     @for (d of days(); track d.iso) {
       <button
         type="button"
@@ -25,7 +32,7 @@
         [class.today]="d.isToday"
         [class.past]="d.isPast"
         [class.selected]="d.iso === selectedDate()"
-        (click)="selectDay(d.iso)"
+        (click)="shouldSuppressClick() ? null : selectDay(d.iso)"
       >
         <span class="weekday">{{ d.weekday }}</span>
         <span class="day-num">{{ d.dayNum }}</span>
