@@ -5,5 +5,6 @@ export interface Usuario {
   nombre?: string;
   apellidos?: string;
   activo: boolean;
+  esAdminSistema?: boolean;
   fechaCreacion?: string;
 }

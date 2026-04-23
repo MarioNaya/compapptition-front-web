@@ -44,7 +44,7 @@ export class LoginPage {
     this.loading.set(true);
     this.auth.login(this.form.getRawValue()).subscribe({
       next: () => {
-        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/dashboard';
+        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/app/dashboard';
         this.router.navigateByUrl(returnUrl);
       },
       error: (err: ApiError) => {

@@ -71,10 +71,10 @@ export class TeamsListPage implements OnInit {
   }
 
   open(e: Equipo): void {
-    this.router.navigate(['/teams', e.id]);
+    this.router.navigate(['/app/teams', e.id]);
   }
 
   goNew(): void {
-    this.router.navigate(['/teams/new']);
+    this.router.navigate(['/app/teams/new']);
   }
 }

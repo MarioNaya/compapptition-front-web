@@ -82,6 +82,6 @@ export class PlayersListPage implements OnInit {
   }
 
   open(j: JugadorSimple): void {
-    this.router.navigate(['/players', j.id]);
+    this.router.navigate(['/app/players', j.id]);
   }
 }

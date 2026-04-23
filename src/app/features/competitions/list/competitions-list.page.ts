@@ -82,10 +82,10 @@ export class CompetitionsListPage implements OnInit {
   }
 
   openDetail(c: CompeticionSimple): void {
-    this.router.navigate(['/competitions', c.id]);
+    this.router.navigate(['/app/competitions', c.id]);
   }
 
   goToNew(): void {
-    this.router.navigate(['/competitions/new']);
+    this.router.navigate(['/app/competitions/new']);
   }
 }

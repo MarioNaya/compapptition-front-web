@@ -1,11 +1,21 @@
 <header class="navbar">
   <div class="container nav-inner">
-    <a class="brand" routerLink="/dashboard" aria-label="Inicio">
+    <button
+      class="hamburger"
+      type="button"
+      (click)="toggleMenu()"
+      [attr.aria-expanded]="menuOpen()"
+      aria-label="Menú de navegación"
+    >
+      <app-icon [name]="menuOpen() ? 'x' : 'menu'" [size]="22" />
+    </button>
+
+    <a class="brand" routerLink="/app/dashboard" aria-label="Inicio">
       <span class="wordmark">COMP<span class="accent">APP</span>TITION</span>
     </a>
 
-    <nav class="links">
-      @for (link of links; track link.path) {
+    <nav class="links" [class.open]="menuOpen()" aria-label="Principal">
+      @for (link of links(); track link.path) {
         <a
           class="nav-link"
           [routerLink]="link.path"
@@ -15,18 +25,46 @@
     </nav>
 
     <div class="tools">
-      <a class="icon-btn" routerLink="/invitations" aria-label="Invitaciones">
-        <app-icon name="bell" [size]="20" />
-        @if (pendingInvitations() > 0) {
+      <div class="create-wrap">
+        <button
+          class="icon-btn create-btn"
+          type="button"
+          (click)="toggleCreate()"
+          [attr.aria-expanded]="createOpen()"
+          aria-haspopup="menu"
+          aria-label="Crear nuevo"
+        >
+          <app-icon name="plus" [size]="20" />
+        </button>
+        @if (createOpen()) {
+          <div class="dropdown" role="menu">
+            <a class="dropdown-item" routerLink="/app/competitions/new" role="menuitem" (click)="closeMenus()">
+              <app-icon name="trophy" [size]="16" />
+              <span>Nueva competición</span>
+            </a>
+            <a class="dropdown-item" routerLink="/app/teams/new" role="menuitem" (click)="closeMenus()">
+              <app-icon name="users" [size]="16" />
+              <span>Nuevo equipo</span>
+            </a>
+          </div>
+        }
+      </div>
+
+      <app-notification-bell />
+
+      <a class="icon-btn mail-btn" routerLink="/app/messages" aria-label="Mensajes">
+        <app-icon name="mail" [size]="20" />
+        @if (unreadMessages() > 0) {
           <span class="badge" aria-hidden="true"></span>
         }
       </a>
-      <a class="icon-btn" routerLink="/invitations" aria-label="Mensajes">
-        <app-icon name="mail" [size]="20" />
-      </a>
-      <a class="profile-btn" routerLink="/profile" [attr.aria-label]="'Perfil de ' + userDisplayName()">
+      <a class="profile-btn" routerLink="/app/profile" [attr.aria-label]="'Perfil de ' + userDisplayName()">
         <app-avatar [name]="userDisplayName() || '—'" size="md" />
       </a>
     </div>
   </div>
+
+  @if (menuOpen()) {
+    <div class="mobile-backdrop" (click)="closeMenus()" aria-hidden="true"></div>
+  }
 </header>

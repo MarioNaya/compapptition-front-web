@@ -1,0 +1,70 @@
+<div class="landing">
+  <header class="top">
+    <a class="brand" routerLink="/" aria-label="Compapption">
+      <span class="wordmark">COMP<span class="accent">APP</span>TITION</span>
+    </a>
+    <nav class="top-actions">
+      <a class="btn btn-ghost" routerLink="/auth/login">Iniciar sesión</a>
+      <a class="btn btn-primary" routerLink="/auth/register">Crear cuenta</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <p class="eyebrow">Gestión de competiciones deportivas</p>
+      <h1 class="title">
+        Organiza tu torneo<br />
+        <span class="accent">como un profesional</span>
+      </h1>
+      <p class="subtitle">
+        Compapption reúne las piezas de una competición —equipos, jugadores, calendario,
+        estadísticas y playoff— en una experiencia coherente para administradores,
+        managers y jugadores.
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-primary lg" routerLink="/auth/register">
+          Crear tu primera competición
+          <app-icon name="chev-r" [size]="16" />
+        </a>
+        <a class="btn btn-ghost lg" routerLink="/auth/login">Ya tengo cuenta</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="features">
+    <article class="feature">
+      <div class="icon-wrap"><app-icon name="trophy" [size]="26" /></div>
+      <h3>Formatos a medida</h3>
+      <p>
+        Liga, ida y vuelta, playoff, grupos + eliminatoria o evento único. Genera el
+        calendario y el bracket automáticamente.
+      </p>
+    </article>
+    <article class="feature">
+      <div class="icon-wrap"><app-icon name="users" [size]="26" /></div>
+      <h3>Equipos y roles claros</h3>
+      <p>
+        Invita a managers por email, gestiona plantillas con dorsales y define quién
+        puede arbitrar o anotar en cada competición.
+      </p>
+    </article>
+    <article class="feature">
+      <div class="icon-wrap"><app-icon name="stats" [size]="26" /></div>
+      <h3>Estadísticas reales</h3>
+      <p>
+        Define tipos de estadística por deporte, registra por evento y consulta rankings
+        acumulados por jugador, equipo y temporada.
+      </p>
+    </article>
+  </section>
+
+  <section class="closing">
+    <h2>Lleva tu liga amateur a otro nivel.</h2>
+    <p>Empieza gratis. Tu primera competición puede estar lista hoy.</p>
+    <a class="btn btn-primary lg" routerLink="/auth/register">Empezar ahora</a>
+  </section>
+
+  <footer class="foot">
+    <span>© {{ year }} Compapption · TFG · Mario Naya</span>
+  </footer>
+</div>

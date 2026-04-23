@@ -29,7 +29,8 @@ export type IconName =
   | 'dots'
   | 'upload'
   | 'stats'
-  | 'flag';
+  | 'flag'
+  | 'menu';
 
 @Component({
   selector: 'app-icon',

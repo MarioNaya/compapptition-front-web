@@ -14,6 +14,10 @@ export interface Evento {
   fechaCreacion: string;
   equipoLocal?: EquipoEvento;
   equipoVisitante?: EquipoEvento;
+  // Bracket playoff — solo presentes en EventoDetalleDTO
+  partidoAnteriorLocalId?: number;
+  partidoAnteriorVisitanteId?: number;
+  numeroPartido?: number;
 }
 
 export enum EstadoEvento {

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, injec
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from '@core/services/auth.service';
-import { EstadoCompeticion } from '@core/models/competicion/competicion.model';
+import { EstadoCompeticion, FormatoCompeticion } from '@core/models/competicion/competicion.model';
 import { ApiError } from '@core/http/api-error.model';
 import { ButtonComponent } from '@shared/ui/button/button.component';
 import { IconComponent } from '@shared/ui/icon/icon.component';
@@ -18,8 +18,15 @@ import { MatchesTabComponent } from './components/matches-tab/matches-tab.compon
 import { StandingsTabComponent } from './components/standings-tab/standings-tab.component';
 import { TeamsTabComponent } from './components/teams-tab/teams-tab.component';
 import { StatsTabComponent } from './components/stats-tab/stats-tab.component';
+import { BracketTabComponent } from './components/bracket-tab/bracket-tab.component';
 
-type DetailTab = 'matches' | 'standings' | 'teams' | 'stats';
+type DetailTab = 'matches' | 'standings' | 'teams' | 'stats' | 'bracket';
+
+const PLAYOFF_FORMATS = new Set<FormatoCompeticion>([
+  FormatoCompeticion.PLAYOFF,
+  FormatoCompeticion.LIGA_PLAYOFF,
+  FormatoCompeticion.GRUPOS_PLAYOFF,
+]);
 
 @Component({
   selector: 'app-competition-detail-page',
@@ -36,6 +43,7 @@ type DetailTab = 'matches' | 'standings' | 'teams' | 'stats';
     StandingsTabComponent,
     TeamsTabComponent,
     StatsTabComponent,
+    BracketTabComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './competition-detail.page.html',
@@ -56,12 +64,23 @@ export class CompetitionDetailPage implements OnInit {
 
   readonly EstadoCompeticion = EstadoCompeticion;
 
-  readonly tabs: readonly TabOption[] = [
-    { label: 'Partidos', value: 'matches' },
-    { label: 'Clasificación', value: 'standings' },
-    { label: 'Equipos', value: 'teams' },
-    { label: 'Estadísticas', value: 'stats' },
-  ];
+  readonly hasBracket = computed(() => {
+    const formato = this.competicion()?.configuracion?.formato;
+    return !!formato && PLAYOFF_FORMATS.has(formato);
+  });
+
+  readonly tabs = computed<readonly TabOption[]>(() => {
+    const base: TabOption[] = [
+      { label: 'Partidos', value: 'matches' },
+      { label: 'Clasificación', value: 'standings' },
+      { label: 'Equipos', value: 'teams' },
+      { label: 'Estadísticas', value: 'stats' },
+    ];
+    if (this.hasBracket()) {
+      base.splice(2, 0, { label: 'Cuadro', value: 'bracket' });
+    }
+    return base;
+  });
 
   readonly canManage = computed(() => {
     const user = this.auth.currentUser();
@@ -110,13 +129,13 @@ export class CompetitionDetailPage implements OnInit {
   goCalendar(): void {
     const c = this.competicion();
     if (!c) return;
-    this.router.navigate(['/competitions', c.id, 'calendar']);
+    this.router.navigate(['/app/competitions', c.id, 'calendar']);
   }
 
   goNewEvent(): void {
     const c = this.competicion();
     if (!c) return;
-    this.router.navigate(['/competitions', c.id, 'events', 'new']);
+    this.router.navigate(['/app/competitions', c.id, 'events', 'new']);
   }
 
   async askDelete(): Promise<void> {
@@ -135,7 +154,7 @@ export class CompetitionDetailPage implements OnInit {
     this.service.delete$(c.id, user.id).subscribe({
       next: () => {
         this.toast.success('Competición eliminada');
-        this.router.navigate(['/competitions']);
+        this.router.navigate(['/app/competitions']);
       },
       error: (err: ApiError) => {
         this.toast.error(err.message ?? 'No se pudo eliminar');

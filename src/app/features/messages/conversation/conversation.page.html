@@ -1,0 +1,38 @@
+<div class="container conversation fade-in">
+  @if (loading() && mensajes().length === 0) {
+    <div class="loading-box"><app-spinner size="md" label="Cargando conversación" /></div>
+  } @else {
+    <div class="thread">
+      @for (m of mensajes(); track m.id) {
+        <article
+          class="bubble"
+          [class.own]="m.autorId === userId()"
+        >
+          <div class="bubble-head">
+            <span class="author">{{ m.autorUsername }}</span>
+            <span class="time mono">{{ m.fechaEnvio | date: 'dd MMM HH:mm' }}</span>
+          </div>
+          <p class="content">{{ m.contenido }}</p>
+        </article>
+      }
+      @if (mensajes().length === 0) {
+        <p class="empty">Aún no hay mensajes en esta conversación. ¡Rompe el hielo!</p>
+      }
+    </div>
+
+    <form class="composer" (submit)="$event.preventDefault(); send()">
+      <textarea
+        class="input"
+        placeholder="Escribe un mensaje…"
+        rows="2"
+        maxlength="2000"
+        [value]="draft()"
+        (input)="onDraftChange($any($event.target).value)"
+        (keydown.enter)="$event.preventDefault(); send()"
+      ></textarea>
+      <app-button variant="primary" (clicked)="send()" [disabled]="sending() || !draft().trim()">
+        <app-icon name="chev-r" [size]="14" /> Enviar
+      </app-button>
+    </form>
+  }
+</div>

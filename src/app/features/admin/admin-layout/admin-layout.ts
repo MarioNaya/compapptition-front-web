@@ -18,10 +18,10 @@ interface AdminLink {
 })
 export class AdminLayout {
   readonly links: readonly AdminLink[] = [
-    { path: '/admin', label: 'Dashboard', icon: 'stats' },
-    { path: '/admin/sports', label: 'Deportes', icon: 'trophy' },
-    { path: '/admin/stat-types', label: 'Tipos estadística', icon: 'flag' },
-    { path: '/admin/users', label: 'Usuarios', icon: 'users' },
-    { path: '/admin/logs', label: 'Logs', icon: 'inbox' },
+    { path: '/app/admin', label: 'Dashboard', icon: 'stats' },
+    { path: '/app/admin/sports', label: 'Deportes', icon: 'trophy' },
+    { path: '/app/admin/stat-types', label: 'Tipos estadística', icon: 'flag' },
+    { path: '/app/admin/users', label: 'Usuarios', icon: 'users' },
+    { path: '/app/admin/logs', label: 'Logs', icon: 'inbox' },
   ];
 }

@@ -1,21 +1,26 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
+import { ToastService } from '@shared/services/toast.service';
 
 /**
- * El admin guard actualmente sólo verifica autenticación. El filtro real (rol ADMIN_SISTEMA)
- * lo aplica el backend con @PreAuthorize en los endpoints de admin; cualquier operación
- * sin permiso devolverá 403 y el errorInterceptor mostrará el mensaje.
- *
- * Cuando el DTO de usuario exponga `esAdminSistema`, este guard puede endurecerse para
- * bloquear la entrada incluso al panel.
+ * Endurecido en F9A: además de exigir autenticación, requiere `esAdminSistema === true`
+ * en el usuario del AuthService. Los endpoints del backend siguen validando con @PreAuthorize;
+ * este guard evita que el usuario no-admin acceda siquiera a las páginas del panel.
  */
 export const adminGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
+  const toast = inject(ToastService);
 
-  if (!authService.isAuthenticated()) {
+  const user = authService.currentUser();
+  if (!user) {
     router.navigate(['/auth/login']);
+    return false;
+  }
+  if (!user.esAdminSistema) {
+    toast.error('No tienes permisos de administrador de sistema');
+    router.navigate(['/app/dashboard']);
     return false;
   }
   return true;

@@ -130,7 +130,7 @@ export class EventDetailPage implements OnInit {
     this.service.delete$(compId, e.id).subscribe({
       next: () => {
         this.toast.success('Partido eliminado');
-        this.router.navigate(['/competitions', compId]);
+        this.router.navigate(['/app/competitions', compId]);
       },
       error: (err: ApiError) => this.toast.error(err.message ?? 'No se pudo eliminar'),
     });

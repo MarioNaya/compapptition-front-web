@@ -57,7 +57,7 @@
     </section>
 
     <app-tabs
-      [options]="tabs"
+      [options]="tabs()"
       [value]="activeTab()"
       (valueChange)="onTabChange($event)"
     />
@@ -69,6 +69,9 @@
         }
         @case ('standings') {
           <app-standings-tab [competicionId]="c.id" />
+        }
+        @case ('bracket') {
+          <app-bracket-tab [competicionId]="c.id" />
         }
         @case ('teams') {
           <app-teams-tab [competicionId]="c.id" [estado]="c.estado" />

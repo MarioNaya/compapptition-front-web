@@ -91,7 +91,7 @@ export class TeamDetailPage implements OnInit {
   }
 
   openJugador(j: Jugador): void {
-    this.router.navigate(['/players', j.id]);
+    this.router.navigate(['/app/players', j.id]);
   }
 
   async askDelete(): Promise<void> {
@@ -107,7 +107,7 @@ export class TeamDetailPage implements OnInit {
     this.service.delete$(e.id).subscribe({
       next: () => {
         this.toast.success('Equipo eliminado');
-        this.router.navigate(['/teams']);
+        this.router.navigate(['/app/dashboard']);
       },
       error: (err: ApiError) => this.toast.error(err.message ?? 'No se pudo eliminar'),
     });

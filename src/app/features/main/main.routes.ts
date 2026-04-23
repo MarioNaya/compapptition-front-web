@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { adminGuard } from '@core/guards/admin.guard';
 
 export const MAIN_ROUTES: Routes = [
   {
@@ -10,6 +11,8 @@ export const MAIN_ROUTES: Routes = [
     loadChildren: () =>
       import('@features/competitions/competitions.routes').then((m) => m.COMPETITION_ROUTES),
   },
+  // Rutas de detalle sobreviven (accesibles programáticamente desde competición).
+  // El listado global se elimina en F9F; por ahora solo se quita el link del navbar.
   {
     path: 'teams',
     loadChildren: () => import('@features/teams/teams.routes').then((m) => m.TEAM_ROUTES),
@@ -24,11 +27,17 @@ export const MAIN_ROUTES: Routes = [
       import('@features/invitations/invitations.routes').then((m) => m.INVITATION_ROUTES),
   },
   {
+    path: 'messages',
+    loadChildren: () =>
+      import('@features/messages/messages.routes').then((m) => m.MESSAGES_ROUTES),
+  },
+  {
     path: 'profile',
     loadChildren: () => import('@features/profile/profile.routes').then((m) => m.PROFILE_ROUTES),
   },
   {
     path: 'admin',
+    canActivate: [adminGuard],
     loadChildren: () => import('@features/admin/admin.routes').then((m) => m.ADMIN_ROUTES),
   },
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },

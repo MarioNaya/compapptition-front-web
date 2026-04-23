@@ -1,0 +1,126 @@
+:host {
+  display: block;
+}
+
+.conversation {
+  padding-top: 32px;
+  padding-bottom: 32px;
+  height: calc(100vh - 120px);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.loading-box {
+  padding: 80px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.thread {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px 0;
+  scrollbar-width: thin;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--line);
+    border-radius: 3px;
+  }
+}
+
+.bubble {
+  max-width: 72%;
+  padding: 10px 14px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  align-self: flex-start;
+
+  &.own {
+    align-self: flex-end;
+    background: linear-gradient(135deg, rgba(255, 122, 26, 0.2), rgba(255, 122, 26, 0.05));
+    border-color: rgba(255, 122, 26, 0.4);
+  }
+}
+
+.bubble-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 4px;
+
+  .author {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent-hi);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .time {
+    font-size: 10px;
+    color: var(--text-mute);
+  }
+}
+
+.content {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--text-pri);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.empty {
+  text-align: center;
+  color: var(--text-mute);
+  font-style: italic;
+  padding: 24px;
+}
+
+.composer {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: flex-end;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: var(--bg-1);
+  border: 1px solid var(--line);
+  color: var(--text-pri);
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.4;
+  resize: vertical;
+  min-height: 48px;
+  max-height: 160px;
+  transition: border-color 120ms ease;
+
+  &:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow-soft);
+  }
+}
+
+@media (max-width: 640px) {
+  .bubble {
+    max-width: 88%;
+  }
+}

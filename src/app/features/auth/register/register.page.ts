@@ -53,7 +53,7 @@ export class RegisterPage {
     this.auth.registro(payload).subscribe({
       next: () => {
         this.toast.success('Cuenta creada. ¡Bienvenido!');
-        this.router.navigateByUrl('/dashboard');
+        this.router.navigateByUrl('/app/dashboard');
       },
       error: (err: ApiError) => {
         this.loading.set(false);

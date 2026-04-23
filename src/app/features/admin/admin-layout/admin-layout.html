@@ -7,7 +7,7 @@
           class="side-link"
           [routerLink]="link.path"
           routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: link.path === '/admin' }"
+          [routerLinkActiveOptions]="{ exact: link.path === '/app/admin' }"
         >
           <app-icon [name]="link.icon" [size]="16" />
           <span>{{ link.label }}</span>

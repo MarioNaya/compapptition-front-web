@@ -39,6 +39,6 @@ export class MatchesTabComponent implements OnInit {
   }
 
   openEvent(evento: Evento): void {
-    this.router.navigate(['/competitions', this.competicionId(), 'events', evento.id]);
+    this.router.navigate(['/app/competitions', this.competicionId(), 'events', evento.id]);
   }
 }

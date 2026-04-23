@@ -121,7 +121,7 @@ export class PlayerDetailPage implements OnInit {
     this.service.delete$(j.id).subscribe({
       next: () => {
         this.toast.success('Jugador eliminado');
-        this.router.navigate(['/players']);
+        this.router.navigate(['/app/dashboard']);
       },
       error: (err: ApiError) => this.toast.error(err.message ?? 'No se pudo eliminar'),
     });

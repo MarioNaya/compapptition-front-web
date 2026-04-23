@@ -77,7 +77,7 @@ export class CalendarWizardPage implements OnInit {
       next: (eventos) => {
         this.saving.set(false);
         this.toast.success(`Calendario generado · ${eventos.length} partidos`);
-        this.router.navigate(['/competitions', compId]);
+        this.router.navigate(['/app/competitions', compId]);
       },
       error: (err: ApiError) => {
         this.saving.set(false);
@@ -88,7 +88,7 @@ export class CalendarWizardPage implements OnInit {
 
   cancel(): void {
     const compId = this.competicionId();
-    if (compId != null) this.router.navigate(['/competitions', compId]);
-    else this.router.navigate(['/competitions']);
+    if (compId != null) this.router.navigate(['/app/competitions', compId]);
+    else this.router.navigate(['/app/competitions']);
   }
 }

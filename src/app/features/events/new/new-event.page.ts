@@ -99,7 +99,7 @@ export class NewEventPage implements OnInit {
       .subscribe({
         next: (evento) => {
           this.toast.success('Partido creado');
-          this.router.navigate(['/competitions', compId, 'events', evento.id]);
+          this.router.navigate(['/app/competitions', compId, 'events', evento.id]);
         },
         error: (err: ApiError) => {
           this.saving.set(false);
@@ -110,7 +110,7 @@ export class NewEventPage implements OnInit {
 
   cancel(): void {
     const compId = this.competicionId();
-    if (compId != null) this.router.navigate(['/competitions', compId]);
-    else this.router.navigate(['/competitions']);
+    if (compId != null) this.router.navigate(['/app/competitions', compId]);
+    else this.router.navigate(['/app/competitions']);
   }
 }

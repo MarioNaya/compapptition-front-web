@@ -219,6 +219,6 @@ export class TeamsTabComponent implements OnInit {
   }
 
   openTeam(equipo: Equipo): void {
-    this.router.navigate(['/teams', equipo.id]);
+    this.router.navigate(['/app/teams', equipo.id]);
   }
 }

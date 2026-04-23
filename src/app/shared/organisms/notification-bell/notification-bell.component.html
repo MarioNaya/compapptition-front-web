@@ -1,0 +1,56 @@
+<div class="bell-wrap">
+  <button
+    class="bell-btn"
+    type="button"
+    (click)="toggle()"
+    [attr.aria-expanded]="open()"
+    aria-haspopup="menu"
+    aria-label="Notificaciones"
+  >
+    <app-icon name="bell" [size]="20" />
+    @if (unreadCount() > 0) {
+      <span class="badge" aria-hidden="true">{{ unreadCount() }}</span>
+    }
+  </button>
+
+  @if (open()) {
+    <div class="panel" role="menu">
+      <header class="panel-head">
+        <h4>Notificaciones</h4>
+        @if (unreadCount() > 0) {
+          <button type="button" class="mark-all" (click)="markAll()">
+            Marcar todas
+          </button>
+        }
+      </header>
+
+      <ul class="notif-list">
+        @if (items().length === 0) {
+          <li class="empty">No tienes notificaciones</li>
+        } @else {
+          @for (n of items(); track n.id) {
+            <li>
+              <button
+                type="button"
+                class="notif-item"
+                [class.unread]="!n.leida"
+                (click)="onClick(n)"
+                role="menuitem"
+              >
+                <app-icon [name]="n.icon" [size]="14" />
+                <span class="notif-main">
+                  <strong>{{ n.title }}</strong>
+                  <span class="detail">{{ n.detail }}</span>
+                  <span class="time mono">{{ n.fechaCreacion | date: 'dd MMM HH:mm' }}</span>
+                </span>
+                @if (!n.leida) {
+                  <span class="dot" aria-hidden="true"></span>
+                }
+              </button>
+            </li>
+          }
+        }
+      </ul>
+    </div>
+  }
+</div>

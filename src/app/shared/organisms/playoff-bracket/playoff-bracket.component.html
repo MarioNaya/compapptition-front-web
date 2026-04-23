@@ -1,0 +1,65 @@
+@if (rounds().length === 0) {
+  <p class="bracket-empty">El calendario del playoff aún no se ha generado.</p>
+} @else {
+  <div class="bracket-wrap">
+    <div class="round-labels" [style.width.px]="layout().width">
+      @for (r of rounds(); track $index) {
+        <div class="round-label">
+          {{ roundLabel($index, rounds().length) }}
+          <span class="count">{{ r.length }}</span>
+        </div>
+      }
+    </div>
+
+    <div class="svg-scroll">
+      <svg
+        class="bracket"
+        [attr.width]="layout().width"
+        [attr.height]="layout().height"
+        [attr.viewBox]="'0 0 ' + layout().width + ' ' + layout().height"
+      >
+        @for (edge of layout().edges; track edge.from + '-' + edge.to) {
+          <path class="edge" [attr.d]="edge.d" />
+        }
+
+        @for (n of layout().nodes; track n.evento.id) {
+          <g
+            class="node"
+            [class.finalized]="n.evento.estado === 'FINALIZADO'"
+            [class.live]="n.evento.estado === 'EN_CURSO'"
+            [class.pending]="n.evento.estado === 'PROGRAMADO'"
+            [attr.transform]="'translate(' + n.x + ',' + n.y + ')'"
+            (click)="onClick(n.evento)"
+            tabindex="0"
+            (keydown.enter)="onClick(n.evento)"
+          >
+            <rect class="node-bg" [attr.width]="nodeW" [attr.height]="nodeH" rx="8" />
+
+            <!-- Home row -->
+            <g class="team-row home" [class.winner]="winnerSide(n.evento) === 'home'">
+              <text class="team-name" x="12" y="26">
+                {{ n.evento.equipoLocal?.nombre ?? 'TBD' }}
+              </text>
+              <text class="team-score" [attr.x]="nodeW - 14" y="26">
+                {{ n.evento.resultadoLocal ?? '—' }}
+              </text>
+            </g>
+
+            <!-- Divider -->
+            <line class="divider" x1="0" [attr.y1]="nodeH / 2" [attr.x2]="nodeW" [attr.y2]="nodeH / 2" />
+
+            <!-- Away row -->
+            <g class="team-row away" [class.winner]="winnerSide(n.evento) === 'away'">
+              <text class="team-name" x="12" y="60">
+                {{ n.evento.equipoVisitante?.nombre ?? 'TBD' }}
+              </text>
+              <text class="team-score" [attr.x]="nodeW - 14" y="60">
+                {{ n.evento.resultadoVisitante ?? '—' }}
+              </text>
+            </g>
+          </g>
+        }
+      </svg>
+    </div>
+  </div>
+}

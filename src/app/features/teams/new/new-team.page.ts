@@ -54,7 +54,7 @@ export class NewTeamPage {
       .subscribe({
         next: (equipo) => {
           this.toast.success('Equipo creado');
-          this.router.navigate(['/teams', equipo.id]);
+          this.router.navigate(['/app/teams', equipo.id]);
         },
         error: (err: ApiError) => {
           this.loading.set(false);
@@ -64,6 +64,6 @@ export class NewTeamPage {
   }
 
   cancel(): void {
-    this.router.navigate(['/teams']);
+    this.router.navigate(['/app/dashboard']);
   }
 }

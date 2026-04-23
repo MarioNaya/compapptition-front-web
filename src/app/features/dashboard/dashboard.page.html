@@ -2,7 +2,7 @@
   <app-page-header
     eyebrow="Dashboard"
     [title]="'Hola, ' + displayName()"
-    subtitle="Próximo partido, tus competiciones y los partidos por venir."
+    subtitle="Tu próximo partido, tus competiciones, invitaciones y gestiones pendientes."
   >
     <app-button variant="ghost" (clicked)="goCompetitions()">
       <app-icon name="trophy" [size]="15" /> Competiciones
@@ -14,7 +14,45 @@
 
   @if (loading()) {
     <div class="loading-box"><app-spinner size="md" label="Cargando tu jornada" /></div>
+  } @else if (isOnboarding()) {
+    <section class="onboarding card">
+      <h2 class="h-display">Bienvenido a Compapption</h2>
+      <p>
+        Organiza tu primera competición o invita a managers para empezar. Puedes
+        también explorar competiciones públicas y unirte como equipo o árbitro.
+      </p>
+      <div class="cta-row">
+        <app-button variant="primary" (clicked)="goNewCompetition()">
+          <app-icon name="trophy" [size]="15" /> Crear competición
+        </app-button>
+        <app-button variant="ghost" (clicked)="goNewTeam()">
+          <app-icon name="users" [size]="15" /> Crear equipo
+        </app-button>
+        <app-button variant="ghost" (clicked)="goCompetitions()">
+          <app-icon name="search" [size]="15" /> Explorar públicas
+        </app-button>
+      </div>
+    </section>
   } @else {
+    <section class="stats-row">
+      <div class="stat-card">
+        <span class="stat-label">Competiciones</span>
+        <span class="stat-value">{{ stats().competiciones }}</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Equipos</span>
+        <span class="stat-value">{{ stats().equipos }}</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Próximos partidos</span>
+        <span class="stat-value">{{ stats().partidosProgramados }}</span>
+      </div>
+      <div class="stat-card" [class.highlight]="stats().invitaciones > 0">
+        <span class="stat-label">Invitaciones</span>
+        <span class="stat-value">{{ stats().invitaciones }}</span>
+      </div>
+    </section>
+
     @if (nextMatch(); as m) {
       <section class="hero" (click)="openMatch(m)" (keydown.enter)="openMatch(m)" tabindex="0">
         <app-notch-card tag="Next match">
@@ -40,46 +78,131 @@
           </div>
         </app-notch-card>
       </section>
-    } @else {
-      <section class="hero">
-        <app-empty-state
-          icon="calendar"
-          title="Sin partidos próximos"
-          subtitle="Cuando tengas partidos programados en tus competiciones aparecerán aquí."
-        />
-      </section>
     }
 
     <section class="section">
-      <h2 class="h-display section-title">Tus competiciones</h2>
-      @if (misCompeticiones().length === 0) {
-        <app-empty-state
-          icon="trophy"
-          title="Aún no participas en ninguna competición"
-          subtitle="Crea una nueva o acepta una invitación para unirte."
-        >
-          <app-button variant="primary" (clicked)="goNewCompetition()">
-            <app-icon name="plus" [size]="14" /> Crear competición
-          </app-button>
-        </app-empty-state>
-      } @else {
-        <div class="comp-grid">
-          @for (c of misCompeticiones(); track c.id) {
-            <app-competition-card [competicion]="c" (opened)="openCompetition($event)" />
-          }
-        </div>
-      }
+      <app-calendar-strip [events]="todosEventos()" [windowDays]="14" />
     </section>
 
-    @if (proximosEventos().length > 1) {
+    <div class="grid-2col">
       <section class="section">
-        <h2 class="h-display section-title">Próximos partidos</h2>
-        <div class="stack">
-          @for (e of proximosEventos().slice(1); track e.id) {
-            <app-match-row [evento]="e" (opened)="openMatch($event)" />
-          }
-        </div>
+        <h2 class="h-display section-title">Tus competiciones</h2>
+        @if (misCompeticiones().length === 0) {
+          <app-empty-state
+            icon="trophy"
+            title="Aún no participas en ninguna competición"
+            subtitle="Crea una nueva o acepta una invitación para unirte."
+          >
+            <app-button variant="primary" (clicked)="goNewCompetition()">
+              <app-icon name="plus" [size]="14" /> Crear competición
+            </app-button>
+          </app-empty-state>
+        } @else {
+          <div class="comp-grid">
+            @for (c of misCompeticiones(); track c.id) {
+              <app-competition-card [competicion]="c" (opened)="openCompetition($event)" />
+            }
+          </div>
+        }
       </section>
-    }
+
+      <aside class="side">
+        @if (gestionesCount() > 0) {
+          <section class="widget card">
+            <header class="widget-head">
+              <h3>Gestiones pendientes</h3>
+              <span class="count-pill">{{ gestionesCount() }}</span>
+            </header>
+            <ul class="widget-list">
+              @for (c of gestionesBorrador(); track c.id) {
+                <li>
+                  <a [routerLink]="['/app/competitions', c.id]" class="widget-item">
+                    <app-icon name="edit" [size]="14" />
+                    <span class="item-text">
+                      <strong>{{ c.nombre }}</strong>
+                      <span class="item-sub">Borrador — listo para activar</span>
+                    </span>
+                    <app-icon name="chev-r" [size]="14" />
+                  </a>
+                </li>
+              }
+              @for (inv of invitacionesEnviadasPend(); track inv.id) {
+                <li>
+                  <a routerLink="/app/invitations" class="widget-item">
+                    <app-icon name="mail" [size]="14" />
+                    <span class="item-text">
+                      <strong>{{ inv.destinatarioUsername ?? 'Destinatario' }}</strong>
+                      <span class="item-sub">Invitación sin respuesta</span>
+                    </span>
+                    <app-icon name="chev-r" [size]="14" />
+                  </a>
+                </li>
+              }
+            </ul>
+          </section>
+        }
+
+        @if (invitacionesRecibidasPend().length > 0) {
+          <section class="widget card">
+            <header class="widget-head">
+              <h3>Invitaciones recibidas</h3>
+              <span class="count-pill accent">{{ invitacionesRecibidasPend().length }}</span>
+            </header>
+            <ul class="widget-list">
+              @for (inv of invitacionesRecibidasPend().slice(0, 3); track inv.id) {
+                <li>
+                  <a routerLink="/app/invitations" class="widget-item">
+                    <app-icon name="bell" [size]="14" />
+                    <span class="item-text">
+                      <strong>{{ inv.competicionNombre || 'Competición' }}</strong>
+                      <span class="item-sub">
+                        {{ inv.equipoNombre ? 'Equipo: ' + inv.equipoNombre : 'Rol: ' + inv.rolOfrecido }}
+                      </span>
+                    </span>
+                    <app-icon name="chev-r" [size]="14" />
+                  </a>
+                </li>
+              }
+            </ul>
+            <a routerLink="/app/invitations" class="see-all">Ver todas →</a>
+          </section>
+        }
+
+        @if (misEquiposMgr().length > 0) {
+          <section class="widget card">
+            <header class="widget-head">
+              <h3>Mis equipos</h3>
+              <span class="count-pill">{{ misEquiposMgr().length }}</span>
+            </header>
+            <ul class="widget-list">
+              @for (e of misEquiposMgr().slice(0, 4); track e.id) {
+                <li>
+                  <a [routerLink]="['/app/teams', e.id]" class="widget-item">
+                    <app-icon name="users" [size]="14" />
+                    <span class="item-text">
+                      <strong>{{ e.nombre }}</strong>
+                      <span class="item-sub">Manager</span>
+                    </span>
+                    <app-icon name="chev-r" [size]="14" />
+                  </a>
+                </li>
+              }
+            </ul>
+          </section>
+        }
+
+        <section class="widget card cta-widget">
+          <h3>Atajos</h3>
+          <div class="cta-stack">
+            <app-button variant="primary" (clicked)="goNewCompetition()">
+              <app-icon name="trophy" [size]="14" /> Nueva competición
+            </app-button>
+            <app-button variant="ghost" (clicked)="goNewTeam()">
+              <app-icon name="users" [size]="14" /> Nuevo equipo
+            </app-button>
+          </div>
+        </section>
+      </aside>
+    </div>
   }
 </div>

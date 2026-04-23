@@ -1,0 +1,43 @@
+<div class="container inbox fade-in">
+  <app-page-header
+    eyebrow="Mensajes"
+    title="Bandeja de entrada"
+    subtitle="Conversaciones con otros usuarios de la plataforma."
+  />
+
+  @if (loading() && conversaciones().length === 0) {
+    <div class="loading-box"><app-spinner size="md" label="Cargando conversaciones" /></div>
+  } @else if (conversaciones().length === 0) {
+    <app-empty-state
+      icon="mail"
+      title="Sin conversaciones"
+      subtitle="Aún no has intercambiado mensajes con nadie. Puedes iniciar una conversación desde el perfil de otro usuario."
+    />
+  } @else {
+    <ul class="conv-list">
+      @for (c of conversaciones(); track c.id) {
+        <li>
+          <a class="conv-item" [routerLink]="['/app/messages', c.id]">
+            <app-avatar [name]="c.otroUsuarioUsername" size="md" />
+            <div class="conv-main">
+              <div class="conv-head">
+                <strong>{{ c.otroUsuarioUsername }}</strong>
+                @if (c.fechaUltimoMensaje) {
+                  <span class="time mono">
+                    {{ c.fechaUltimoMensaje | date: 'dd MMM HH:mm' : '' : 'es' }}
+                  </span>
+                }
+              </div>
+              <p class="preview" [class.unread]="c.unreadCount > 0">
+                {{ c.ultimoMensaje || 'Sin mensajes' }}
+              </p>
+            </div>
+            @if (c.unreadCount > 0) {
+              <span class="unread-pill">{{ c.unreadCount }}</span>
+            }
+          </a>
+        </li>
+      }
+    </ul>
+  }
+</div>

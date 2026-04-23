@@ -1,0 +1,56 @@
+<div class="cal-strip card">
+  <header class="cal-head">
+    <div class="title-group">
+      <p class="eyebrow">Calendario</p>
+      <h3 class="h-display">
+        {{ selectedLabel() | date: 'EEEE d MMMM' : '' : 'es' }}
+      </h3>
+    </div>
+    <div class="nav">
+      <button type="button" class="nav-btn" (click)="shiftWindow(-7)" aria-label="Semana anterior">
+        <app-icon name="chev-l" [size]="16" />
+      </button>
+      <button type="button" class="today-btn" (click)="goToday()">Hoy</button>
+      <button type="button" class="nav-btn" (click)="shiftWindow(7)" aria-label="Semana siguiente">
+        <app-icon name="chev-r" [size]="16" />
+      </button>
+    </div>
+  </header>
+
+  <div class="days-row">
+    @for (d of days(); track d.iso) {
+      <button
+        type="button"
+        class="day"
+        [class.today]="d.isToday"
+        [class.past]="d.isPast"
+        [class.selected]="d.iso === selectedDate()"
+        (click)="selectDay(d.iso)"
+      >
+        <span class="weekday">{{ d.weekday }}</span>
+        <span class="day-num">{{ d.dayNum }}</span>
+        @if (d.count > 0) {
+          <span class="dot" [attr.aria-label]="d.count + ' partidos'"></span>
+        }
+      </button>
+    }
+  </div>
+
+  <div class="day-events">
+    @if (eventsOfSelected().length === 0) {
+      <p class="no-events">Sin partidos este día</p>
+    } @else {
+      @for (e of eventsOfSelected(); track e.id) {
+        <a class="event-row" [routerLink]="['/app/competitions', e.competicionId, 'events', e.id]">
+          <span class="time mono">{{ e.fechaHora | date: 'HH:mm' }}</span>
+          <span class="teams">
+            {{ e.equipoLocal?.nombre ?? 'TBD' }}
+            <span class="vs">vs</span>
+            {{ e.equipoVisitante?.nombre ?? 'TBD' }}
+          </span>
+          <span class="comp">{{ e.competicionNombre }}</span>
+        </a>
+      }
+    }
+  </div>
+</div>
