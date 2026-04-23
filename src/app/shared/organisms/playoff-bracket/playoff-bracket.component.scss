@@ -140,10 +140,30 @@
     stroke: var(--line);
   }
 
-  &:hover .node-bg,
-  &:focus-visible .node-bg {
-    stroke: var(--accent);
-    filter: drop-shadow(0 0 8px var(--accent-glow));
+  &.placeholder {
+    cursor: default;
+
+    .node-bg {
+      stroke: var(--line);
+      stroke-dasharray: 4 3;
+      fill: transparent;
+    }
+
+    .team-name {
+      fill: var(--text-mute);
+      font-style: italic;
+      font-weight: 400;
+    }
+  }
+
+  &.clickable {
+    cursor: pointer;
+
+    &:hover .node-bg,
+    &:focus-visible .node-bg {
+      stroke: var(--accent);
+      filter: drop-shadow(0 0 8px var(--accent-glow));
+    }
   }
 
   &:focus-visible {

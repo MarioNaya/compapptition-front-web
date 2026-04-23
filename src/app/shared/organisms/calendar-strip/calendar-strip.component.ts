@@ -37,12 +37,13 @@ function startOfDay(d: Date): Date {
 })
 export class CalendarStripComponent {
   readonly events = input<readonly Evento[]>([]);
-  readonly windowDays = input<number>(14);
+  // Impar: el día del medio queda en el centro geométrico perfecto.
+  readonly windowDays = input<number>(15);
 
   readonly selectedDate = signal<string>(toIso(new Date()));
-  // Centra el día actual: mitad hacia atrás, mitad hacia delante.
+  // Centra el día actual: mitad hacia atrás (floor(windowDays/2)).
   readonly windowStart = signal<Date>(
-    startOfDay(new Date(Date.now() - Math.floor(14 / 2) * DAY_MS)),
+    startOfDay(new Date(Date.now() - Math.floor(15 / 2) * DAY_MS)),
   );
 
   @ViewChild('daysRow') daysRow?: ElementRef<HTMLDivElement>;

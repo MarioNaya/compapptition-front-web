@@ -55,14 +55,14 @@
 
     @if (nextMatch(); as m) {
       <section class="hero" (click)="openMatch(m)" (keydown.enter)="openMatch(m)" tabindex="0">
-        <app-notch-card tag="Next match">
+        <app-notch-card tag="Próximo partido">
           <div class="hero-inner">
             <app-team-pair
               [home]="m.equipoLocal?.nombre ?? 'TBD'"
               [away]="m.equipoVisitante?.nombre ?? 'TBD'"
               [homeCrest]="m.equipoLocal?.escudoUrl ?? null"
               [awayCrest]="m.equipoVisitante?.escudoUrl ?? null"
-              size="md"
+              size="lg"
             />
             <div class="hero-meta">
               <span class="mono when">
@@ -81,7 +81,7 @@
     }
 
     <section class="section">
-      <app-calendar-strip [events]="todosEventos()" [windowDays]="14" />
+      <app-calendar-strip [events]="todosEventos()" [windowDays]="15" />
     </section>
 
     <div class="grid-2col">
@@ -112,40 +112,19 @@
       </section>
 
       <aside class="side">
-        @if (gestionesCount() > 0) {
-          <section class="widget card">
-            <header class="widget-head">
-              <h3>Gestiones pendientes</h3>
-              <span class="count-pill">{{ gestionesCount() }}</span>
-            </header>
-            <ul class="widget-list">
-              @for (c of gestionesBorrador(); track c.id) {
-                <li>
-                  <a [routerLink]="['/app/competitions', c.id]" class="widget-item">
-                    <app-icon name="edit" [size]="14" />
-                    <span class="item-text">
-                      <strong>{{ c.nombre }}</strong>
-                      <span class="item-sub">Borrador — listo para activar</span>
-                    </span>
-                    <app-icon name="chev-r" [size]="14" />
-                  </a>
-                </li>
-              }
-              @for (inv of invitacionesEnviadasPend(); track inv.id) {
-                <li>
-                  <a routerLink="/app/invitations" class="widget-item">
-                    <app-icon name="mail" [size]="14" />
-                    <span class="item-text">
-                      <strong>{{ inv.destinatarioUsername ?? 'Destinatario' }}</strong>
-                      <span class="item-sub">Invitación sin respuesta</span>
-                    </span>
-                    <app-icon name="chev-r" [size]="14" />
-                  </a>
-                </li>
-              }
-            </ul>
-          </section>
-        }
+        <section class="widget card cta-widget">
+          <header class="widget-head">
+            <h3>Atajos</h3>
+          </header>
+          <div class="cta-stack">
+            <app-button variant="primary" (clicked)="goNewCompetition()">
+              <app-icon name="trophy" [size]="14" /> Nueva competición
+            </app-button>
+            <app-button variant="ghost" (clicked)="goNewTeam()">
+              <app-icon name="users" [size]="14" /> Nuevo equipo
+            </app-button>
+          </div>
+        </section>
 
         @if (invitacionesRecibidasPend().length > 0) {
           <section class="widget card">
@@ -196,17 +175,40 @@
           </section>
         }
 
-        <section class="widget card cta-widget">
-          <h3>Atajos</h3>
-          <div class="cta-stack">
-            <app-button variant="primary" (clicked)="goNewCompetition()">
-              <app-icon name="trophy" [size]="14" /> Nueva competición
-            </app-button>
-            <app-button variant="ghost" (clicked)="goNewTeam()">
-              <app-icon name="users" [size]="14" /> Nuevo equipo
-            </app-button>
-          </div>
-        </section>
+        @if (gestionesCount() > 0) {
+          <section class="widget card">
+            <header class="widget-head">
+              <h3>Gestiones pendientes</h3>
+              <span class="count-pill">{{ gestionesCount() }}</span>
+            </header>
+            <ul class="widget-list">
+              @for (c of gestionesBorrador(); track c.id) {
+                <li>
+                  <a [routerLink]="['/app/competitions', c.id]" class="widget-item">
+                    <app-icon name="edit" [size]="14" />
+                    <span class="item-text">
+                      <strong>{{ c.nombre }}</strong>
+                      <span class="item-sub">Borrador — listo para activar</span>
+                    </span>
+                    <app-icon name="chev-r" [size]="14" />
+                  </a>
+                </li>
+              }
+              @for (inv of invitacionesEnviadasPend(); track inv.id) {
+                <li>
+                  <a routerLink="/app/invitations" class="widget-item">
+                    <app-icon name="mail" [size]="14" />
+                    <span class="item-text">
+                      <strong>{{ inv.destinatarioUsername ?? 'Destinatario' }}</strong>
+                      <span class="item-sub">Invitación sin respuesta</span>
+                    </span>
+                    <app-icon name="chev-r" [size]="14" />
+                  </a>
+                </li>
+              }
+            </ul>
+          </section>
+        }
       </aside>
     </div>
   }

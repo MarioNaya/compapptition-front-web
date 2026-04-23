@@ -22,39 +22,34 @@
           <path class="edge" [attr.d]="edge.d" />
         }
 
-        @for (n of layout().nodes; track n.evento.id) {
+        @for (n of layout().nodes; track n.data.id) {
           <g
             class="node"
-            [class.finalized]="n.evento.estado === 'FINALIZADO'"
-            [class.live]="n.evento.estado === 'EN_CURSO'"
-            [class.pending]="n.evento.estado === 'PROGRAMADO'"
+            [class.finalized]="n.data.state === 'finalized'"
+            [class.live]="n.data.state === 'live'"
+            [class.pending]="n.data.state === 'pending'"
+            [class.placeholder]="n.data.state === 'placeholder'"
+            [class.clickable]="n.data.realEvento"
             [attr.transform]="'translate(' + n.x + ',' + n.y + ')'"
-            (click)="onClick(n.evento)"
-            tabindex="0"
-            (keydown.enter)="onClick(n.evento)"
+            (click)="onClick(n.data)"
+            [attr.tabindex]="n.data.realEvento ? 0 : -1"
+            (keydown.enter)="onClick(n.data)"
           >
             <rect class="node-bg" [attr.width]="nodeW" [attr.height]="nodeH" rx="8" />
 
-            <!-- Home row -->
-            <g class="team-row home" [class.winner]="winnerSide(n.evento) === 'home'">
-              <text class="team-name" x="12" y="26">
-                {{ n.evento.equipoLocal?.nombre ?? 'TBD' }}
-              </text>
+            <g class="team-row home" [class.winner]="winnerSide(n.data) === 'home'">
+              <text class="team-name" x="12" y="26">{{ n.data.homeLabel }}</text>
               <text class="team-score" [attr.x]="nodeW - 14" y="26">
-                {{ n.evento.resultadoLocal ?? '—' }}
+                {{ n.data.homeScore ?? (n.data.state === 'placeholder' ? '' : '—') }}
               </text>
             </g>
 
-            <!-- Divider -->
             <line class="divider" x1="0" [attr.y1]="nodeH / 2" [attr.x2]="nodeW" [attr.y2]="nodeH / 2" />
 
-            <!-- Away row -->
-            <g class="team-row away" [class.winner]="winnerSide(n.evento) === 'away'">
-              <text class="team-name" x="12" y="60">
-                {{ n.evento.equipoVisitante?.nombre ?? 'TBD' }}
-              </text>
+            <g class="team-row away" [class.winner]="winnerSide(n.data) === 'away'">
+              <text class="team-name" x="12" y="60">{{ n.data.awayLabel }}</text>
               <text class="team-score" [attr.x]="nodeW - 14" y="60">
-                {{ n.evento.resultadoVisitante ?? '—' }}
+                {{ n.data.awayScore ?? (n.data.state === 'placeholder' ? '' : '—') }}
               </text>
             </g>
           </g>

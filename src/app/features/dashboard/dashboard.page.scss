@@ -206,14 +206,8 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
-
-    h3 {
-      margin: 0;
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text-mute);
-    }
+    // El h3 del header usa el estilo global .widget-head h3 (debajo),
+    // igual que el resto de widgets.
   }
 }
 

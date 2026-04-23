@@ -121,6 +121,12 @@
     transform: translateY(-1px);
   }
 
+  /* Hover sobre día today/selected NO debe pisar su borde accent. */
+  &.today:hover,
+  &.selected:hover {
+    border-color: var(--accent);
+  }
+
   .weekday {
     font-size: 10px;
     letter-spacing: 0.1em;

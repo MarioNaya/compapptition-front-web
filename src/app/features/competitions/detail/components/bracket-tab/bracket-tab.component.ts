@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, OnChanges, SimpleChanges, effect, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnChanges, SimpleChanges, inject, input, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { Evento, EstadoEvento } from '@core/models/evento/evento.model';
+import { Evento } from '@core/models/evento/evento.model';
 import { ApiError } from '@core/http/api-error.model';
 import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';
 import { EmptyStateComponent } from '@shared/molecules/empty-state/empty-state.component';
@@ -16,14 +16,18 @@ import { EventoService } from '@features/events/services/evento.service';
   template: `
     @if (loading()) {
       <div class="loading"><app-spinner size="md" label="Cargando cuadro" /></div>
-    } @else if (eventos().length === 0) {
+    } @else if (eventos().length === 0 && !placeholderSize()) {
       <app-empty-state
         icon="trophy"
         title="Aún no hay cuadro de playoff"
-        subtitle="Genera el calendario de playoff desde la sección de calendario para ver el bracket."
+        subtitle="Configura el número de equipos en playoff y genera el calendario desde la sección de calendario."
       />
     } @else {
-      <app-playoff-bracket [eventos]="eventos()" (eventClick)="openEvent($event)" />
+      <app-playoff-bracket
+        [eventos]="eventos()"
+        [placeholderSize]="placeholderSize()"
+        (eventClick)="openEvent($event)"
+      />
     }
   `,
   styles: [
@@ -39,6 +43,7 @@ export class BracketTabComponent implements OnChanges {
   private readonly router = inject(Router);
 
   readonly competicionId = input.required<number>();
+  readonly placeholderSize = input<number | null>(null);
 
   readonly loading = signal(true);
   readonly eventos = signal<readonly Evento[]>([]);

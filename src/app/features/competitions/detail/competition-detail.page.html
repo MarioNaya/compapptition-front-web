@@ -79,7 +79,10 @@
           <app-standings-tab [competicionId]="c.id" />
         }
         @case ('bracket') {
-          <app-bracket-tab [competicionId]="c.id" />
+          <app-bracket-tab
+            [competicionId]="c.id"
+            [placeholderSize]="c.configuracion?.numEquiposPlayoff ?? null"
+          />
         }
         @case ('teams') {
           <app-teams-tab [competicionId]="c.id" [estado]="c.estado" />
