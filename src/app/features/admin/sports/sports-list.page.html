@@ -22,8 +22,8 @@
       <textarea class="textarea" formControlName="descripcion"></textarea>
     </app-form-field>
     <div class="two-cols">
-      <app-form-field label="Icono" [control]="form.controls.icono">
-        <input class="input" type="text" formControlName="icono" placeholder="p.ej. soccer" />
+      <app-form-field label="URL del icono" [control]="form.controls.iconoUrl">
+        <input class="input" type="url" formControlName="iconoUrl" placeholder="https://…" />
       </app-form-field>
       <app-form-field label="Activo" [control]="form.controls.activo">
         <select class="select" formControlName="activo">

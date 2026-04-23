@@ -48,14 +48,14 @@ export class SportsListPage implements OnInit {
   readonly form = this.fb.nonNullable.group({
     nombre: ['', [Validators.required, Validators.maxLength(50)]],
     descripcion: [''],
-    icono: [''],
+    iconoUrl: [''],
     activo: [true],
   });
 
   readonly columns: readonly ColumnDef<Deporte>[] = [
     { key: 'nombre', label: 'Nombre' },
     { key: 'descripcion', label: 'Descripción', accessor: (d) => d.descripcion ?? '—' },
-    { key: 'icono', label: 'Icono', width: '120px', accessor: (d) => d.icono ?? '—' },
+    { key: 'iconoUrl', label: 'Icono', width: '120px', accessor: (d) => d.iconoUrl ?? '—' },
     { key: 'activo', label: 'Estado', width: '100px', accessor: (d) => (d.activo ? 'Activo' : 'Inactivo') },
   ];
 
@@ -81,7 +81,7 @@ export class SportsListPage implements OnInit {
 
   startCreate(): void {
     this.editing.set(null);
-    this.form.reset({ nombre: '', descripcion: '', icono: '', activo: true });
+    this.form.reset({ nombre: '', descripcion: '', iconoUrl: '', activo: true });
     this.showForm.set(true);
   }
 
@@ -90,7 +90,7 @@ export class SportsListPage implements OnInit {
     this.form.reset({
       nombre: d.nombre,
       descripcion: d.descripcion ?? '',
-      icono: d.icono ?? '',
+      iconoUrl: d.iconoUrl ?? '',
       activo: d.activo,
     });
     this.showForm.set(true);
@@ -106,11 +106,11 @@ export class SportsListPage implements OnInit {
       this.form.markAllAsTouched();
       return;
     }
-    const { nombre, descripcion, icono, activo } = this.form.getRawValue();
+    const { nombre, descripcion, iconoUrl, activo } = this.form.getRawValue();
     const req: DeporteRequest = {
       nombre,
       descripcion: descripcion || undefined,
-      icono: icono || undefined,
+      iconoUrl: iconoUrl || undefined,
       activo,
     };
     this.saving.set(true);

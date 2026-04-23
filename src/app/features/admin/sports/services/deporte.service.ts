@@ -8,7 +8,7 @@ import { TipoEstadistica } from '@core/models/estadistica/estadistica.model';
 export interface DeporteRequest {
   readonly nombre: string;
   readonly descripcion?: string;
-  readonly icono?: string;
+  readonly iconoUrl?: string;
   readonly activo?: boolean;
 }
 
