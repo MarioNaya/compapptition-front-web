@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { computed, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '@env/environment';
-import { catchError, Observable, tap, throwError } from 'rxjs';
+import { catchError, finalize, Observable, tap, throwError } from 'rxjs';
 import {
   AuthResponse,
   LoginRequest,
@@ -59,9 +59,16 @@ export class AuthService {
   }
 
   logout(): void {
-    this.http.post(`${this.API_URL}/logout`, {}).subscribe({
-      complete: () => this.clearSession(),
-    });
+    // Garantiza la limpieza local aunque el POST al backend falle (401, 500,
+    // timeout, sin red): finalize se dispara tanto en next como en error.
+    this.http
+      .post(`${this.API_URL}/logout`, {})
+      .pipe(finalize(() => this.clearSession()))
+      .subscribe({
+        error: () => {
+          // Silenciar: clearSession ya se encarga de limpiar la sesión local.
+        },
+      });
   }
 
   recuperarPassword(email: string): Observable<{ message: string }> {
