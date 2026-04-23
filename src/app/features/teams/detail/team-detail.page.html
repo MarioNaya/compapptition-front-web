@@ -3,6 +3,7 @@
     <div class="loading-box"><app-spinner size="md" label="Cargando equipo" /></div>
   } @else if (equipo(); as e) {
     <app-page-header
+      [back]="true"
       [eyebrow]="e.tipo"
       [title]="e.nombre"
       [subtitle]="e.descripcion ?? null"

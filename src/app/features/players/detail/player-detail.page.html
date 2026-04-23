@@ -3,6 +3,7 @@
     <div class="loading-box"><app-spinner size="md" label="Cargando jugador" /></div>
   } @else if (jugador(); as j) {
     <app-page-header
+      [back]="true"
       [eyebrow]="j.posicion ?? 'Jugador'"
       [title]="displayName()"
       [subtitle]="j.dorsal ? 'Dorsal #' + j.dorsal : null"

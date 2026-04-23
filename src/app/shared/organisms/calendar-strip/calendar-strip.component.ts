@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, HostListener, ViewChild, computed, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Evento } from '@core/models/evento/evento.model';
@@ -15,6 +15,7 @@ interface DayCell {
 }
 
 const DAY_MS = 86_400_000;
+const PX_PER_DAY = 66; // min-width del día (60) + gap aprox (6)
 
 function toIso(d: Date): string {
   const y = d.getFullYear();
@@ -41,15 +42,15 @@ export class CalendarStripComponent {
   readonly windowDays = input<number>(15);
 
   readonly selectedDate = signal<string>(toIso(new Date()));
-  // Centra el día actual: mitad hacia atrás (floor(windowDays/2)).
   readonly windowStart = signal<Date>(
     startOfDay(new Date(Date.now() - Math.floor(15 / 2) * DAY_MS)),
   );
 
-  @ViewChild('daysRow') daysRow?: ElementRef<HTMLDivElement>;
+  // Estado de drag: al arrastrar horizontalmente, la ventana de días se
+  // desplaza (1 día por cada PX_PER_DAY px). No tocamos scrollLeft interno.
   private dragging = false;
   private dragStartX = 0;
-  private dragStartScroll = 0;
+  private lastAppliedShiftPx = 0;
   private dragged = false;
 
   readonly selected = output<string>();
@@ -95,6 +96,9 @@ export class CalendarStripComponent {
   });
 
   selectDay(iso: string): void {
+    // Si el click viene justo tras un drag, ignora; el reset de `dragged`
+    // ocurre en el siguiente pointerdown.
+    if (this.dragged) return;
     this.selectedDate.set(iso);
     this.selected.emit(iso);
   }
@@ -112,41 +116,39 @@ export class CalendarStripComponent {
   }
 
   /**
-   * Drag horizontal con mouse/touch. Si el usuario arrastra más de 5px, se
-   * considera drag y el click final sobre un día se suprime. Si es un click
-   * puro (sin mover), selectDay se dispara normalmente.
+   * Drag horizontal para mover la ventana de días. Cada PX_PER_DAY px
+   * arrastrados = 1 día de shift en la dirección contraria (drag derecha
+   * muestra días anteriores, como en una línea temporal).
+   *
+   * Se resetea `dragged` en pointerdown (no en pointerup) para que el
+   * click del día suprimido quede coherente con el flag.
    */
   onPointerDown(ev: PointerEvent): void {
-    const row = this.daysRow?.nativeElement;
-    if (!row) return;
+    // Solo botón principal / touch / pen.
+    if (ev.button !== undefined && ev.button !== 0) return;
     this.dragging = true;
     this.dragged = false;
     this.dragStartX = ev.clientX;
-    this.dragStartScroll = row.scrollLeft;
-    row.setPointerCapture(ev.pointerId);
+    this.lastAppliedShiftPx = 0;
   }
 
   onPointerMove(ev: PointerEvent): void {
     if (!this.dragging) return;
-    const row = this.daysRow?.nativeElement;
-    if (!row) return;
     const dx = ev.clientX - this.dragStartX;
     if (Math.abs(dx) > 5) this.dragged = true;
-    row.scrollLeft = this.dragStartScroll - dx;
-  }
 
-  onPointerUp(ev: PointerEvent): void {
-    const row = this.daysRow?.nativeElement;
-    if (row && row.hasPointerCapture(ev.pointerId)) {
-      row.releasePointerCapture(ev.pointerId);
+    // Aplica shift por pasos completos de PX_PER_DAY.
+    const targetSteps = Math.trunc((dx - this.lastAppliedShiftPx) / PX_PER_DAY);
+    if (targetSteps !== 0) {
+      // drag a la derecha (dx positivo) → mostrar días anteriores → shift negativo.
+      this.shiftWindow(-targetSteps);
+      this.lastAppliedShiftPx += targetSteps * PX_PER_DAY;
     }
-    this.dragging = false;
-    // Reset en el próximo tick — el click sobre el día se dispara después.
-    setTimeout(() => (this.dragged = false), 0);
   }
 
-  /** Devuelve true si se suprime el click (porque fue un drag). */
-  shouldSuppressClick(): boolean {
-    return this.dragged;
+  onPointerUp(_ev: PointerEvent): void {
+    this.dragging = false;
+    // No reseteamos `dragged` aquí: el click del día dispara inmediatamente
+    // después y debe respetar el flag. El reset ocurre en el próximo pointerdown.
   }
 }

@@ -9,6 +9,7 @@
     />
   } @else if (competicion(); as c) {
     <app-page-header
+      [back]="true"
       eyebrow="Editar"
       [title]="'Editar ' + c.nombre"
       subtitle="Modifica los datos, la visibilidad y las reglas. El deporte no se puede cambiar."

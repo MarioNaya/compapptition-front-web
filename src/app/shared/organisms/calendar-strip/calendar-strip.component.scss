@@ -115,16 +115,18 @@
   transition: background 120ms ease, border-color 120ms ease, color 120ms ease, transform 120ms ease;
   cursor: pointer;
 
-  &:hover {
+  /* Hover normal (día no-today, no-selected). */
+  &:not(.today):not(.selected):hover {
     border-color: var(--line);
     color: var(--text-pri);
     transform: translateY(-1px);
   }
 
-  /* Hover sobre día today/selected NO debe pisar su borde accent. */
+  /* Hover sobre día today/selected: mantiene el borde accent y sube ligeramente. */
   &.today:hover,
   &.selected:hover {
     border-color: var(--accent);
+    transform: translateY(-1px);
   }
 
   .weekday {

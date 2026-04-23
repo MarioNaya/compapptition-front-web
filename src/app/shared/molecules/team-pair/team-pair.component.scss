@@ -29,12 +29,15 @@
   }
 
   &.size-xl {
-    gap: 18px;
+    gap: 24px;
     .name {
-      font-size: 26px;
+      font-size: 36px;
+      letter-spacing: 0.01em;
+      font-family: var(--font-display);
+      text-transform: uppercase;
     }
     .vs {
-      font-size: 24px;
+      font-size: 28px;
     }
   }
 }

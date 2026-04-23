@@ -190,17 +190,69 @@ export class PlayoffBracketComponent {
 
   // ============== builders ==============
 
+  /**
+   * Construye las rondas a partir de `partidoAnteriorLocalId/VisitanteId`
+   * (árbol de padres). NO depende de `jornada`, que puede no reflejar la
+   * ronda real del playoff. Fallback a `jornada` si no hay parents.
+   */
   private buildFromEventos(ev: readonly Evento[]): readonly (readonly BracketNodeData[])[] {
-    const byJornada = new Map<number, Evento[]>();
+    if (ev.length === 0) return [];
+
+    const byId = new Map<number, Evento>();
+    for (const e of ev) byId.set(e.id, e);
+
+    const parentIds = new Set<number>();
     for (const e of ev) {
-      const j = e.jornada ?? 0;
-      if (!byJornada.has(j)) byJornada.set(j, []);
-      byJornada.get(j)!.push(e);
+      if (e.partidoAnteriorLocalId != null) parentIds.add(e.partidoAnteriorLocalId);
+      if (e.partidoAnteriorVisitanteId != null) parentIds.add(e.partidoAnteriorVisitanteId);
     }
-    const jornadas = [...byJornada.keys()].sort((a, b) => a - b);
-    return jornadas.map((j) =>
-      byJornada
-        .get(j)!
+
+    // Fallback: ningún evento declara padres → agrupar por jornada.
+    if (parentIds.size === 0) {
+      const byJornada = new Map<number, Evento[]>();
+      for (const e of ev) {
+        const j = e.jornada ?? 0;
+        if (!byJornada.has(j)) byJornada.set(j, []);
+        byJornada.get(j)!.push(e);
+      }
+      const jornadas = [...byJornada.keys()].sort((a, b) => a - b);
+      return jornadas.map((j) =>
+        byJornada
+          .get(j)!
+          .sort((a, b) => (a.numeroPartido ?? 0) - (b.numeroPartido ?? 0))
+          .map((e) => this.toNodeData(e)),
+      );
+    }
+
+    // Raíces = eventos que no son parent de nadie (final o finales paralelas).
+    const roots = ev.filter((e) => !parentIds.has(e.id));
+    if (roots.length === 0) return [ev.map((e) => this.toNodeData(e))];
+
+    // BFS desde raíces hacia sus padres (rondas previas).
+    const roundsFromRoot: Evento[][] = [roots];
+    let current: Evento[] = roots;
+    while (true) {
+      const nextMap = new Map<number, Evento>();
+      for (const e of current) {
+        for (const pid of [e.partidoAnteriorLocalId, e.partidoAnteriorVisitanteId]) {
+          if (pid != null) {
+            const p = byId.get(pid);
+            if (p && !nextMap.has(p.id)) nextMap.set(p.id, p);
+          }
+        }
+      }
+      if (nextMap.size === 0) break;
+      const next = [...nextMap.values()];
+      roundsFromRoot.push(next);
+      current = next;
+    }
+
+    // Invertir: ronda más profunda (cuartos/octavos) primero.
+    const rounds = [...roundsFromRoot].reverse();
+
+    return rounds.map((round) =>
+      round
+        .slice()
         .sort((a, b) => (a.numeroPartido ?? 0) - (b.numeroPartido ?? 0))
         .map((e) => this.toNodeData(e)),
     );

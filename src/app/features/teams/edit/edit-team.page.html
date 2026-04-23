@@ -9,6 +9,7 @@
     />
   } @else if (equipo(); as e) {
     <app-page-header
+      [back]="true"
       eyebrow="Editar"
       [title]="'Editar ' + e.nombre"
       subtitle="Modifica el nombre, la descripción o el escudo."

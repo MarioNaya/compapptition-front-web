@@ -3,6 +3,7 @@
     <div class="loading-box"><app-spinner size="md" label="Cargando partido" /></div>
   } @else if (evento(); as e) {
     <app-page-header
+      [back]="true"
       [eyebrow]="e.competicionNombre"
       [title]="'Jornada ' + (e.jornada ?? '—')"
       [subtitle]="e.lugar ?? null"
