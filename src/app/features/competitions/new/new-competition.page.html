@@ -1,12 +1,134 @@
-<div class="container placeholder">
+<div class="container new-comp fade-in">
   <app-page-header
     eyebrow="Crear"
     title="Nueva competición"
-    subtitle="Formulario completo en F4."
+    subtitle="Define el formato, la visibilidad y las reglas. Podrás invitar a managers y generar el calendario después."
   />
-  <app-empty-state
-    icon="trophy"
-    title="Formulario en construcción"
-    subtitle="El alta de competición llegará en la fase F4."
-  />
+
+  <form class="form card" [formGroup]="form" (ngSubmit)="submit()">
+    <section class="group">
+      <h3 class="group-title">Datos básicos</h3>
+
+      <app-form-field label="Nombre" [control]="form.controls.nombre">
+        <input class="input" type="text" formControlName="nombre" placeholder="p.ej. Liga de verano 2026" />
+      </app-form-field>
+
+      <app-form-field label="Descripción" [control]="form.controls.descripcion">
+        <textarea
+          class="textarea"
+          formControlName="descripcion"
+          placeholder="Breve descripción que verán los participantes"
+          rows="3"
+        ></textarea>
+      </app-form-field>
+
+      <app-form-field label="Deporte" [control]="form.controls.deporteId">
+        @if (loadingDeportes()) {
+          <div class="loading-inline"><app-spinner size="sm" /> Cargando deportes…</div>
+        } @else {
+          <select class="select" formControlName="deporteId">
+            <option [ngValue]="null" disabled>Selecciona un deporte</option>
+            @for (d of deportes(); track d.id) {
+              <option [ngValue]="d.id">{{ d.nombre }}</option>
+            }
+          </select>
+        }
+      </app-form-field>
+    </section>
+
+    <section class="group">
+      <h3 class="group-title">Visibilidad</h3>
+      <div class="toggles">
+        <label class="toggle">
+          <input type="checkbox" formControlName="publica" />
+          <span>
+            <strong>Pública</strong>
+            <span class="hint">Aparecerá en el listado de competiciones públicas.</span>
+          </span>
+        </label>
+        <label class="toggle">
+          <input type="checkbox" formControlName="inscripcionAbierta" />
+          <span>
+            <strong>Inscripciones abiertas</strong>
+            <span class="hint">Permite inscribir equipos mientras esté en estado ACTIVA.</span>
+          </span>
+        </label>
+        <label class="toggle">
+          <input type="checkbox" formControlName="estadisticasActivas" />
+          <span>
+            <strong>Estadísticas activas</strong>
+            <span class="hint">Registra estadísticas de jugadores por partido.</span>
+          </span>
+        </label>
+      </div>
+    </section>
+
+    <section class="group" formGroupName="configuracion">
+      <h3 class="group-title">Formato y reglas</h3>
+
+      <app-form-field label="Formato" [control]="form.controls.configuracion.controls.formato">
+        <select class="select" formControlName="formato">
+          @for (f of formatos; track f.value) {
+            <option [value]="f.value">{{ f.label }}</option>
+          }
+        </select>
+      </app-form-field>
+
+      @if (showLigaFields()) {
+        <div class="row">
+          <app-form-field label="Puntos por victoria" [control]="form.controls.configuracion.controls.puntosVictoria">
+            <input class="input" type="number" min="0" max="10" formControlName="puntosVictoria" />
+          </app-form-field>
+          <app-form-field label="Puntos por empate" [control]="form.controls.configuracion.controls.puntosEmpate">
+            <input class="input" type="number" min="0" max="10" formControlName="puntosEmpate" />
+          </app-form-field>
+          <app-form-field label="Puntos por derrota" [control]="form.controls.configuracion.controls.puntosDerrota">
+            <input class="input" type="number" min="0" max="10" formControlName="puntosDerrota" />
+          </app-form-field>
+        </div>
+      }
+
+      @if (showPlayoffFields()) {
+        <div class="row">
+          <app-form-field
+            label="Equipos en playoff"
+            [control]="form.controls.configuracion.controls.numEquiposPlayoff"
+            hint="Debe ser potencia de 2 para que el cuadro esté completo (2, 4, 8, 16…)."
+          >
+            <input class="input" type="number" min="2" max="64" formControlName="numEquiposPlayoff" />
+          </app-form-field>
+          <app-form-field
+            label="Partidos por eliminatoria"
+            [control]="form.controls.configuracion.controls.partidosEliminatoria"
+            hint="1 = partido único. 3 = mejor de 3. Etc."
+          >
+            <input class="input" type="number" min="1" max="7" formControlName="partidosEliminatoria" />
+          </app-form-field>
+        </div>
+      }
+    </section>
+
+    <section class="group">
+      <h3 class="group-title">Fechas <span class="optional">(opcional)</span></h3>
+      <div class="row">
+        <app-form-field label="Fecha inicio" [control]="form.controls.fechaInicio">
+          <input class="input" type="date" formControlName="fechaInicio" />
+        </app-form-field>
+        <app-form-field label="Fecha fin" [control]="form.controls.fechaFin">
+          <input class="input" type="date" formControlName="fechaFin" />
+        </app-form-field>
+      </div>
+    </section>
+
+    <div class="actions">
+      <app-button variant="ghost" type="button" (clicked)="cancel()">Cancelar</app-button>
+      <app-button variant="primary" type="submit" [disabled]="saving()">
+        @if (saving()) {
+          <app-spinner size="sm" />
+        } @else {
+          Crear competición
+        }
+      </app-button>
+    </div>
+  </form>
 </div>
