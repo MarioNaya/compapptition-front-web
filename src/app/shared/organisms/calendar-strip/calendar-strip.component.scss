@@ -79,7 +79,10 @@
   display: flex;
   gap: 6px;
   overflow-x: auto;
-  padding-bottom: 4px;
+  overflow-y: visible;
+  /* Deja aire arriba para que el `transform: translateY(-1px)` del día no
+     quede oculto bajo el contenido superior del card. */
+  padding: 4px 0;
   scrollbar-width: thin;
   cursor: grab;
   user-select: none;

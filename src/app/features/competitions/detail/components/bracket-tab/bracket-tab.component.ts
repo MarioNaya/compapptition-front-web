@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, OnChanges, SimpleChanges, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnChanges, SimpleChanges, computed, inject, input, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { DatePipe } from '@angular/common';
 import { Evento } from '@core/models/evento/evento.model';
 import { ApiError } from '@core/http/api-error.model';
 import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';
@@ -8,34 +9,15 @@ import { PlayoffBracketComponent } from '@shared/organisms/playoff-bracket/playo
 import { ToastService } from '@shared/services/toast.service';
 import { EventoService } from '@features/events/services/evento.service';
 
+type ViewMode = 'regular' | 'playoff';
+
 @Component({
   selector: 'app-bracket-tab',
   standalone: true,
-  imports: [SpinnerComponent, EmptyStateComponent, PlayoffBracketComponent],
+  imports: [DatePipe, SpinnerComponent, EmptyStateComponent, PlayoffBracketComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    @if (loading()) {
-      <div class="loading"><app-spinner size="md" label="Cargando cuadro" /></div>
-    } @else if (eventos().length === 0 && !placeholderSize()) {
-      <app-empty-state
-        icon="trophy"
-        title="Aún no hay cuadro de playoff"
-        subtitle="Configura el número de equipos en playoff y genera el calendario desde la sección de calendario."
-      />
-    } @else {
-      <app-playoff-bracket
-        [eventos]="eventos()"
-        [placeholderSize]="placeholderSize()"
-        (eventClick)="openEvent($event)"
-      />
-    }
-  `,
-  styles: [
-    `
-      :host { display: block; padding-top: 12px; }
-      .loading { padding: 60px 20px; display: flex; justify-content: center; }
-    `,
-  ],
+  templateUrl: './bracket-tab.component.html',
+  styleUrl: './bracket-tab.component.scss',
 })
 export class BracketTabComponent implements OnChanges {
   private readonly eventoService = inject(EventoService);
@@ -47,6 +29,42 @@ export class BracketTabComponent implements OnChanges {
 
   readonly loading = signal(true);
   readonly eventos = signal<readonly Evento[]>([]);
+  readonly view = signal<ViewMode>('playoff');
+
+  // Eventos playoff: los que tienen parents o son parents.
+  readonly playoffEvents = computed<readonly Evento[]>(() => {
+    const all = this.eventos();
+    if (all.length === 0) return [];
+    const parentIds = new Set<number>();
+    for (const e of all) {
+      if (e.partidoAnteriorLocalId != null) parentIds.add(e.partidoAnteriorLocalId);
+      if (e.partidoAnteriorVisitanteId != null) parentIds.add(e.partidoAnteriorVisitanteId);
+    }
+    return all.filter(
+      (e) =>
+        e.partidoAnteriorLocalId != null ||
+        e.partidoAnteriorVisitanteId != null ||
+        parentIds.has(e.id),
+    );
+  });
+
+  // Eventos temporada regular: todos los que NO son playoff.
+  readonly regularEvents = computed<readonly Evento[]>(() => {
+    const playoffIds = new Set(this.playoffEvents().map((e) => e.id));
+    return this.eventos()
+      .filter((e) => !playoffIds.has(e.id))
+      .sort((a, b) => {
+        const ja = a.jornada ?? 0;
+        const jb = b.jornada ?? 0;
+        if (ja !== jb) return ja - jb;
+        return new Date(a.fechaHora).getTime() - new Date(b.fechaHora).getTime();
+      });
+  });
+
+  readonly hasRegular = computed(() => this.regularEvents().length > 0);
+  readonly hasPlayoff = computed(
+    () => this.playoffEvents().length > 0 || this.placeholderSize() != null,
+  );
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['competicionId']) this.load();
@@ -58,6 +76,13 @@ export class BracketTabComponent implements OnChanges {
       next: (list) => {
         this.eventos.set(list);
         this.loading.set(false);
+        // Selecciona la vista inicial: si solo hay regular, mostrarlo; si hay
+        // playoff (o placeholder), empezar por playoff.
+        if (this.regularEvents().length > 0 && this.playoffEvents().length === 0) {
+          this.view.set('regular');
+        } else {
+          this.view.set('playoff');
+        }
       },
       error: (err: ApiError) => {
         this.loading.set(false);
@@ -66,6 +91,10 @@ export class BracketTabComponent implements OnChanges {
         }
       },
     });
+  }
+
+  setView(v: ViewMode): void {
+    this.view.set(v);
   }
 
   openEvent(ev: Evento): void {

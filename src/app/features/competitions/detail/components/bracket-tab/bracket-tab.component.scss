@@ -1,0 +1,132 @@
+:host {
+  display: block;
+  padding-top: 12px;
+}
+
+.loading {
+  padding: 60px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.view-switcher {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.switch-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-1);
+  border: 1px solid var(--line);
+  color: var(--text-sec);
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 120ms ease;
+
+  &:hover:not(:disabled) {
+    border-color: rgba(255, 122, 26, 0.45);
+    color: var(--text-pri);
+  }
+
+  &.active {
+    background: rgba(255, 122, 26, 0.14);
+    border-color: var(--accent);
+    color: var(--accent-hi);
+    box-shadow: 0 0 12px -4px rgba(255, 122, 26, 0.5);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .count {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-sec);
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: var(--radius-pill);
+  }
+}
+
+.regular-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.regular-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap: 14px;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--text-pri);
+  cursor: pointer;
+  transition: border-color 120ms ease, background 120ms ease;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--accent);
+    background: rgba(255, 122, 26, 0.04);
+  }
+
+  .jornada {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--accent-hi);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    min-width: 32px;
+  }
+
+  .teams {
+    font-size: 14px;
+    color: var(--text-pri);
+  }
+
+  .vs {
+    color: var(--text-mute);
+    margin: 0 6px;
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  .score {
+    font-family: var(--font-mono);
+    color: var(--text-pri);
+    font-weight: 700;
+    min-width: 60px;
+    text-align: right;
+  }
+
+  .date {
+    font-size: 11px;
+    color: var(--text-mute);
+    letter-spacing: 0.05em;
+    text-align: right;
+    min-width: 100px;
+  }
+}
+
+@media (max-width: 640px) {
+  .regular-row {
+    grid-template-columns: auto 1fr auto;
+    .date { display: none; }
+  }
+}

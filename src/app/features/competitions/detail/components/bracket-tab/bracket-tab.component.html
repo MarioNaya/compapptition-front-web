@@ -1,0 +1,65 @@
+@if (loading()) {
+  <div class="loading"><app-spinner size="md" label="Cargando cuadro" /></div>
+} @else if (!hasRegular() && !hasPlayoff()) {
+  <app-empty-state
+    icon="trophy"
+    title="Aún no hay partidos"
+    subtitle="Genera el calendario desde la sección de calendario para ver los partidos."
+  />
+} @else {
+  <div class="view-switcher" role="tablist">
+    <button
+      type="button"
+      class="switch-chip"
+      [class.active]="view() === 'regular'"
+      [disabled]="!hasRegular()"
+      (click)="setView('regular')"
+    >
+      Temporada regular
+      @if (regularEvents().length > 0) {
+        <span class="count">{{ regularEvents().length }}</span>
+      }
+    </button>
+    <button
+      type="button"
+      class="switch-chip"
+      [class.active]="view() === 'playoff'"
+      [disabled]="!hasPlayoff()"
+      (click)="setView('playoff')"
+    >
+      Playoff
+      @if (playoffEvents().length > 0) {
+        <span class="count">{{ playoffEvents().length }}</span>
+      }
+    </button>
+  </div>
+
+  @if (view() === 'playoff') {
+    <app-playoff-bracket
+      [eventos]="playoffEvents()"
+      [placeholderSize]="placeholderSize()"
+      (eventClick)="openEvent($event)"
+    />
+  } @else {
+    <ul class="regular-list">
+      @for (e of regularEvents(); track e.id) {
+        <li class="regular-row" (click)="openEvent(e)" (keydown.enter)="openEvent(e)" tabindex="0">
+          <span class="jornada">J{{ e.jornada ?? '—' }}</span>
+          <span class="teams">
+            {{ e.equipoLocal?.nombre ?? 'TBD' }}
+            <span class="vs">vs</span>
+            {{ e.equipoVisitante?.nombre ?? 'TBD' }}
+          </span>
+          <span class="score">
+            @if (e.resultadoLocal != null && e.resultadoVisitante != null) {
+              {{ e.resultadoLocal }} - {{ e.resultadoVisitante }}
+            } @else {
+              —
+            }
+          </span>
+          <span class="date mono">{{ e.fechaHora | date: 'dd MMM HH:mm' }}</span>
+        </li>
+      }
+    </ul>
+  }
+}

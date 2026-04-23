@@ -17,11 +17,14 @@
     <div class="panel" role="menu">
       <header class="panel-head">
         <h4>Notificaciones</h4>
-        @if (unreadCount() > 0) {
-          <button type="button" class="mark-all" (click)="markAll()">
-            Marcar todas como vistas
-          </button>
-        }
+        <button
+          type="button"
+          class="mark-all"
+          (click)="markAll()"
+          [disabled]="unreadCount() === 0"
+        >
+          Marcar todas como vistas
+        </button>
       </header>
 
       <ul class="notif-list">

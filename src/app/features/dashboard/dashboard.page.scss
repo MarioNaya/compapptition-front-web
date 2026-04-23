@@ -13,6 +13,23 @@
   justify-content: center;
 }
 
+.hero-skeleton {
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.02);
+  margin-bottom: 28px;
+}
+
+.widget-loading {
+  padding: 24px 0;
+  display: flex;
+  justify-content: center;
+}
+
 /* --- Onboarding --- */
 
 .onboarding {

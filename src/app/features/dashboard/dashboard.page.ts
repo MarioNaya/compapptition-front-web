@@ -54,7 +54,16 @@ export class DashboardPage implements OnInit {
   private readonly toast = inject(ToastService);
 
   readonly user = this.auth.currentUser;
-  readonly loading = signal(true);
+
+  // Loading por fuente. Cada sección del template comprueba el suyo, no un
+  // loading global bloqueante. Permite que el esqueleto aparezca de inmediato
+  // y cada widget se pueble según llega su respuesta.
+  readonly loadingParticipadas = signal(true);
+  readonly loadingCreadas = signal(true);
+  readonly loadingEquipos = signal(true);
+  readonly loadingRecibidas = signal(true);
+  readonly loadingEnviadas = signal(true);
+  readonly loadingEventos = signal(true);
 
   readonly misCompeticiones = signal<readonly CompeticionSimple[]>([]);
   readonly misCreadas = signal<readonly CompeticionSimple[]>([]);
@@ -97,9 +106,19 @@ export class DashboardPage implements OnInit {
     invitaciones: this.invitacionesRecibidasPend().length,
   }));
 
+  readonly anyLoading = computed(
+    () =>
+      this.loadingParticipadas() ||
+      this.loadingCreadas() ||
+      this.loadingEquipos() ||
+      this.loadingRecibidas() ||
+      this.loadingEnviadas() ||
+      this.loadingEventos(),
+  );
+
   readonly isOnboarding = computed(
     () =>
-      !this.loading() &&
+      !this.anyLoading() &&
       this.misCompeticiones().length === 0 &&
       this.misEquiposMgr().length === 0 &&
       this.invitacionesRecibidasPend().length === 0,
@@ -114,41 +133,75 @@ export class DashboardPage implements OnInit {
   ngOnInit(): void {
     const userId = this.user()?.id;
     if (userId == null) return;
-    this.loadData(userId);
+    this.loadAll(userId);
   }
 
-  private loadData(userId: number): void {
-    this.loading.set(true);
-    forkJoin({
-      participadas: this.compService.misParticipadas$(userId),
-      creadas: this.compService.misCreadas$(userId),
-      equipos: this.equipoService.misEquiposManager$(userId),
-      recibidas: this.invitacionService.findPendientes$(userId),
-      enviadas: this.invitacionService.findEnviadas$(userId),
-    })
+  /**
+   * Lanza las 5 cargas independientes + fan-out de eventos.
+   * Cada una tiene su propio spinner y actualiza su signal al llegar.
+   */
+  private loadAll(userId: number): void {
+    // Competiciones participadas + fan-out de eventos por competición.
+    this.compService
+      .misParticipadas$(userId)
       .pipe(
-        switchMap((data) => {
-          this.misCompeticiones.set(data.participadas);
-          this.misCreadas.set(data.creadas);
-          this.misEquiposMgr.set(data.equipos);
-          this.invitacionesRecibidas.set(data.recibidas);
-          this.invitacionesEnviadas.set(data.enviadas);
-          if (data.participadas.length === 0) return of([] as Evento[][]);
-          return forkJoin(data.participadas.map((c) => this.eventoService.findByCompeticion$(c.id)));
+        switchMap((list) => {
+          this.misCompeticiones.set(list);
+          this.loadingParticipadas.set(false);
+          if (list.length === 0) {
+            this.loadingEventos.set(false);
+            return of([] as Evento[][]);
+          }
+          return forkJoin(list.map((c) => this.eventoService.findByCompeticion$(c.id)));
         }),
       )
       .subscribe({
         next: (eventsByComp) => {
           this._todosEventos.set(eventsByComp.flat());
-          this.loading.set(false);
+          this.loadingEventos.set(false);
         },
         error: (err: ApiError) => {
-          this.loading.set(false);
-          if (err.status !== 404) {
-            this.toast.error(err.message ?? 'Error al cargar el dashboard');
-          }
+          this.loadingParticipadas.set(false);
+          this.loadingEventos.set(false);
+          if (err.status !== 404) this.toast.error(err.message ?? 'Error al cargar competiciones');
         },
       });
+
+    // Competiciones creadas (para gestiones pendientes).
+    this.compService.misCreadas$(userId).subscribe({
+      next: (list) => {
+        this.misCreadas.set(list);
+        this.loadingCreadas.set(false);
+      },
+      error: () => this.loadingCreadas.set(false),
+    });
+
+    // Equipos como manager.
+    this.equipoService.misEquiposManager$(userId).subscribe({
+      next: (list) => {
+        this.misEquiposMgr.set(list);
+        this.loadingEquipos.set(false);
+      },
+      error: () => this.loadingEquipos.set(false),
+    });
+
+    // Invitaciones recibidas.
+    this.invitacionService.findPendientes$(userId).subscribe({
+      next: (list) => {
+        this.invitacionesRecibidas.set(list);
+        this.loadingRecibidas.set(false);
+      },
+      error: () => this.loadingRecibidas.set(false),
+    });
+
+    // Invitaciones enviadas.
+    this.invitacionService.findEnviadas$(userId).subscribe({
+      next: (list) => {
+        this.invitacionesEnviadas.set(list);
+        this.loadingEnviadas.set(false);
+      },
+      error: () => this.loadingEnviadas.set(false),
+    });
   }
 
   openMatch(e: Evento): void {

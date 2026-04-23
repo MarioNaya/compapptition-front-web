@@ -12,9 +12,7 @@
     </app-button>
   </app-page-header>
 
-  @if (loading()) {
-    <div class="loading-box"><app-spinner size="md" label="Cargando tu jornada" /></div>
-  } @else if (isOnboarding()) {
+  @if (isOnboarding()) {
     <section class="onboarding card">
       <h2 class="h-display">Bienvenido a Compapption</h2>
       <p>
@@ -53,7 +51,11 @@
       </div>
     </section>
 
-    @if (nextMatch(); as m) {
+    @if (loadingEventos() && !nextMatch()) {
+      <section class="hero hero-skeleton">
+        <app-spinner size="sm" label="Cargando tu próximo partido" />
+      </section>
+    } @else if (nextMatch(); as m) {
       <section class="hero" (click)="openMatch(m)" (keydown.enter)="openMatch(m)" tabindex="0">
         <app-notch-card tag="Próximo partido">
           <div class="hero-inner">
@@ -92,7 +94,9 @@
             <span class="count-pill">{{ misCompeticiones().length }}</span>
           }
         </header>
-        @if (misCompeticiones().length === 0) {
+        @if (loadingParticipadas()) {
+          <div class="widget-loading"><app-spinner size="sm" /></div>
+        } @else if (misCompeticiones().length === 0) {
           <app-empty-state
             icon="trophy"
             title="Aún no participas en ninguna competición"
