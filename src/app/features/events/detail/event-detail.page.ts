@@ -2,8 +2,10 @@ import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, injec
 import { ActivatedRoute, Router } from '@angular/router';
 import { DatePipe, UpperCasePipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { forkJoin } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Evento, EstadoEvento } from '@core/models/evento/evento.model';
+import { Competicion } from '@core/models/competicion/competicion.model';
 import { ApiError } from '@core/http/api-error.model';
 import { ButtonComponent } from '@shared/ui/button/button.component';
 import { IconComponent } from '@shared/ui/icon/icon.component';
@@ -16,6 +18,8 @@ import { FormFieldComponent } from '@shared/molecules/form-field/form-field.comp
 import { ToastService } from '@shared/services/toast.service';
 import { ConfirmDialogService } from '@shared/services/confirm-dialog.service';
 import { EventoService } from '@features/events/services/evento.service';
+import { CompeticionService } from '@features/competitions/services/competicion.service';
+import { EventStatsPanelComponent } from './components/event-stats-panel/event-stats-panel.component';
 
 @Component({
   selector: 'app-event-detail-page',
@@ -32,6 +36,7 @@ import { EventoService } from '@features/events/services/evento.service';
     TeamPairComponent,
     StatusTagComponent,
     FormFieldComponent,
+    EventStatsPanelComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './event-detail.page.html',
@@ -41,6 +46,7 @@ export class EventDetailPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly service = inject(EventoService);
+  private readonly competicionService = inject(CompeticionService);
   private readonly toast = inject(ToastService);
   private readonly confirm = inject(ConfirmDialogService);
   private readonly destroyRef = inject(DestroyRef);
@@ -49,11 +55,17 @@ export class EventDetailPage implements OnInit {
   readonly loading = signal(true);
   readonly saving = signal(false);
   readonly evento = signal<Evento | null>(null);
+  readonly competicion = signal<Competicion | null>(null);
   readonly competicionId = signal<number | null>(null);
 
   readonly canRegister = computed(() => {
     const e = this.evento();
     return !!e && e.estado !== EstadoEvento.FINALIZADO && e.estado !== EstadoEvento.SUSPENDIDO;
+  });
+
+  readonly canRegisterStats = computed(() => {
+    const c = this.competicion();
+    return !!c && c.estadisticasActivas;
   });
 
   readonly resultForm = this.fb.nonNullable.group({
@@ -74,9 +86,13 @@ export class EventDetailPage implements OnInit {
 
   private load(competicionId: number, eventoId: number): void {
     this.loading.set(true);
-    this.service.findById$(competicionId, eventoId).subscribe({
-      next: (e) => {
+    forkJoin({
+      evento: this.service.findById$(competicionId, eventoId),
+      competicion: this.competicionService.findByIdDetalle$(competicionId),
+    }).subscribe({
+      next: ({ evento: e, competicion: c }) => {
         this.evento.set(e);
+        this.competicion.set(c);
         if (e.resultadoLocal != null && e.resultadoVisitante != null) {
           this.resultForm.patchValue({
             resultadoLocal: e.resultadoLocal,

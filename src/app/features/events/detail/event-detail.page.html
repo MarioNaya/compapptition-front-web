@@ -70,13 +70,24 @@
       </section>
     }
 
-    <section class="empty-stats">
-      <app-empty-state
-        icon="stats"
-        title="Estadísticas del partido"
-        subtitle="El registro manual de estadísticas por jugador necesita un endpoint backend POST /estadisticas que aún no está implementado. Los rankings acumulados en el tab Estadísticas de la competición sí funcionan."
+    @if (canRegisterStats() && competicion(); as c) {
+      <app-event-stats-panel
+        [eventoId]="e.id"
+        [deporteId]="c.deporteId"
+        [equipoLocalId]="e.equipoLocal?.id ?? null"
+        [equipoLocalNombre]="e.equipoLocal?.nombre ?? 'Local'"
+        [equipoVisitanteId]="e.equipoVisitante?.id ?? null"
+        [equipoVisitanteNombre]="e.equipoVisitante?.nombre ?? 'Visitante'"
       />
-    </section>
+    } @else if (competicion()) {
+      <section class="empty-stats">
+        <app-empty-state
+          icon="stats"
+          title="Estadísticas desactivadas"
+          subtitle="La competición tiene el flag estadisticasActivas en false. Actívalo en la edición de la competición para poder registrar estadísticas por partido."
+        />
+      </section>
+    }
   } @else {
     <app-empty-state
       icon="x"

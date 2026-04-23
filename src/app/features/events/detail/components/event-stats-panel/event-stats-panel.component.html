@@ -1,0 +1,72 @@
+<section class="stats-panel card">
+  <header class="panel-head">
+    <h2 class="h-display">Registrar estadística</h2>
+    <p class="hint">Selecciona jugador, tipo y valor. El listado acumulado se consulta en la pestaña Estadísticas de la competición.</p>
+  </header>
+
+  @if (loading()) {
+    <div class="loading"><app-spinner size="md" label="Cargando tipos y jugadores" /></div>
+  } @else if (tipos().length === 0 || jugadores().length === 0) {
+    <app-empty-state
+      icon="stats"
+      title="Sin datos suficientes"
+      [subtitle]="
+        tipos().length === 0
+          ? 'Este deporte no tiene tipos de estadística definidos. Un administrador puede añadirlos desde el panel.'
+          : 'Ninguno de los equipos tiene jugadores activos en la plantilla.'
+      "
+    />
+  } @else {
+    <form class="form" [formGroup]="form" (ngSubmit)="submit()">
+      <app-form-field label="Jugador" [control]="form.controls.jugadorId">
+        <select class="select" formControlName="jugadorId">
+          <option [ngValue]="null" disabled>Selecciona un jugador</option>
+          @for (j of jugadores(); track j.id + '-' + j.equipoNombre) {
+            <option [ngValue]="j.id">{{ j.label }} · {{ j.equipoNombre }}</option>
+          }
+        </select>
+      </app-form-field>
+
+      <app-form-field label="Tipo de estadística" [control]="form.controls.tipoEstadisticaId">
+        <select class="select" formControlName="tipoEstadisticaId">
+          <option [ngValue]="null" disabled>Selecciona el tipo</option>
+          @for (t of tipos(); track t.id) {
+            <option [ngValue]="t.id">{{ t.nombre }} ({{ t.tipoValor }})</option>
+          }
+        </select>
+      </app-form-field>
+
+      <app-form-field
+        label="Valor"
+        [control]="form.controls.valor"
+        [hint]="
+          selectedTipo()?.tipoValor === TipoValor.BOOLEANO
+            ? 'Introduce 1 (sí) o 0 (no).'
+            : selectedTipo()?.tipoValor === TipoValor.ENTERO
+              ? 'Número entero ≥ 0.'
+              : selectedTipo()?.tipoValor === TipoValor.TIEMPO
+                ? 'Tiempo en segundos (decimal admitido).'
+                : null
+        "
+      >
+        <input
+          class="input"
+          type="number"
+          [attr.step]="selectedTipo()?.tipoValor === TipoValor.ENTERO || selectedTipo()?.tipoValor === TipoValor.BOOLEANO ? '1' : '0.01'"
+          min="0"
+          formControlName="valor"
+        />
+      </app-form-field>
+
+      <div class="actions">
+        <app-button variant="primary" type="submit" [disabled]="saving()">
+          @if (saving()) {
+            <app-spinner size="sm" />
+          } @else {
+            <app-icon name="check" [size]="14" /> Registrar
+          }
+        </app-button>
+      </div>
+    </form>
+  }
+</section>
