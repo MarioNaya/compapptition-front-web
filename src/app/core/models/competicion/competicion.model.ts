@@ -38,6 +38,8 @@ export interface ConfiguracionCompeticion {
   formato: FormatoCompeticion;
   numEquiposPlayoff: number;
   partidosEliminatoria: number;
+  /** Solo relevante si formato === GRUPOS_PLAYOFF. null = auto-calcular. */
+  numGrupos?: number | null;
 }
 
 export enum EstadoCompeticion {

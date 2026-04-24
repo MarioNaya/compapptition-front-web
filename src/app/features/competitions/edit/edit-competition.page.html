@@ -101,6 +101,18 @@
             </app-form-field>
           </div>
         }
+
+        @if (showGruposFields()) {
+          <div class="row">
+            <app-form-field
+              label="Número de grupos"
+              [control]="form.controls.configuracion.controls.numGrupos"
+              hint="Déjalo vacío para que se calcule automáticamente. Mínimo 2 grupos de 3 equipos."
+            >
+              <input class="input" type="number" min="2" max="16" formControlName="numGrupos" placeholder="auto" />
+            </app-form-field>
+          </div>
+        }
       </section>
 
       <section class="group">

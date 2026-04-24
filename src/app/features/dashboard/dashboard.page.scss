@@ -115,7 +115,10 @@
 /* --- Hero --- */
 
 .hero {
-  margin-bottom: 28px;
+  /* Espacio amplio arriba (stats) y abajo (calendar-strip) para que el
+     shadow-glow del notch-card no se solape visualmente con esos
+     contenedores. 44px ≈ radio del halo proyectado. */
+  margin: 44px 0;
   cursor: pointer;
 
   &:focus-visible {

@@ -26,6 +26,10 @@ const PLAYOFF_FORMATOS = new Set<FormatoCompeticion>([
   FormatoCompeticion.GRUPOS_PLAYOFF,
 ]);
 
+const GRUPOS_FORMATOS = new Set<FormatoCompeticion>([
+  FormatoCompeticion.GRUPOS_PLAYOFF,
+]);
+
 @Component({
   selector: 'app-edit-competition-page',
   standalone: true,
@@ -79,6 +83,7 @@ export class EditCompetitionPage implements OnInit {
       puntosDerrota: [0, [Validators.required, Validators.min(0), Validators.max(10)]],
       numEquiposPlayoff: [8, [Validators.min(2), Validators.max(64)]],
       partidosEliminatoria: [1, [Validators.min(1), Validators.max(7)]],
+      numGrupos: [null as number | null, [Validators.min(2), Validators.max(16)]],
     }),
   });
 
@@ -88,6 +93,7 @@ export class EditCompetitionPage implements OnInit {
 
   readonly showLigaFields = computed(() => LIGA_FORMATOS.has(this.formatoSignal()));
   readonly showPlayoffFields = computed(() => PLAYOFF_FORMATOS.has(this.formatoSignal()));
+  readonly showGruposFields = computed(() => GRUPOS_FORMATOS.has(this.formatoSignal()));
 
   ngOnInit(): void {
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
@@ -121,6 +127,7 @@ export class EditCompetitionPage implements OnInit {
             puntosDerrota: c.configuracion?.puntosDerrota ?? 0,
             numEquiposPlayoff: c.configuracion?.numEquiposPlayoff ?? 8,
             partidosEliminatoria: c.configuracion?.partidosEliminatoria ?? 1,
+            numGrupos: c.configuracion?.numGrupos ?? null,
           },
         });
         this.loading.set(false);
@@ -147,6 +154,7 @@ export class EditCompetitionPage implements OnInit {
     const cfg = v.configuracion;
     const showLiga = LIGA_FORMATOS.has(cfg.formato);
     const showPlayoff = PLAYOFF_FORMATOS.has(cfg.formato);
+    const showGrupos = GRUPOS_FORMATOS.has(cfg.formato);
 
     this.service
       .update$(
@@ -166,6 +174,7 @@ export class EditCompetitionPage implements OnInit {
             puntosDerrota: showLiga ? cfg.puntosDerrota : undefined,
             numEquiposPlayoff: showPlayoff ? cfg.numEquiposPlayoff : undefined,
             partidosEliminatoria: showPlayoff ? cfg.partidosEliminatoria : undefined,
+            numGrupos: showGrupos && cfg.numGrupos != null ? cfg.numGrupos : undefined,
           },
         },
         user.id,

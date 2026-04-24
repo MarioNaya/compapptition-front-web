@@ -26,6 +26,10 @@ const PLAYOFF_FORMATOS = new Set<FormatoCompeticion>([
   FormatoCompeticion.GRUPOS_PLAYOFF,
 ]);
 
+const GRUPOS_FORMATOS = new Set<FormatoCompeticion>([
+  FormatoCompeticion.GRUPOS_PLAYOFF,
+]);
+
 @Component({
   selector: 'app-new-competition-page',
   standalone: true,
@@ -76,6 +80,7 @@ export class NewCompetitionPage implements OnInit {
       puntosDerrota: [0, [Validators.required, Validators.min(0), Validators.max(10)]],
       numEquiposPlayoff: [8, [Validators.min(2), Validators.max(64)]],
       partidosEliminatoria: [1, [Validators.min(1), Validators.max(7)]],
+      numGrupos: [null as number | null, [Validators.min(2), Validators.max(16)]],
     }),
   });
 
@@ -85,6 +90,7 @@ export class NewCompetitionPage implements OnInit {
 
   readonly showLigaFields = computed(() => LIGA_FORMATOS.has(this.formatoSignal()));
   readonly showPlayoffFields = computed(() => PLAYOFF_FORMATOS.has(this.formatoSignal()));
+  readonly showGruposFields = computed(() => GRUPOS_FORMATOS.has(this.formatoSignal()));
 
   ngOnInit(): void {
     this.deporteService.findAll$().subscribe({
@@ -109,6 +115,7 @@ export class NewCompetitionPage implements OnInit {
     const cfg = v.configuracion;
     const showLiga = LIGA_FORMATOS.has(cfg.formato);
     const showPlayoff = PLAYOFF_FORMATOS.has(cfg.formato);
+    const showGrupos = GRUPOS_FORMATOS.has(cfg.formato);
 
     this.service
       .create$({
@@ -127,6 +134,7 @@ export class NewCompetitionPage implements OnInit {
           puntosDerrota: showLiga ? cfg.puntosDerrota : undefined,
           numEquiposPlayoff: showPlayoff ? cfg.numEquiposPlayoff : undefined,
           partidosEliminatoria: showPlayoff ? cfg.partidosEliminatoria : undefined,
+          numGrupos: showGrupos && cfg.numGrupos != null ? cfg.numGrupos : undefined,
         },
       })
       .subscribe({
