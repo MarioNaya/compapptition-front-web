@@ -47,7 +47,7 @@ export class ResetPasswordPage {
 
   submit(): void {
     if (!this.token) {
-      this.toast.error('Token inválido o ausente');
+      this.toast.error('El enlace de recuperación no es válido. Solicita uno nuevo.');
       return;
     }
     if (this.form.invalid) {

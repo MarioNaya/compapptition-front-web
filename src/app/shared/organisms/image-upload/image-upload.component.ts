@@ -45,9 +45,9 @@ export class ImageUploadComponent {
           this.toast.error(err.message ?? 'No se pudo subir la imagen');
         },
       });
-    } catch (e) {
+    } catch {
       this.uploading.set(false);
-      this.toast.error((e as Error).message);
+      this.toast.error('No se pudo subir la imagen. Inténtalo de nuevo.');
     } finally {
       // Reset input para permitir volver a seleccionar el mismo archivo
       input.value = '';

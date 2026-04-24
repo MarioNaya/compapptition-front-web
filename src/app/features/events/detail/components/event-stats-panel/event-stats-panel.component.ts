@@ -143,7 +143,7 @@ export class EventStatsPanelComponent implements OnInit {
         return;
       }
       if (tipo.tipoValor === TipoValor.BOOLEANO && v.valor !== 0 && v.valor !== 1) {
-        this.toast.error('Para BOOLEANO el valor debe ser 0 o 1.');
+        this.toast.error('Para un campo de sí/no, el valor debe ser 0 o 1.');
         return;
       }
     }

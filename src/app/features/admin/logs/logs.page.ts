@@ -126,8 +126,8 @@ export class AdminLogsPage implements OnInit {
         this.loading.set(false);
         if (err.status === 403) {
           const msg = this.mode() === 'usuario'
-            ? 'Solo puedes ver tus propios logs (o ser ADMIN_SISTEMA).'
-            : 'Solo el administrador de esa competición puede ver sus logs.';
+            ? 'Solo puedes consultar tu propio histórico.'
+            : 'Solo el administrador de esa competición puede ver su histórico.';
           this.toast.error(msg);
         } else {
           this.toast.error(err.message ?? 'Error al cargar logs');

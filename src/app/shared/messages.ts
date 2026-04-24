@@ -19,6 +19,13 @@ export const M = {
     notFound: 'No se ha encontrado lo que buscabas.',
     copied: 'Copiado al portapapeles',
   },
+  network: {
+    offline: 'No hay conexión a internet. Revisa tu red e inténtalo de nuevo.',
+    serverUnreachable:
+      'No se ha podido contactar con el servidor. Inténtalo de nuevo más tarde.',
+    timeout: 'La petición ha tardado demasiado. Inténtalo de nuevo.',
+    serverError: 'Se ha producido un error en el servidor. Inténtalo de nuevo más tarde.',
+  },
   auth: {
     loginError: 'Credenciales incorrectas',
     loginOther: 'No se pudo iniciar sesión',
