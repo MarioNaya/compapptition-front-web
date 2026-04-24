@@ -8,6 +8,8 @@ export interface Equipo {
   tipo: TipoEquipo;
   fechaCreacion: string;
   numJugadores: number;
+  creadorId?: number;
+  creadorUsername?: string;
   jugadores?: JugadorSimple[];
 }
 

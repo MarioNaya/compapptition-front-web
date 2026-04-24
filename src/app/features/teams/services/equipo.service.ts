@@ -56,6 +56,12 @@ export class EquipoService {
     });
   }
 
+  misEquiposCreados$(usuarioId: number): Observable<Equipo[]> {
+    return this.http.get<Equipo[]>(`${this.base}/mis-equipos/creados`, {
+      params: { id: String(usuarioId) },
+    });
+  }
+
   create$(req: EquipoCreateRequest): Observable<Equipo> {
     return this.http.post<Equipo>(this.base, req);
   }

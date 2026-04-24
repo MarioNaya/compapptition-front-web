@@ -156,20 +156,20 @@
           </section>
         }
 
-        @if (misEquiposMgr().length > 0) {
+        @if (misEquipos().length > 0) {
           <section class="widget card">
             <header class="widget-head">
               <h3>Mis equipos</h3>
-              <span class="count-pill">{{ misEquiposMgr().length }}</span>
+              <span class="count-pill">{{ misEquipos().length }}</span>
             </header>
             <ul class="widget-list">
-              @for (e of misEquiposMgr().slice(0, 4); track e.id) {
+              @for (e of misEquipos().slice(0, 4); track e.id) {
                 <li>
                   <a [routerLink]="['/app/teams', e.id]" class="widget-item">
                     <app-icon name="users" [size]="14" />
                     <span class="item-text">
                       <strong>{{ e.nombre }}</strong>
-                      <span class="item-sub">Manager</span>
+                      <span class="item-sub">{{ e.rol }}</span>
                     </span>
                     <app-icon name="chev-r" [size]="14" />
                   </a>

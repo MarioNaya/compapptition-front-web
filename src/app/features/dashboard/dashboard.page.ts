@@ -23,6 +23,8 @@ import { EventoService } from '@features/events/services/evento.service';
 import { EquipoService } from '@features/teams/services/equipo.service';
 import { InvitacionService } from '@features/invitations/services/invitacion.service';
 
+type EquipoConRol = Equipo & { rol: string };
+
 @Component({
   selector: 'app-dashboard-page',
   standalone: true,
@@ -60,19 +62,46 @@ export class DashboardPage implements OnInit {
   // y cada widget se pueble según llega su respuesta.
   readonly loadingParticipadas = signal(true);
   readonly loadingCreadas = signal(true);
-  readonly loadingEquipos = signal(true);
+  readonly loadingEquiposManager = signal(true);
+  readonly loadingEquiposCreados = signal(true);
+  readonly loadingEquiposJugador = signal(true);
   readonly loadingRecibidas = signal(true);
   readonly loadingEnviadas = signal(true);
   readonly loadingEventos = signal(true);
 
   readonly misCompeticiones = signal<readonly CompeticionSimple[]>([]);
   readonly misCreadas = signal<readonly CompeticionSimple[]>([]);
-  readonly misEquiposMgr = signal<readonly Equipo[]>([]);
+  private readonly _equiposManager = signal<readonly Equipo[]>([]);
+  private readonly _equiposCreados = signal<readonly Equipo[]>([]);
+  private readonly _equiposJugador = signal<readonly Equipo[]>([]);
   readonly invitacionesRecibidas = signal<readonly Invitacion[]>([]);
   readonly invitacionesEnviadas = signal<readonly Invitacion[]>([]);
   private readonly _todosEventos = signal<readonly Evento[]>([]);
 
   readonly todosEventos = this._todosEventos.asReadonly();
+
+  /**
+   * Unión de equipos del usuario: creador + manager + jugador. Deduplica por
+   * id y etiqueta con el rol principal (prioridad creador > manager > jugador).
+   */
+  readonly misEquipos = computed<readonly EquipoConRol[]>(() => {
+    const map = new Map<number, EquipoConRol>();
+    for (const e of this._equiposCreados()) map.set(e.id, { ...e, rol: 'Creador' });
+    for (const e of this._equiposManager()) {
+      if (!map.has(e.id)) map.set(e.id, { ...e, rol: 'Manager' });
+    }
+    for (const e of this._equiposJugador()) {
+      if (!map.has(e.id)) map.set(e.id, { ...e, rol: 'Jugador' });
+    }
+    return [...map.values()];
+  });
+
+  readonly loadingEquipos = computed(
+    () =>
+      this.loadingEquiposManager() ||
+      this.loadingEquiposCreados() ||
+      this.loadingEquiposJugador(),
+  );
 
   readonly proximosEventos = computed<readonly Evento[]>(() => {
     const now = Date.now();
@@ -101,7 +130,7 @@ export class DashboardPage implements OnInit {
 
   readonly stats = computed(() => ({
     competiciones: this.misCompeticiones().length,
-    equipos: this.misEquiposMgr().length,
+    equipos: this.misEquipos().length,
     partidosProgramados: this.proximosEventos().length,
     invitaciones: this.invitacionesRecibidasPend().length,
   }));
@@ -120,7 +149,7 @@ export class DashboardPage implements OnInit {
     () =>
       !this.anyLoading() &&
       this.misCompeticiones().length === 0 &&
-      this.misEquiposMgr().length === 0 &&
+      this.misEquipos().length === 0 &&
       this.invitacionesRecibidasPend().length === 0,
   );
 
@@ -137,7 +166,8 @@ export class DashboardPage implements OnInit {
   }
 
   /**
-   * Lanza las 5 cargas independientes + fan-out de eventos.
+   * Lanza las 7 cargas independientes (participadas, creadas, 3 fuentes de
+   * equipos, invitaciones recibidas y enviadas) + fan-out de eventos.
    * Cada una tiene su propio spinner y actualiza su signal al llegar.
    */
   private loadAll(userId: number): void {
@@ -176,13 +206,29 @@ export class DashboardPage implements OnInit {
       error: () => this.loadingCreadas.set(false),
     });
 
-    // Equipos como manager.
+    // Equipos: 3 fuentes que el computed `misEquipos` deduplica.
+    this.equipoService.misEquiposCreados$(userId).subscribe({
+      next: (list) => {
+        this._equiposCreados.set(list);
+        this.loadingEquiposCreados.set(false);
+      },
+      error: () => this.loadingEquiposCreados.set(false),
+    });
+
     this.equipoService.misEquiposManager$(userId).subscribe({
       next: (list) => {
-        this.misEquiposMgr.set(list);
-        this.loadingEquipos.set(false);
+        this._equiposManager.set(list);
+        this.loadingEquiposManager.set(false);
       },
-      error: () => this.loadingEquipos.set(false),
+      error: () => this.loadingEquiposManager.set(false),
+    });
+
+    this.equipoService.misEquiposJugador$(userId).subscribe({
+      next: (list) => {
+        this._equiposJugador.set(list);
+        this.loadingEquiposJugador.set(false);
+      },
+      error: () => this.loadingEquiposJugador.set(false),
     });
 
     // Invitaciones recibidas.
