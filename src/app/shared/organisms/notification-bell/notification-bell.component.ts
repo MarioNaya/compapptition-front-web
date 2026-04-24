@@ -70,13 +70,13 @@ export class NotificationBellComponent implements OnInit {
   ngOnInit(): void {
     // Carga inicial del listado.
     if (this.auth.isAuthenticated()) {
-      this.service.listar$(0, 20).subscribe();
+      this.service.listar$(0, 10).subscribe();
     }
   }
 
   toggle(): void {
     this.open.update((v) => !v);
-    if (this.open()) this.service.listar$(0, 20).subscribe();
+    if (this.open()) this.service.listar$(0, 10).subscribe();
   }
 
   close(): void {

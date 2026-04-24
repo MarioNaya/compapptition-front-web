@@ -82,7 +82,7 @@ export class NotificationService {
     }, delay);
   }
 
-  listar$(page = 0, size = 20, leida?: boolean): Observable<PageResponse<Notificacion>> {
+  listar$(page = 0, size = 10, leida?: boolean): Observable<PageResponse<Notificacion>> {
     let params = new HttpParams().set('page', page).set('size', size);
     if (leida !== undefined) params = params.set('leida', leida);
     return this.http

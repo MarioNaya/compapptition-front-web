@@ -87,7 +87,7 @@ export class TeamDetailPage implements OnInit {
         distinctUntilChanged(),
         switchMap((term) => {
           this.searching.set(true);
-          return this.jugadorService.buscar$({ search: term, size: 20 });
+          return this.jugadorService.buscar$({ search: term, size: 10 });
         }),
         takeUntilDestroyed(),
       )

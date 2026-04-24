@@ -77,7 +77,7 @@ export class TeamsTabComponent implements OnInit {
         distinctUntilChanged(),
         switchMap((term) => {
           this.searching.set(true);
-          return this.service.findAll$({ search: term, size: 20 });
+          return this.service.findAll$({ search: term, size: 10 });
         }),
         takeUntilDestroyed(),
       )

@@ -112,8 +112,8 @@ export class AdminLogsPage implements OnInit {
     this.searched.set(true);
     const obs =
       this.mode() === 'usuario'
-        ? this.service.findByUsuario$(id, { page, size: 20 })
-        : this.service.findByCompeticion$(id, { page, size: 20 });
+        ? this.service.findByUsuario$(id, { page, size: 10 })
+        : this.service.findByCompeticion$(id, { page, size: 10 });
     obs.subscribe({
       next: (resp) => {
         this.logs.set(resp.content);
