@@ -37,6 +37,22 @@
       </div>
     </section>
 
+    @if (!j.usuarioId) {
+      <section class="card no-account">
+        <div class="info">
+          <span class="badge h-display">Sin cuenta vinculada</span>
+          <p class="hint">
+            Este jugador no está asociado a ninguna cuenta de usuario. Si reconoces
+            que se trata de ti, puedes solicitar la vinculación; el manager o el
+            administrador de la competición deberá aprobarla.
+          </p>
+        </div>
+        <a class="link-action" routerLink="/app/players/vinculaciones">
+          <app-icon name="users" [size]="14" /> Ver mis solicitudes
+        </a>
+      </section>
+    }
+
     <h2 class="h-display section-title">Estadísticas acumuladas</h2>
 
     @if (statsByType().length === 0) {

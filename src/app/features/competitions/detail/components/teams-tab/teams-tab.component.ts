@@ -155,15 +155,12 @@ export class TeamsTabComponent implements OnInit {
 
     this.sending.set(true);
     this.invitacionService
-      .create$(
-        {
-          destinatarioEmail: email,
-          competicionId: this.competicionId(),
-          equipoId: equipo.id,
-          rolOfrecido: RolCompeticion.MANAGER_EQUIPO,
-        },
-        userId,
-      )
+      .create$({
+        destinatarioEmail: email,
+        competicionId: this.competicionId(),
+        equipoId: equipo.id,
+        rolOfrecido: RolCompeticion.MANAGER_EQUIPO,
+      })
       .subscribe({
         next: () => {
           this.toast.success(`Invitación enviada a ${email} para "${equipo.nombre}"`);

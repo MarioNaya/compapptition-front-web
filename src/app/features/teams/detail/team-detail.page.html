@@ -36,72 +36,136 @@
 
     @if (showAdd()) {
       <section class="add-panel card">
-        @if (!selected()) {
-          <h3 class="h-display panel-title">1. Busca el jugador</h3>
-          <app-search-bar
-            [value]="search()"
-            placeholder="Nombre o apellidos…"
-            (valueChange)="onSearchChange($event)"
-          />
-
-          @if (searching()) {
-            <div class="search-state"><app-spinner size="sm" /> Buscando…</div>
-          } @else if (results().length === 0 && search().length > 0) {
-            <div class="search-state muted">Sin resultados para "{{ search() }}"</div>
-          } @else if (results().length > 0) {
-            <ul class="results">
-              @for (j of results(); track j.id) {
-                <li class="result-row" (click)="selectPlayer(j)" (keydown.enter)="selectPlayer(j)" tabindex="0">
-                  <app-team-crest [name]="j.nombre" [imageUrl]="j.fotoUrl ?? null" size="sm" />
-                  <div class="info">
-                    <span class="name">{{ j.nombre }}{{ j.apellidos ? ' ' + j.apellidos : '' }}</span>
-                    @if (j.posicion) {
-                      <span class="mono meta">{{ j.posicion }}</span>
-                    }
-                  </div>
-                  <app-icon name="chev-r" [size]="14" />
-                </li>
-              }
-            </ul>
+        <div class="mode-tabs" role="tablist">
+          @if (isModeAvailable('create')) {
+            <button
+              type="button"
+              role="tab"
+              class="mode-tab"
+              [class.active]="mode() === 'create'"
+              (click)="setMode('create')"
+            >Crear jugador</button>
           }
-        } @else {
-          <h3 class="h-display panel-title">2. Confirma la incorporación</h3>
-          <div class="selected-player">
-            <app-team-crest
-              [name]="selected()!.nombre"
-              [imageUrl]="selected()!.fotoUrl ?? null"
-              size="md"
-            />
-            <div class="info">
-              <span class="name">{{ selected()!.nombre }}{{ selected()!.apellidos ? ' ' + selected()!.apellidos : '' }}</span>
-              @if (selected()!.posicion) {
-                <span class="mono meta">{{ selected()!.posicion }}</span>
-              }
-            </div>
-            <button type="button" class="link-btn" (click)="backToSearch()">Cambiar</button>
-          </div>
+          <button
+            type="button"
+            role="tab"
+            class="mode-tab"
+            [class.active]="mode() === 'invite'"
+            (click)="setMode('invite')"
+          >Invitar usuario</button>
+        </div>
 
-          <div class="dorsal-row">
-            <label for="dorsal-input" class="label h-display">Dorsal (opcional)</label>
-            <input
-              id="dorsal-input"
-              class="input"
-              type="number"
-              min="1"
-              max="99"
-              placeholder="Ej. 10"
-              [value]="dorsal() ?? ''"
-              (input)="onDorsalChange($any($event.target).value)"
-            />
+        @if (mode() === 'create') {
+          <p class="muted hint">
+            Añade a la plantilla un jugador sin cuenta de usuario. Útil para llevar
+            estadísticas de personas que no se han registrado en la plataforma.
+          </p>
+
+          <div class="form-grid">
+            <div class="form-field">
+              <label class="label h-display" for="ng-nombre">Nombre*</label>
+              <input
+                id="ng-nombre"
+                class="input"
+                type="text"
+                placeholder="Nombre"
+                [value]="nuevoNombre()"
+                (input)="onCrearNombre($any($event.target).value)"
+              />
+            </div>
+            <div class="form-field">
+              <label class="label h-display" for="ng-apellidos">Apellidos</label>
+              <input
+                id="ng-apellidos"
+                class="input"
+                type="text"
+                placeholder="Apellidos"
+                [value]="nuevoApellidos()"
+                (input)="onCrearApellidos($any($event.target).value)"
+              />
+            </div>
+            <div class="form-field">
+              <label class="label h-display" for="ng-posicion">Posición</label>
+              <input
+                id="ng-posicion"
+                class="input"
+                type="text"
+                placeholder="Ej. Delantero"
+                [value]="nuevoPosicion()"
+                (input)="onCrearPosicion($any($event.target).value)"
+              />
+            </div>
+            <div class="form-field">
+              <label class="label h-display" for="ng-dorsal">Dorsal</label>
+              <input
+                id="ng-dorsal"
+                class="input"
+                type="number"
+                min="1"
+                max="99"
+                placeholder="Ej. 10"
+                [value]="nuevoDorsal() ?? ''"
+                (input)="onCrearDorsal($any($event.target).value)"
+              />
+            </div>
           </div>
 
           <div class="panel-actions">
-            <app-button variant="ghost" (clicked)="backToSearch()">Atrás</app-button>
-            <app-button variant="primary" (clicked)="addPlayer()" [disabled]="adding()">
-              @if (adding()) {
+            <app-button variant="ghost" (clicked)="toggleAdd()">Cancelar</app-button>
+            <app-button
+              variant="primary"
+              (clicked)="crearFantasma()"
+              [disabled]="busy() || !nuevoNombre().trim()"
+            >
+              @if (busy()) {
                 <app-spinner size="sm" />
               } @else {
-                Añadir a la plantilla
+                Crear y añadir
+              }
+            </app-button>
+          </div>
+        } @else {
+          <p class="muted hint">
+            Envía una invitación al usuario por email o nombre de usuario. Cuando
+            la acepte, se vinculará automáticamente como jugador de este equipo.
+          </p>
+
+          <div class="form-grid">
+            <div class="form-field">
+              <label class="label h-display" for="inv-email">Email</label>
+              <input
+                id="inv-email"
+                class="input"
+                type="email"
+                placeholder="usuario@ejemplo.com"
+                [value]="invitarEmail()"
+                (input)="onInvitarEmail($any($event.target).value)"
+              />
+            </div>
+            <div class="form-field">
+              <label class="label h-display" for="inv-username">Nombre de usuario</label>
+              <input
+                id="inv-username"
+                class="input"
+                type="text"
+                placeholder="Ej. mariog"
+                [value]="invitarUsername()"
+                (input)="onInvitarUsername($any($event.target).value)"
+              />
+            </div>
+          </div>
+
+          <div class="panel-actions">
+            <app-button variant="ghost" (clicked)="toggleAdd()">Cancelar</app-button>
+            <app-button
+              variant="primary"
+              (clicked)="invitar()"
+              [disabled]="busy() || (!invitarEmail().trim() && !invitarUsername().trim())"
+            >
+              @if (busy()) {
+                <app-spinner size="sm" />
+              } @else {
+                Enviar invitación
               }
             </app-button>
           </div>
@@ -109,14 +173,27 @@
       </section>
     }
 
+    <ng-template #actionsCell let-j>
+      <button
+        type="button"
+        class="row-action-btn"
+        title="Dar de baja"
+        aria-label="Dar de baja"
+        [disabled]="removingId() === j.id"
+        (click)="quitarJugador(j, $event)"
+      >
+        <app-icon name="trash" [size]="14" />
+      </button>
+    </ng-template>
+
     <app-data-table
-      [columns]="columns"
+      [columns]="columns()"
       [rows]="jugadores()"
       [rowKey]="rowKey"
       [clickable]="true"
       (rowClick)="openJugador($event)"
       emptyTitle="Aún no hay jugadores"
-      emptySubtitle='Pulsa "Añadir jugador" para incorporar a un jugador existente a la plantilla.'
+      emptySubtitle='Pulsa "Añadir jugador" para crear un perfil sin cuenta o invitar a un usuario.'
     />
   } @else {
     <app-empty-state

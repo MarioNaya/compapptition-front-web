@@ -6,6 +6,7 @@ import { PageResponse } from '@core/models/comun/page.model';
 import { Equipo } from '@core/models/equipo/equipo.model';
 import { EquipoCreateRequest, EquipoUpdateRequest } from '@core/models/equipo/equipo.requests';
 import { Jugador } from '@core/models/equipo/jugador.model';
+import { CreateJugadorRequest } from '@core/models/equipo/jugador.requests';
 import { PageableRequest, toPageableParams } from '@core/http/pageable';
 
 export interface EquipoFilters extends PageableRequest {
@@ -103,6 +104,24 @@ export class EquipoService {
     return this.http.post<{ message: string }>(
       `${this.base}/${equipoId}/jugadores/${jugadorId}`,
       null,
+      params ? { params } : undefined,
+    );
+  }
+
+  /**
+   * Crea un jugador "fantasma" (sin cuenta de usuario) y lo añade a la plantilla
+   * en una sola llamada. Solo permitido para equipos de tipo ESTANDAR; el backend
+   * rechaza la petición si el equipo es GESTIONADO.
+   */
+  crearJugadorFantasma$(
+    equipoId: number,
+    request: CreateJugadorRequest,
+    dorsal?: number,
+  ): Observable<Jugador> {
+    const params = dorsal !== undefined ? { dorsal: String(dorsal) } : undefined;
+    return this.http.post<Jugador>(
+      `${this.base}/${equipoId}/jugadores`,
+      request,
       params ? { params } : undefined,
     );
   }

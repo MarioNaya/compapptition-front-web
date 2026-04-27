@@ -1,8 +1,10 @@
 import { RolCompeticion } from '../rol';
 
 export interface CreateInvitacionRequest {
-  /** Email del destinatario (obligatorio). */
-  destinatarioEmail: string;
+  /** Email del destinatario. Opcional si se proporciona `destinatarioUsername`. */
+  destinatarioEmail?: string;
+  /** Username del destinatario. Opcional si se proporciona `destinatarioEmail`. */
+  destinatarioUsername?: string;
   /** Competición a la que se invita. */
   competicionId?: number;
   /** Equipo al que se invita (cuando el rol es MANAGER_EQUIPO o JUGADOR). */

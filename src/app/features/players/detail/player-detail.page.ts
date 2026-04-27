@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Jugador } from '@core/models/equipo/jugador.model';
 import { EstadisticaJugador } from '@core/models/estadistica/estadistica.model';
@@ -26,6 +26,7 @@ interface StatSummary {
   selector: 'app-player-detail-page',
   standalone: true,
   imports: [
+    RouterLink,
     ButtonComponent,
     IconComponent,
     SpinnerComponent,

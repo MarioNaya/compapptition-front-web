@@ -23,6 +23,8 @@ const TITLES: Record<TipoNotificacion, string> = {
   RESULTADO_REGISTRADO: 'Resultado registrado',
   MENSAJE_RECIBIDO: 'Nuevo mensaje',
   COMPETICION_ACTIVADA: 'Competición activada',
+  SOLICITUD_VINCULACION_RECIBIDA: 'Solicitud de vinculación',
+  SOLICITUD_VINCULACION_RESUELTA: 'Vinculación resuelta',
 };
 
 const ICONS: Record<TipoNotificacion, NotifView['icon']> = {
@@ -31,6 +33,8 @@ const ICONS: Record<TipoNotificacion, NotifView['icon']> = {
   RESULTADO_REGISTRADO: 'trophy',
   MENSAJE_RECIBIDO: 'mail',
   COMPETICION_ACTIVADA: 'trophy',
+  SOLICITUD_VINCULACION_RECIBIDA: 'users',
+  SOLICITUD_VINCULACION_RESUELTA: 'check',
 };
 
 @Component({
@@ -129,6 +133,20 @@ export class NotificationBellComponent implements OnInit {
         detail = String(payload['competicionNombre'] ?? 'Una competición ha empezado');
         const compId = payload['competicionId'];
         link = compId != null ? ['/app/competitions', compId] : null;
+        break;
+      }
+      case TipoNotificacion.SOLICITUD_VINCULACION_RECIBIDA: {
+        const jugador = payload['jugadorNombre'] ?? '';
+        const equipo = payload['equipoNombre'] ?? '';
+        detail = `${jugador}${equipo ? ' · ' + equipo : ''}`.trim() || 'Solicitud pendiente de respuesta';
+        link = ['/app/players/vinculaciones'];
+        break;
+      }
+      case TipoNotificacion.SOLICITUD_VINCULACION_RESUELTA: {
+        const jugador = payload['jugadorNombre'] ?? '';
+        const aceptada = payload['aceptada'];
+        detail = `${jugador} · ${aceptada ? 'aceptada' : 'rechazada'}`.trim();
+        link = ['/app/players/vinculaciones'];
         break;
       }
     }

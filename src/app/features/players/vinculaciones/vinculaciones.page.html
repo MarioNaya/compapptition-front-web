@@ -1,0 +1,74 @@
+<div class="container vinculaciones fade-in">
+  <app-page-header
+    [back]="true"
+    eyebrow="Solicitudes"
+    title="Vinculaciones de cuenta"
+    subtitle="Aprueba o rechaza la asociación de cuentas de usuario con jugadores."
+  />
+
+  @if (loading()) {
+    <div class="loading-box"><app-spinner size="md" label="Cargando solicitudes" /></div>
+  } @else {
+    <section class="bandeja">
+      <h2 class="h-display section-title">Tus solicitudes pendientes</h2>
+      @if (comoUsuario().length === 0) {
+        <p class="muted hint">No tienes invitaciones de vinculación que aceptar.</p>
+      } @else {
+        <ul class="lista">
+          @for (s of comoUsuario(); track s.id) {
+            <li class="card item">
+              <div class="info">
+                <span class="eyebrow h-display">Iniciada por {{ s.iniciadorUsername }}</span>
+                <h3 class="title h-display">{{ jugadorLabel(s) }}</h3>
+                <span class="meta mono">Equipo: {{ s.equipoNombre }}</span>
+              </div>
+              <div class="actions">
+                <app-button variant="ghost" (clicked)="rechazar(s)" [disabled]="busyId() === s.id">
+                  <app-icon name="x" [size]="14" /> Rechazar
+                </app-button>
+                <app-button variant="primary" (clicked)="aceptar(s)" [disabled]="busyId() === s.id">
+                  <app-icon name="check" [size]="14" /> Aceptar
+                </app-button>
+              </div>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+    <section class="bandeja">
+      <h2 class="h-display section-title">Pendientes de tu aprobación</h2>
+      @if (comoAdmin().length === 0) {
+        <p class="muted hint">No hay reclamaciones de jugadores en tus equipos.</p>
+      } @else {
+        <ul class="lista">
+          @for (s of comoAdmin(); track s.id) {
+            <li class="card item">
+              <div class="info">
+                <span class="eyebrow h-display">{{ usuarioLabel(s) }} reclama</span>
+                <h3 class="title h-display">{{ jugadorLabel(s) }}</h3>
+                <span class="meta mono">Equipo: {{ s.equipoNombre }}</span>
+              </div>
+              <div class="actions">
+                <app-button variant="ghost" (clicked)="rechazar(s)" [disabled]="busyId() === s.id">
+                  <app-icon name="x" [size]="14" /> Rechazar
+                </app-button>
+                <app-button variant="primary" (clicked)="aceptar(s)" [disabled]="busyId() === s.id">
+                  <app-icon name="check" [size]="14" /> Aprobar
+                </app-button>
+              </div>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+    @if (solicitudes().length === 0) {
+      <app-empty-state
+        icon="users"
+        title="Sin solicitudes pendientes"
+        subtitle="Aquí aparecerán las solicitudes de vinculación entre jugadores y cuentas de usuario."
+      />
+    }
+  }
+</div>

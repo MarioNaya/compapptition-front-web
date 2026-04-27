@@ -38,10 +38,9 @@ export class InvitacionService {
     return this.http.get<Invitacion[]>(`${this.base}/competicion/${competicionId}`);
   }
 
-  create$(req: CreateInvitacionRequest, usuarioId: number): Observable<Invitacion> {
-    return this.http.post<Invitacion>(this.base, req, {
-      params: { usuarioId: String(usuarioId) },
-    });
+  create$(req: CreateInvitacionRequest): Observable<Invitacion> {
+    // El emisor se toma del JWT en backend; no se pasa usuarioId por query.
+    return this.http.post<Invitacion>(this.base, req);
   }
 
   aceptar$(token: string, usuarioId: number): Observable<Invitacion> {
