@@ -30,7 +30,10 @@ export type IconName =
   | 'upload'
   | 'stats'
   | 'flag'
-  | 'menu';
+  | 'menu'
+  | 'copy'
+  | 'refresh'
+  | 'help';
 
 @Component({
   selector: 'app-icon',

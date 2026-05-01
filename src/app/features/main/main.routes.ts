@@ -27,6 +27,16 @@ export const MAIN_ROUTES: Routes = [
       import('@features/invitations/invitations.routes').then((m) => m.INVITATION_ROUTES),
   },
   {
+    path: 'matches',
+    loadChildren: () =>
+      import('@features/matches/matches.routes').then((m) => m.MATCHES_ROUTES),
+  },
+  {
+    path: 'notifications',
+    loadChildren: () =>
+      import('@features/notifications/notifications.routes').then((m) => m.NOTIFICATIONS_ROUTES),
+  },
+  {
     path: 'messages',
     loadChildren: () =>
       import('@features/messages/messages.routes').then((m) => m.MESSAGES_ROUTES),

@@ -13,6 +13,10 @@
       <app-icon name="users" [size]="14" />
       <span>{{ equipo().numJugadores }} jugadores</span>
     </span>
-    <span class="meta-item mono tipo">{{ equipo().tipo }}</span>
+    @if (rolBadge(); as r) {
+      <span class="meta-item mono rol-badge">{{ r }}</span>
+    } @else {
+      <span class="meta-item mono tipo">{{ equipo().publico ? 'Público' : 'Privado' }}</span>
+    }
   </footer>
 </article>

@@ -31,7 +31,7 @@ import {
   EstadoCompeticion,
   FormatoCompeticion,
 } from '@core/models/competicion/competicion.model';
-import { Equipo, TipoEquipo } from '@core/models/equipo/equipo.model';
+import { Equipo } from '@core/models/equipo/equipo.model';
 import { Evento, EstadoEvento } from '@core/models/evento/evento.model';
 import { EstadoInvitacion, Invitacion } from '@core/models/invitacion/invitacion.model';
 import { RolCompeticion } from '@core/models/rol';
@@ -131,7 +131,7 @@ export class UiGalleryPage {
     id: 1,
     nombre: 'Nottingham miedo',
     descripcion: 'Veteranos mixta, 14 en plantilla.',
-    tipo: TipoEquipo.GESTIONADO,
+    publico: true,
     fechaCreacion: '2024-09-12T12:00:00Z',
     numJugadores: 14,
   };

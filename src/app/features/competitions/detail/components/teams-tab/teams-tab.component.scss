@@ -177,3 +177,29 @@
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 16px;
 }
+
+.codigo-section {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px dashed var(--line);
+
+  .sub-title {
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    color: var(--text-sec);
+    text-transform: uppercase;
+    margin: 0 0 6px 0;
+  }
+}
+
+.codigo-input {
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-weight: 700;
+}
+
+.hint.error {
+  color: #ff6b6b;
+  margin-top: 8px;
+}

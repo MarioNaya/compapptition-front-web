@@ -4,6 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Jugador } from '@core/models/equipo/jugador.model';
 import { EstadisticaJugador } from '@core/models/estadistica/estadistica.model';
 import { ApiError } from '@core/http/api-error.model';
+import { AuthService } from '@core/services/auth.service';
 import { ButtonComponent } from '@shared/ui/button/button.component';
 import { IconComponent } from '@shared/ui/icon/icon.component';
 import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';
@@ -14,6 +15,7 @@ import { ToastService } from '@shared/services/toast.service';
 import { ConfirmDialogService } from '@shared/services/confirm-dialog.service';
 import { JugadorService } from '@features/players/services/jugador.service';
 import { EstadisticaService } from '@features/events/services/estadistica.service';
+import { MensajeriaService } from '@features/messages/services/mensajeria.service';
 
 interface StatSummary {
   readonly tipoId: number;
@@ -43,9 +45,13 @@ export class PlayerDetailPage implements OnInit {
   private readonly router = inject(Router);
   private readonly service = inject(JugadorService);
   private readonly statsService = inject(EstadisticaService);
+  private readonly mensajeria = inject(MensajeriaService);
+  private readonly auth = inject(AuthService);
   private readonly toast = inject(ToastService);
   private readonly confirm = inject(ConfirmDialogService);
   private readonly destroyRef = inject(DestroyRef);
+
+  readonly openingChat = signal(false);
 
   readonly loading = signal(true);
   readonly jugador = signal<Jugador | null>(null);
@@ -55,6 +61,30 @@ export class PlayerDetailPage implements OnInit {
     const j = this.jugador();
     if (!j) return '';
     return `${j.nombre}${j.apellidos ? ' ' + j.apellidos : ''}`;
+  });
+
+  /**
+   * Solo el admin de sistema y el propio usuario vinculado al jugador pueden
+   * borrar el registro completo. Para retirar a un jugador de un equipo se usa
+   * el flujo "Dar de baja" que vive en el detalle del equipo.
+   */
+  readonly canDelete = computed(() => {
+    const j = this.jugador();
+    if (!j) return false;
+    if (this.auth.isAdminSistema()) return true;
+    const userId = this.auth.currentUser()?.id;
+    return userId != null && j.usuarioId === userId;
+  });
+
+  /**
+   * El botón "Enviar mensaje" sólo se muestra cuando el jugador tiene una
+   * cuenta de usuario vinculada y no eres tú mismo.
+   */
+  readonly canMessage = computed(() => {
+    const j = this.jugador();
+    if (!j || j.usuarioId == null) return false;
+    const userId = this.auth.currentUser()?.id;
+    return userId != null && j.usuarioId !== userId;
   });
 
   readonly statsByType = computed<readonly StatSummary[]>(() => {
@@ -125,6 +155,26 @@ export class PlayerDetailPage implements OnInit {
         this.router.navigate(['/app/dashboard']);
       },
       error: (err: ApiError) => this.toast.error(err.message ?? 'No se pudo eliminar'),
+    });
+  }
+
+  /**
+   * Abre (o crea) la conversación con el usuario vinculado al jugador y
+   * navega al detalle de mensajería.
+   */
+  enviarMensaje(): void {
+    const j = this.jugador();
+    if (!j || j.usuarioId == null) return;
+    this.openingChat.set(true);
+    this.mensajeria.buscarOCrear$({ destinatarioId: j.usuarioId }).subscribe({
+      next: (conv) => {
+        this.openingChat.set(false);
+        this.router.navigate(['/app/messages', conv.id]);
+      },
+      error: (err: ApiError) => {
+        this.openingChat.set(false);
+        this.toast.error(err.message ?? 'No se pudo abrir la conversación');
+      },
     });
   }
 }

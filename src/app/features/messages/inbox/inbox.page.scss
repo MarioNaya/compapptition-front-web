@@ -13,6 +13,35 @@
   justify-content: center;
 }
 
+.new-conv {
+  padding: 20px 24px;
+  margin: 16px 0 24px;
+
+  .panel-title {
+    font-size: 14px;
+    letter-spacing: 0.12em;
+    color: var(--accent-hi);
+    margin: 0 0 6px;
+  }
+
+  .hint {
+    color: var(--text-sec);
+    font-size: 12px;
+    line-height: 1.5;
+    margin: 0 0 14px;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+
+    @media (max-width: 540px) {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
 .conv-list {
   list-style: none;
   margin: 0;

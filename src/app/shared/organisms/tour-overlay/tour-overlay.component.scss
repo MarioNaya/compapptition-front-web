@@ -1,0 +1,102 @@
+:host {
+  display: contents;
+}
+
+.tour-root {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  // El spotlight intercepta clicks fuera del recorte; el tooltip recibe los
+  // suyos. Así evitamos que el usuario interactúe con la app por accidente.
+}
+
+.tour-spotlight {
+  position: fixed;
+  border-radius: var(--radius-md);
+  pointer-events: auto;
+  // Box-shadow gigantesco que oscurece todo lo demás, dejando ver el target
+  // como si fuera un agujero. El borde naranja remarca el elemento activo.
+  box-shadow:
+    0 0 0 9999px rgba(0, 0, 0, 0.65),
+    0 0 0 2px var(--accent),
+    0 0 24px 2px var(--accent-glow);
+  transition: top 240ms ease, left 240ms ease, width 240ms ease, height 240ms ease;
+}
+
+.tour-tooltip {
+  position: fixed;
+  pointer-events: auto;
+  background: var(--bg-2);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px 14px;
+  box-shadow: var(--shadow-modal);
+  color: var(--text-pri);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: tourFade 180ms ease-out;
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+
+    .step-counter {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      color: var(--text-mute);
+      text-transform: uppercase;
+    }
+
+    .close {
+      background: none;
+      border: none;
+      color: var(--text-mute);
+      cursor: pointer;
+      padding: 2px;
+      border-radius: 4px;
+      transition: color 120ms ease;
+
+      &:hover {
+        color: var(--accent-hi);
+      }
+    }
+  }
+
+  .title {
+    font-size: 18px;
+    margin: 0;
+    color: var(--text-pri);
+    line-height: 1.2;
+  }
+
+  .description {
+    margin: 0;
+    color: var(--text-sec);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+  }
+}
+
+@keyframes tourFade {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 480px) {
+  .tour-tooltip {
+    width: calc(100vw - 24px) !important;
+    left: 12px !important;
+  }
+}

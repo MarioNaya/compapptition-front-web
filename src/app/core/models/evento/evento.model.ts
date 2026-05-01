@@ -18,6 +18,12 @@ export interface Evento {
   partidoAnteriorLocalId?: number;
   partidoAnteriorVisitanteId?: number;
   numeroPartido?: number;
+  /**
+   * Solo presente en EventoDetalleDTO. `true` si el partido es de playoff y la
+   * fase de la que depende (liga, grupos o ronda anterior del bracket) aún no
+   * ha terminado. El frontend deshabilita acciones de edición en ese caso.
+   */
+  bloqueado?: boolean;
 }
 
 export enum EstadoEvento {

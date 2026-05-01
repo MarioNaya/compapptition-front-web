@@ -250,18 +250,43 @@ export class PlayoffBracketComponent {
     // Invertir: ronda más profunda (cuartos/octavos) primero.
     const rounds = [...roundsFromRoot].reverse();
 
-    return rounds.map((round) =>
+    const built = rounds.map((round) =>
       round
         .slice()
         .sort((a, b) => (a.numeroPartido ?? 0) - (b.numeroPartido ?? 0))
         .map((e) => this.toNodeData(e)),
     );
+
+    // Primera ronda + bracket completo: si todos los eventos están bloqueados
+    // sustituimos los nombres reales por las etiquetas de seeding (1º vs Nº)
+    // para evitar mostrar equipos provisionales antes de cerrar la fase regular.
+    if (built.length > 0 && built[0]!.length >= 1) {
+      const firstRound = built[0]!;
+      const allLocked = firstRound.every((n) => n.state === 'placeholder');
+      if (allLocked) {
+        const tamBracket = firstRound.length * 2;
+        if (tamBracket >= 2 && (tamBracket & (tamBracket - 1)) === 0) {
+          const pairings = buildPairings(tamBracket);
+          built[0] = firstRound.map((n, idx) => {
+            const pair = pairings[idx];
+            if (!pair) return n;
+            return { ...n, homeLabel: ordinal(pair[0]), awayLabel: ordinal(pair[1]) };
+          });
+        }
+      }
+    }
+
+    return built;
   }
 
   private toNodeData(e: Evento): BracketNodeData {
     let state: BracketNodeData['state'] = 'pending';
     if (e.estado === EstadoEvento.FINALIZADO) state = 'finalized';
     else if (e.estado === EstadoEvento.EN_CURSO) state = 'live';
+    // Si el evento está bloqueado (depende de fase aún no finalizada) lo
+    // tratamos como placeholder: las etiquetas reales se sustituyen por
+    // seeds en buildFromEventos para no mostrar equipos provisionales.
+    if (e.bloqueado) state = 'placeholder';
     return {
       id: e.id,
       round: e.jornada ?? 0,

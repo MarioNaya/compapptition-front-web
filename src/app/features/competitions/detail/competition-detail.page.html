@@ -8,6 +8,7 @@
       [eyebrow]="c.deporteNombre"
       [title]="c.nombre"
       [subtitle]="c.descripcion ?? null"
+      data-tour="comp-actions"
     >
       <app-status-tag [state]="c.estado" />
       @if (canManage()) {
@@ -21,6 +22,9 @@
         </app-button>
         <app-button variant="ghost" (clicked)="goNewEvent()">
           <app-icon name="plus" [size]="14" /> Nuevo partido
+        </app-button>
+        <app-button variant="ghost" (clicked)="toggleInviteArbitro()">
+          <app-icon name="whistle" [size]="14" /> Invitar árbitro
         </app-button>
       }
       @if (canActivate()) {
@@ -40,6 +44,47 @@
       }
     </app-page-header>
 
+    @if (showInviteArbitro()) {
+      <section class="invite-arbitro card">
+        <h3 class="h-display panel-title">Invitar árbitro a la competición</h3>
+        <p class="hint mono">
+          El árbitro podrá registrar resultados y estadísticas de los partidos.
+          Indica un email o un nombre de usuario; el backend valida si ya está
+          registrado y, si no, le envía un email con la invitación.
+        </p>
+        <div class="grid">
+          <input
+            class="input"
+            type="email"
+            placeholder="email&#64;ejemplo.com"
+            [value]="arbitroEmail()"
+            (input)="onArbitroEmail($any($event.target).value)"
+          />
+          <input
+            class="input"
+            type="text"
+            placeholder="nombre de usuario"
+            [value]="arbitroUsername()"
+            (input)="onArbitroUsername($any($event.target).value)"
+          />
+        </div>
+        <div class="actions">
+          <app-button variant="ghost" (clicked)="toggleInviteArbitro()">Cancelar</app-button>
+          <app-button
+            variant="primary"
+            (clicked)="enviarInvitacionArbitro()"
+            [disabled]="invitingArbitro() || (!arbitroEmail().trim() && !arbitroUsername().trim())"
+          >
+            @if (invitingArbitro()) {
+              <app-spinner size="sm" />
+            } @else {
+              <app-icon name="mail" [size]="14" /> Enviar invitación
+            }
+          </app-button>
+        </div>
+      </section>
+    }
+
     <section class="meta">
       <div class="meta-item">
         <span class="label h-display">Creador</span>
@@ -52,7 +97,7 @@
       @if (c.configuracion?.formato; as f) {
         <div class="meta-item">
           <span class="label h-display">Formato</span>
-          <span class="value">{{ f }}</span>
+          <span class="value">{{ formatoLabel(f) }}</span>
         </div>
       }
       <div class="meta-item">
@@ -62,6 +107,7 @@
     </section>
 
     <app-tabs
+      data-tour="comp-tabs"
       [options]="tabs()"
       [value]="activeTab()"
       (valueChange)="onTabChange($event)"

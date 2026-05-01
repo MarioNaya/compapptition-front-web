@@ -8,9 +8,20 @@
       [title]="displayName()"
       [subtitle]="j.dorsal ? 'Dorsal #' + j.dorsal : null"
     >
-      <app-button variant="orange-ghost" (clicked)="askDelete()">
-        <app-icon name="trash" [size]="14" /> Eliminar
-      </app-button>
+      @if (canMessage()) {
+        <app-button variant="ghost" (clicked)="enviarMensaje()" [disabled]="openingChat()">
+          @if (openingChat()) {
+            <app-spinner size="sm" />
+          } @else {
+            <app-icon name="mail" [size]="14" /> Enviar mensaje
+          }
+        </app-button>
+      }
+      @if (canDelete()) {
+        <app-button variant="orange-ghost" (clicked)="askDelete()">
+          <app-icon name="trash" [size]="14" /> Eliminar
+        </app-button>
+      }
     </app-page-header>
 
     <section class="hero card">

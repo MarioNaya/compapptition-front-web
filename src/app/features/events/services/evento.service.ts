@@ -71,4 +71,31 @@ export class EventoService {
       req,
     );
   }
+
+  /**
+   * Cambia el estado del evento manualmente. Pensado para que el admin de
+   * competición reabra un partido FINALIZADO con un resultado erróneo
+   * (al reabrir, el backend limpia los marcadores y recalcula la clasificación).
+   */
+  cambiarEstado$(competicionId: number, id: number, estado: string): Observable<Evento> {
+    return this.http.patch<Evento>(
+      `${this.base}/${competicionId}/eventos/${id}/estado`,
+      null,
+      { params: { estado } },
+    );
+  }
+
+  /**
+   * Lista las estadísticas registradas en un evento concreto (todos los jugadores
+   * de los dos equipos). Se usa para mostrar la tabla del partido tanto en estado
+   * abierto como finalizado.
+   */
+  estadisticas$(
+    competicionId: number,
+    eventoId: number,
+  ): Observable<import('@core/models/estadistica/estadistica.model').EstadisticaJugador[]> {
+    return this.http.get<
+      import('@core/models/estadistica/estadistica.model').EstadisticaJugador[]
+    >(`${this.base}/${competicionId}/eventos/${eventoId}/estadisticas`);
+  }
 }

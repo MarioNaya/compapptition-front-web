@@ -32,23 +32,23 @@
       </div>
     </section>
   } @else {
-    <section class="stats-row">
-      <div class="stat-card">
+    <section class="stats-row" data-tour="dashboard-stats">
+      <a class="stat-card" routerLink="/app/competitions" [queryParams]="{ mine: 1 }">
         <span class="stat-label">Competiciones</span>
         <span class="stat-value">{{ stats().competiciones }}</span>
-      </div>
-      <div class="stat-card">
+      </a>
+      <a class="stat-card" routerLink="/app/teams" [queryParams]="{ mine: 1 }">
         <span class="stat-label">Equipos</span>
         <span class="stat-value">{{ stats().equipos }}</span>
-      </div>
-      <div class="stat-card">
+      </a>
+      <a class="stat-card" routerLink="/app/matches">
         <span class="stat-label">Próximos partidos</span>
         <span class="stat-value">{{ stats().partidosProgramados }}</span>
-      </div>
-      <div class="stat-card" [class.highlight]="stats().invitaciones > 0">
+      </a>
+      <a class="stat-card" routerLink="/app/invitations" [class.highlight]="stats().invitaciones > 0">
         <span class="stat-label">Invitaciones</span>
         <span class="stat-value">{{ stats().invitaciones }}</span>
-      </div>
+      </a>
     </section>
 
     @if (loadingEventos() && !nextMatch()) {
@@ -56,7 +56,7 @@
         <app-spinner size="sm" label="Cargando tu próximo partido" />
       </section>
     } @else if (nextMatch(); as m) {
-      <section class="hero" (click)="openMatch(m)" (keydown.enter)="openMatch(m)" tabindex="0">
+      <section class="hero" data-tour="dashboard-hero" (click)="openMatch(m)" (keydown.enter)="openMatch(m)" tabindex="0">
         <app-notch-card tag="Próximo partido">
           <div class="hero-inner">
             <app-team-pair
@@ -82,19 +82,22 @@
       </section>
     }
 
-    <section class="section">
+    <section class="section" data-tour="dashboard-calendar">
       <app-calendar-strip [events]="todosEventos()" [windowDays]="15" />
     </section>
 
     <div class="grid-2col">
-      <section class="widget card main-widget">
+      <section class="widget card main-widget" data-tour="dashboard-competitions">
         <header class="widget-head">
           <h3>Tus competiciones</h3>
           @if (misCompeticiones().length > 0) {
             <span class="count-pill">{{ misCompeticiones().length }}</span>
           }
+          <a routerLink="/app/competitions" [queryParams]="{ mine: 1 }" class="see-all-link">
+            Ver todas <app-icon name="chev-r" [size]="12" />
+          </a>
         </header>
-        @if (loadingParticipadas()) {
+        @if (loadingPorRol()) {
           <div class="widget-loading"><app-spinner size="sm" /></div>
         } @else if (misCompeticiones().length === 0) {
           <app-empty-state
@@ -107,16 +110,28 @@
             </app-button>
           </app-empty-state>
         } @else {
-          <div class="comp-grid">
-            @for (c of misCompeticiones(); track c.id) {
-              <app-competition-card [competicion]="c" (opened)="openCompetition($event)" />
+          <div class="comp-groups">
+            @for (g of compGroups(); track g.key) {
+              @if (g.items.length > 0) {
+                <div class="comp-group">
+                  <header class="comp-group-head">
+                    <h4>{{ g.title }}</h4>
+                    <span class="count-pill">{{ g.items.length }}</span>
+                  </header>
+                  <div class="comp-grid">
+                    @for (c of g.items; track c.id) {
+                      <app-competition-card [competicion]="c" (opened)="openCompetition($event)" />
+                    }
+                  </div>
+                </div>
+              }
             }
           </div>
         }
       </section>
 
       <aside class="side">
-        <section class="widget card cta-widget">
+        <section class="widget card cta-widget" data-tour="dashboard-shortcuts">
           <header class="widget-head">
             <h3>Atajos</h3>
           </header>
@@ -137,7 +152,7 @@
               <span class="count-pill accent">{{ invitacionesRecibidasPend().length }}</span>
             </header>
             <ul class="widget-list">
-              @for (inv of invitacionesRecibidasPend().slice(0, 3); track inv.id) {
+              @for (inv of invitacionesRecibidasPend().slice(0, 5); track inv.id) {
                 <li>
                   <a routerLink="/app/invitations" class="widget-item">
                     <app-icon name="bell" [size]="14" />
@@ -157,13 +172,13 @@
         }
 
         @if (misEquipos().length > 0) {
-          <section class="widget card">
+          <section class="widget card" data-tour="dashboard-myteams">
             <header class="widget-head">
               <h3>Mis equipos</h3>
               <span class="count-pill">{{ misEquipos().length }}</span>
             </header>
             <ul class="widget-list">
-              @for (e of misEquipos().slice(0, 4); track e.id) {
+              @for (e of misEquipos().slice(0, 6); track e.id) {
                 <li>
                   <a [routerLink]="['/app/teams', e.id]" class="widget-item">
                     <app-icon name="users" [size]="14" />
@@ -176,11 +191,16 @@
                 </li>
               }
             </ul>
+            @if (misEquipos().length > 6) {
+              <a routerLink="/app/teams" [queryParams]="{ mine: 1 }" class="see-all">
+                Ver todos los {{ misEquipos().length }} equipos →
+              </a>
+            }
           </section>
         }
 
         @if (gestionesCount() > 0) {
-          <section class="widget card">
+          <section class="widget card" data-tour="dashboard-pending">
             <header class="widget-head">
               <h3>Gestiones pendientes</h3>
               <span class="count-pill">{{ gestionesCount() }}</span>

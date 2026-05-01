@@ -15,12 +15,12 @@
       @if (!selectedEquipo()) {
         <h3 class="h-display panel-title">1. Elige el equipo a invitar</h3>
         <p class="hint mono">
-          Buscaremos entre todos los equipos. Al elegir uno se enviará una invitación al
-          email del manager para unirse a esta competición.
+          Solo aparecen equipos públicos. Para invitar un equipo privado necesitarás
+          el código de 8 caracteres que te facilite su creador.
         </p>
         <app-search-bar
           [value]="searchTerm()"
-          placeholder="Busca por nombre…"
+          placeholder="Busca un equipo público por nombre…"
           (valueChange)="onSearchChange($event)"
         />
         <div class="results">
@@ -28,7 +28,8 @@
             <div class="loading-inline"><app-spinner size="sm" label="Buscando" /></div>
           } @else if (availableResults().length === 0) {
             <p class="hint mono">
-              No se encontraron equipos disponibles. Prueba otra búsqueda o crea uno nuevo.
+              No se encontraron equipos disponibles. Prueba otra búsqueda, usa un código
+              de invitación o crea uno nuevo.
             </p>
           } @else {
             <ul class="result-list">
@@ -37,12 +38,45 @@
                   <app-team-crest [name]="e.nombre" [imageUrl]="e.escudoUrl ?? null" size="sm" />
                   <div class="info">
                     <span class="name">{{ e.nombre }}</span>
-                    <span class="mono meta">{{ e.tipo }} · {{ e.numJugadores }} jugadores</span>
+                    <span class="mono meta">{{ e.numJugadores }} jugadores</span>
                   </div>
                   <app-icon name="chev-r" [size]="14" />
                 </li>
               }
             </ul>
+          }
+        </div>
+
+        <div class="codigo-section">
+          <h4 class="h-display sub-title">¿Tienes un código de invitación?</h4>
+          <p class="hint mono">
+            Los equipos privados no aparecen en el buscador. Pega el código de 8 caracteres
+            que te ha facilitado el creador para invitarlos.
+          </p>
+          <div class="row">
+            <input
+              class="input codigo-input"
+              type="text"
+              maxlength="20"
+              placeholder="Ej. AB23CDEF"
+              [value]="codigoInput()"
+              (input)="onCodigoChange($any($event.target).value)"
+              (keydown.enter)="resolverCodigo()"
+            />
+            <app-button
+              variant="ghost"
+              (clicked)="resolverCodigo()"
+              [disabled]="resolvingCodigo() || !codigoInput().trim()"
+            >
+              @if (resolvingCodigo()) {
+                <app-spinner size="sm" />
+              } @else {
+                Buscar por código
+              }
+            </app-button>
+          </div>
+          @if (codigoError()) {
+            <p class="hint error">{{ codigoError() }}</p>
           }
         </div>
       } @else {
@@ -55,7 +89,7 @@
           />
           <div class="info">
             <span class="name">{{ selectedEquipo()!.nombre }}</span>
-            <span class="mono meta">{{ selectedEquipo()!.tipo }}</span>
+            <span class="mono meta">{{ selectedEquipo()!.publico ? 'Público' : 'Privado' }}</span>
           </div>
           <button class="link" type="button" (click)="backToSearch()">
             <app-icon name="chev-l" [size]="12" /> Cambiar

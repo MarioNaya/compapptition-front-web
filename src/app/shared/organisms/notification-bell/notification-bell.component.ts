@@ -97,6 +97,11 @@ export class NotificationBellComponent implements OnInit {
     if (n.link) this.router.navigate([...n.link]);
   }
 
+  remove(n: NotifView, ev: Event): void {
+    ev.stopPropagation();
+    this.service.eliminar$(n.id).subscribe();
+  }
+
   private toView(n: Notificacion): NotifView {
     const payload = n.payload ?? {};
     let detail = '';
@@ -117,7 +122,16 @@ export class NotificationBellComponent implements OnInit {
         break;
       }
       case TipoNotificacion.RESULTADO_REGISTRADO: {
-        detail = String(payload['resultado'] ?? 'Nuevo resultado en un partido');
+        const local = payload['localNombre'];
+        const visitante = payload['visitanteNombre'];
+        const resultado = payload['resultado'];
+        if (local && visitante && resultado) {
+          detail = `${local} vs ${visitante} · ${resultado}`;
+        } else if (local && visitante) {
+          detail = `${local} vs ${visitante}`;
+        } else {
+          detail = String(resultado ?? 'Nuevo resultado en un partido');
+        }
         const compId = payload['competicionId'];
         const eventoId = payload['eventoId'];
         link = compId != null && eventoId != null ? ['/app/competitions', compId, 'events', eventoId] : null;

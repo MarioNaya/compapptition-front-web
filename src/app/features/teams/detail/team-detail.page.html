@@ -4,16 +4,18 @@
   } @else if (equipo(); as e) {
     <app-page-header
       [back]="true"
-      [eyebrow]="e.tipo"
+      [eyebrow]="e.publico ? 'Público' : 'Privado'"
       [title]="e.nombre"
       [subtitle]="e.descripcion ?? null"
     >
-      <app-button variant="ghost" (clicked)="goEdit()">
-        <app-icon name="edit" [size]="14" /> Editar
-      </app-button>
-      <app-button variant="orange-ghost" (clicked)="askDelete()">
-        <app-icon name="trash" [size]="14" /> Eliminar
-      </app-button>
+      @if (canManage()) {
+        <app-button variant="ghost" (clicked)="goEdit()">
+          <app-icon name="edit" [size]="14" /> Editar
+        </app-button>
+        <app-button variant="orange-ghost" (clicked)="askDelete()">
+          <app-icon name="trash" [size]="14" /> Eliminar
+        </app-button>
+      }
     </app-page-header>
 
     <section class="hero card">
@@ -23,15 +25,33 @@
           <span class="label h-display">Jugadores</span>
           <span class="value">{{ e.numJugadores }}</span>
         </div>
+        @if (!e.publico && e.codigoInvitacion) {
+          <div class="meta-row codigo-row">
+            <span class="label h-display">Código de invitación</span>
+            <code class="codigo">{{ e.codigoInvitacion }}</code>
+            <button type="button" class="link" (click)="copiarCodigo()">
+              <app-icon name="copy" [size]="14" /> Copiar
+            </button>
+            <button type="button" class="link link-danger" (click)="regenerarCodigo()">
+              <app-icon name="refresh" [size]="14" /> Regenerar
+            </button>
+          </div>
+          <p class="hint mono">
+            Compártelo con el admin de la competición para que pueda invitar a este equipo.
+            Si lo regeneras, el anterior deja de servir.
+          </p>
+        }
       </div>
     </section>
 
     <div class="plantilla-head">
       <h2 class="h-display section-title">Plantilla</h2>
-      <app-button variant="primary" (clicked)="toggleAdd()">
-        <app-icon [name]="showAdd() ? 'x' : 'plus'" [size]="14" />
-        {{ showAdd() ? 'Cerrar' : 'Añadir jugador' }}
-      </app-button>
+      @if (canManage()) {
+        <app-button variant="primary" (clicked)="toggleAdd()">
+          <app-icon [name]="showAdd() ? 'x' : 'plus'" [size]="14" />
+          {{ showAdd() ? 'Cerrar' : 'Añadir jugador' }}
+        </app-button>
+      }
     </div>
 
     @if (showAdd()) {
@@ -184,6 +204,58 @@
       >
         <app-icon name="trash" [size]="14" />
       </button>
+    </ng-template>
+
+    <!--
+      Celda del dorsal en modo lectura/edición. En lectura muestra el número
+      con un botón discreto de lápiz (solo si se puede gestionar). Click →
+      input inline; Enter guarda, Esc/blur cancela.
+    -->
+    <ng-template #dorsalCell let-j>
+      @if (editingDorsalId() === j.id) {
+        <div class="dorsal-edit" (click)="$event.stopPropagation()">
+          <input
+            class="input dorsal-input"
+            type="number"
+            min="0"
+            step="1"
+            placeholder="—"
+            [value]="dorsalDraft() ?? ''"
+            (input)="onDorsalDraftChange($any($event.target).value)"
+            (keydown.enter)="saveDorsal(j, $event)"
+            (keydown.escape)="cancelEditDorsal($event)"
+            [disabled]="savingDorsalId() === j.id"
+            autofocus
+          />
+          <button
+            type="button"
+            class="row-action-btn primary"
+            title="Guardar"
+            (click)="saveDorsal(j, $event)"
+            [disabled]="savingDorsalId() === j.id"
+          >
+            <app-icon name="check" [size]="14" />
+          </button>
+          <button
+            type="button"
+            class="row-action-btn"
+            title="Cancelar"
+            (click)="cancelEditDorsal($event)"
+          >
+            <app-icon name="x" [size]="14" />
+          </button>
+        </div>
+      } @else {
+        <button
+          type="button"
+          class="dorsal-cell"
+          (click)="startEditDorsal(j, $event)"
+          title="Editar dorsal"
+        >
+          <span class="value">{{ j.dorsal ?? '—' }}</span>
+          <app-icon name="edit" [size]="11" />
+        </button>
+      }
     </ng-template>
 
     <app-data-table

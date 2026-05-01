@@ -1,23 +1,25 @@
 <header class="page-header">
-  @if (showBack()) {
-    @if (backAsLink(); as link) {
-      <a class="back-btn" [routerLink]="link" aria-label="Volver">
-        <app-icon name="chev-l" [size]="18" />
-      </a>
-    } @else {
-      <button type="button" class="back-btn" (click)="onBackClick($event)" aria-label="Volver">
-        <app-icon name="chev-l" [size]="18" />
-      </button>
+  <div class="header-top">
+    @if (showBack()) {
+      @if (backAsLink(); as link) {
+        <a class="back-btn" [routerLink]="link" aria-label="Volver">
+          <app-icon name="chev-l" [size]="18" />
+        </a>
+      } @else {
+        <button type="button" class="back-btn" (click)="onBackClick($event)" aria-label="Volver">
+          <app-icon name="chev-l" [size]="18" />
+        </button>
+      }
     }
-  }
-  <div class="main">
-    @if (eyebrow(); as e) {
-      <p class="eyebrow h-display">{{ e }}</p>
-    }
-    <h1 class="title h-display">{{ title() }}</h1>
-    @if (subtitle(); as s) {
-      <p class="subtitle">{{ s }}</p>
-    }
+    <div class="main">
+      @if (eyebrow(); as e) {
+        <p class="eyebrow h-display">{{ e }}</p>
+      }
+      <h1 class="title h-display">{{ title() }}</h1>
+      @if (subtitle(); as s) {
+        <p class="subtitle">{{ s }}</p>
+      }
+    </div>
   </div>
   <div class="actions">
     <ng-content />

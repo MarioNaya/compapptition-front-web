@@ -34,22 +34,23 @@
 
 .form {
   display: grid;
-  grid-template-columns: 2fr 2fr 1fr auto;
+  // Tres columnas para los form-fields; el botón se desplaza a su propia fila
+  // para que el hint dinámico del campo "Valor" no desalinee el resto.
+  grid-template-columns: 2fr 2fr 1fr;
   gap: 14px;
-  align-items: end;
+  align-items: start;
 }
 
 .actions {
+  grid-column: 1 / -1;
   display: flex;
   justify-content: flex-end;
+  margin-top: 4px;
 }
 
 @media (max-width: 860px) {
   .form {
     grid-template-columns: 1fr 1fr;
-  }
-  .actions {
-    grid-column: 1 / -1;
   }
 }
 

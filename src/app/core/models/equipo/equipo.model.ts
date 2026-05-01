@@ -5,15 +5,16 @@ export interface Equipo {
   nombre: string;
   descripcion?: string;
   escudoUrl?: string;
-  tipo: TipoEquipo;
+  /**
+   * Visibilidad del equipo. Los públicos aparecen en el buscador al inscribir
+   * en una competición; los privados sólo se invitan vía código.
+   */
+  publico: boolean;
+  /** Código de 8 caracteres. Sólo presente cuando `publico === false`. */
+  codigoInvitacion?: string | null;
   fechaCreacion: string;
   numJugadores: number;
   creadorId?: number;
   creadorUsername?: string;
   jugadores?: JugadorSimple[];
-}
-
-export enum TipoEquipo {
-  GESTIONADO = 'GESTIONADO',
-  ESTANDAR = 'ESTANDAR'
 }

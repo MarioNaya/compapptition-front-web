@@ -3,11 +3,10 @@
     eyebrow="Perfil"
     [title]="displayName() || 'Perfil'"
     [subtitle]="user()?.email ?? null"
-  >
-    <app-button variant="ghost" (clicked)="logout()">
-      <app-icon name="logout" [size]="14" /> Cerrar sesión
-    </app-button>
-  </app-page-header>
+  />
+  <!-- El botón "Cerrar sesión" ahora vive al final de la página, junto a la
+       zona peligrosa, para evitar que se pulse por accidente al entrar. -->
+
 
   <div class="grid">
     <aside class="side card">
@@ -68,6 +67,16 @@
             </app-button>
           </div>
         </form>
+      </div>
+
+      <div class="section card">
+        <h2 class="h-display section-title">Sesión</h2>
+        <p class="hint">Cierra sesión en este dispositivo.</p>
+        <div class="actions">
+          <app-button variant="ghost" (clicked)="logout()">
+            <app-icon name="logout" [size]="14" /> Cerrar sesión
+          </app-button>
+        </div>
       </div>
 
       <div class="section card danger">

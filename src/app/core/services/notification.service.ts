@@ -106,8 +106,37 @@ export class NotificationService {
       );
   }
 
+  /**
+   * Borra una notificación del servidor y de la lista local. Permite que el
+   * usuario limpie individualmente entradas del dropdown de la campana.
+   */
+  eliminar$(id: number): Observable<void> {
+    return this.http
+      .delete<void>(`${this.base}/${id}`)
+      .pipe(tap(() => this._items.update((items) => items.filter((n) => n.id !== id))));
+  }
+
+  /**
+   * Elimina todas las notificaciones leídas del usuario y actualiza el listado
+   * local descartándolas también de memoria.
+   */
+  eliminarLeidas$(): Observable<{ eliminadas: number }> {
+    return this.http
+      .delete<{ eliminadas: number }>(`${this.base}/leidas`)
+      .pipe(tap(() => this._items.update((items) => items.filter((n) => !n.leida))));
+  }
+
+  /**
+   * Mantiene la lista en memoria acotada al cap del dropdown (10). Las notifs
+   * antiguas siguen accesibles vía el endpoint paginado `/notificaciones`.
+   */
+  private static readonly DROPDOWN_CAP = 10;
+
   private prepend(n: Notificacion): void {
-    this._items.update((items) => [n, ...items.filter((x) => x.id !== n.id)]);
+    this._items.update((items) => {
+      const dedup = items.filter((x) => x.id !== n.id);
+      return [n, ...dedup].slice(0, NotificationService.DROPDOWN_CAP);
+    });
   }
 
   private markLocal(id: number, leida: boolean): void {

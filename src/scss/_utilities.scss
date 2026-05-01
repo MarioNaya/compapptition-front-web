@@ -4,6 +4,17 @@
   margin: 0 auto;
   padding: 0 32px;
   width: 100%;
+  // Evita que un elemento ancho dentro del container desborde y mueva la
+  // página entera lateralmente. Si necesitas scroll horizontal explícito
+  // (tabla larga, calendar-strip), añade overflow-x:auto al contenedor que
+  // toque, no aquí.
+  min-width: 0;
+}
+
+@media (max-width: 540px) {
+  .container {
+    padding: 0 16px;
+  }
 }
 
 // Typography utilities

@@ -32,7 +32,7 @@
           <li class="empty">No tienes notificaciones</li>
         } @else {
           @for (n of items(); track n.id) {
-            <li>
+            <li class="notif-li">
               <button
                 type="button"
                 class="notif-item"
@@ -50,10 +50,25 @@
                   <span class="dot" aria-hidden="true"></span>
                 }
               </button>
+              <button
+                type="button"
+                class="notif-delete"
+                (click)="remove(n, $event)"
+                aria-label="Eliminar notificación"
+                title="Eliminar"
+              >
+                <app-icon name="x" [size]="12" />
+              </button>
             </li>
           }
         }
       </ul>
+
+      <footer class="panel-foot">
+        <a routerLink="/app/notifications" class="see-all" (click)="close()">
+          Ver historial completo →
+        </a>
+      </footer>
     </div>
   }
 </div>

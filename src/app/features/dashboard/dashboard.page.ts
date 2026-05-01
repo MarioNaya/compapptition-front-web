@@ -3,7 +3,11 @@ import { Router, RouterLink } from '@angular/router';
 import { DatePipe, UpperCasePipe } from '@angular/common';
 import { forkJoin, of, switchMap } from 'rxjs';
 import { AuthService } from '@core/services/auth.service';
-import { CompeticionSimple, EstadoCompeticion } from '@core/models/competicion/competicion.model';
+import {
+  CompeticionSimple,
+  EstadoCompeticion,
+  MisCompeticionesPorRol,
+} from '@core/models/competicion/competicion.model';
 import { Equipo } from '@core/models/equipo/equipo.model';
 import { Evento, EstadoEvento } from '@core/models/evento/evento.model';
 import { Invitacion, EstadoInvitacion } from '@core/models/invitacion/invitacion.model';
@@ -24,6 +28,22 @@ import { EquipoService } from '@features/teams/services/equipo.service';
 import { InvitacionService } from '@features/invitations/services/invitacion.service';
 
 type EquipoConRol = Equipo & { rol: string };
+
+type RolKey = 'admin' | 'manager' | 'arbitro' | 'jugador';
+
+interface CompGroup {
+  readonly key: RolKey;
+  readonly title: string;
+  readonly emptyMessage: string;
+  readonly items: readonly CompeticionSimple[];
+}
+
+const EMPTY_POR_ROL: MisCompeticionesPorRol = {
+  admin: [],
+  manager: [],
+  arbitro: [],
+  jugador: [],
+};
 
 @Component({
   selector: 'app-dashboard-page',
@@ -60,7 +80,7 @@ export class DashboardPage implements OnInit {
   // Loading por fuente. Cada sección del template comprueba el suyo, no un
   // loading global bloqueante. Permite que el esqueleto aparezca de inmediato
   // y cada widget se pueble según llega su respuesta.
-  readonly loadingParticipadas = signal(true);
+  readonly loadingPorRol = signal(true);
   readonly loadingCreadas = signal(true);
   readonly loadingEquiposManager = signal(true);
   readonly loadingEquiposCreados = signal(true);
@@ -69,7 +89,7 @@ export class DashboardPage implements OnInit {
   readonly loadingEnviadas = signal(true);
   readonly loadingEventos = signal(true);
 
-  readonly misCompeticiones = signal<readonly CompeticionSimple[]>([]);
+  readonly misPorRol = signal<MisCompeticionesPorRol>(EMPTY_POR_ROL);
   readonly misCreadas = signal<readonly CompeticionSimple[]>([]);
   private readonly _equiposManager = signal<readonly Equipo[]>([]);
   private readonly _equiposCreados = signal<readonly Equipo[]>([]);
@@ -79,6 +99,53 @@ export class DashboardPage implements OnInit {
   private readonly _todosEventos = signal<readonly Evento[]>([]);
 
   readonly todosEventos = this._todosEventos.asReadonly();
+
+  /**
+   * Unión deduplicada (por id) de las cuatro listas. Sirve como fuente de
+   * verdad para fan-out de eventos, contadores y onboarding.
+   */
+  readonly misCompeticiones = computed<readonly CompeticionSimple[]>(() => {
+    const por = this.misPorRol();
+    const map = new Map<number, CompeticionSimple>();
+    for (const c of [...por.admin, ...por.manager, ...por.arbitro, ...por.jugador]) {
+      map.set(c.id, c);
+    }
+    return [...map.values()];
+  });
+
+  /**
+   * Lista ordenada de los 4 grupos para el render del dashboard.
+   * Cada grupo se pinta solo si tiene al menos una competición.
+   */
+  readonly compGroups = computed<readonly CompGroup[]>(() => {
+    const por = this.misPorRol();
+    return [
+      {
+        key: 'admin' as const,
+        title: 'Como administrador',
+        emptyMessage: 'No administras ninguna competición.',
+        items: por.admin,
+      },
+      {
+        key: 'manager' as const,
+        title: 'Como manager de equipo',
+        emptyMessage: 'No gestionas equipos en ninguna competición.',
+        items: por.manager,
+      },
+      {
+        key: 'arbitro' as const,
+        title: 'Como árbitro',
+        emptyMessage: 'No arbitras ninguna competición.',
+        items: por.arbitro,
+      },
+      {
+        key: 'jugador' as const,
+        title: 'Como jugador',
+        emptyMessage: 'No estás inscrito como jugador en ninguna competición.',
+        items: por.jugador,
+      },
+    ];
+  });
 
   /**
    * Unión de equipos del usuario: creador + manager + jugador. Deduplica por
@@ -120,9 +187,21 @@ export class DashboardPage implements OnInit {
     this.invitacionesRecibidas().filter((i) => i.estado === EstadoInvitacion.PENDIENTE),
   );
 
-  readonly invitacionesEnviadasPend = computed(() =>
-    this.invitacionesEnviadas().filter((i) => i.estado === EstadoInvitacion.PENDIENTE),
-  );
+  readonly invitacionesEnviadasPend = computed(() => {
+    const now = Date.now();
+    return this.invitacionesEnviadas().filter((i) => {
+      if (i.estado !== EstadoInvitacion.PENDIENTE) return false;
+      // Algunas invitaciones se quedan en BD con estado PENDIENTE pero con
+      // la fecha de expiración pasada (el backend solo las marca EXPIRADAS
+      // cuando alguien intenta aceptarlas). Las descartamos para que no
+      // ensucien la sección "Gestiones pendientes".
+      if (i.fechaExpiracion) {
+        const exp = new Date(i.fechaExpiracion).getTime();
+        if (Number.isFinite(exp) && exp < now) return false;
+      }
+      return true;
+    });
+  });
 
   readonly gestionesCount = computed(
     () => this.gestionesBorrador().length + this.invitacionesEnviadasPend().length,
@@ -137,7 +216,7 @@ export class DashboardPage implements OnInit {
 
   readonly anyLoading = computed(
     () =>
-      this.loadingParticipadas() ||
+      this.loadingPorRol() ||
       this.loadingCreadas() ||
       this.loadingEquipos() ||
       this.loadingRecibidas() ||
@@ -171,18 +250,23 @@ export class DashboardPage implements OnInit {
    * Cada una tiene su propio spinner y actualiza su signal al llegar.
    */
   private loadAll(userId: number): void {
-    // Competiciones participadas + fan-out de eventos por competición.
+    // Competiciones del usuario agrupadas por rol + fan-out de eventos sobre
+    // la unión deduplicada de las 4 listas.
     this.compService
-      .misParticipadas$(userId)
+      .misCompeticionesPorRol$(userId)
       .pipe(
-        switchMap((list) => {
-          this.misCompeticiones.set(list);
-          this.loadingParticipadas.set(false);
-          if (list.length === 0) {
+        switchMap((porRol) => {
+          this.misPorRol.set(porRol);
+          this.loadingPorRol.set(false);
+          const ids = new Set<number>();
+          for (const c of [...porRol.admin, ...porRol.manager, ...porRol.arbitro, ...porRol.jugador]) {
+            ids.add(c.id);
+          }
+          if (ids.size === 0) {
             this.loadingEventos.set(false);
             return of([] as Evento[][]);
           }
-          return forkJoin(list.map((c) => this.eventoService.findByCompeticion$(c.id)));
+          return forkJoin([...ids].map((id) => this.eventoService.findByCompeticion$(id)));
         }),
       )
       .subscribe({
@@ -191,7 +275,7 @@ export class DashboardPage implements OnInit {
           this.loadingEventos.set(false);
         },
         error: (err: ApiError) => {
-          this.loadingParticipadas.set(false);
+          this.loadingPorRol.set(false);
           this.loadingEventos.set(false);
           if (err.status !== 404) this.toast.error(err.message ?? 'Error al cargar competiciones');
         },

@@ -42,7 +42,16 @@ export class MensajeriaService {
   }
 
   marcarLeido$(conversacionId: number): Observable<void> {
-    return this.http.patch<void>(`${this.base}/${conversacionId}/leer`, null);
+    return this.http.patch<void>(`${this.base}/${conversacionId}/leer`, null).pipe(
+      tap(() =>
+        // Reseteamos en local el contador de no leídos de esta conversación
+        // para que el badge del topbar (mail) y el de la inbox bajen al
+        // momento, sin esperar al próximo polling.
+        this._conversaciones.update((list) =>
+          list.map((c) => (c.id === conversacionId ? { ...c, unreadCount: 0 } : c)),
+        ),
+      ),
+    );
   }
 
   /** Polling helper para refrescar la lista de conversaciones. */

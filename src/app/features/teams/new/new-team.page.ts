@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { TipoEquipo } from '@core/models/equipo/equipo.model';
 import { ApiError } from '@core/http/api-error.model';
 import { ButtonComponent } from '@shared/ui/button/button.component';
 import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';
@@ -37,7 +36,7 @@ export class NewTeamPage {
   readonly form = this.fb.nonNullable.group({
     nombre: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(60)]],
     descripcion: [''],
-    tipo: [TipoEquipo.GESTIONADO, [Validators.required]],
+    publico: [true, [Validators.required]],
     escudoUrl: ['', [Validators.maxLength(512)]],
   });
 
@@ -47,12 +46,12 @@ export class NewTeamPage {
       return;
     }
     this.loading.set(true);
-    const { nombre, descripcion, tipo, escudoUrl } = this.form.getRawValue();
+    const { nombre, descripcion, publico, escudoUrl } = this.form.getRawValue();
     this.service
       .create$({
         nombre,
         descripcion: descripcion || undefined,
-        tipo,
+        publico,
         escudoUrl: escudoUrl || undefined,
       })
       .subscribe({

@@ -1,7 +1,12 @@
 :host {
+  // Fixed (no sticky) porque el body global lleva overflow-x:hidden y eso
+  // rompe el comportamiento sticky. Compensamos con padding-top en el main
+  // para que el contenido no quede oculto bajo la barra.
   display: block;
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 30;
 }
 
@@ -189,14 +194,114 @@
   box-shadow: 0 0 8px var(--accent-glow);
 }
 
+.profile-wrap {
+  position: relative;
+}
+
 .profile-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  background: none;
+  border: none;
+  padding: 2px;
+  cursor: pointer;
   transition: transform 120ms ease;
+  position: relative;
 
   &:hover {
     transform: scale(1.04);
+  }
+
+  &[aria-expanded='true'] {
+    transform: scale(1.04);
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 50%;
+  }
+}
+
+.profile-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: var(--radius-pill);
+  background: var(--accent);
+  color: #1a0e07;
+  font-size: 10px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+.profile-dropdown {
+  min-width: 240px;
+
+  .dropdown-header {
+    padding: 10px 12px 8px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    .display-name {
+      font-weight: 700;
+      color: var(--text-pri);
+      font-size: 14px;
+    }
+
+    .email {
+      font-size: 11px;
+      color: var(--text-mute);
+      letter-spacing: 0.04em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .item-pill {
+    margin-left: auto;
+    min-width: 22px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: var(--radius-pill);
+    background: var(--accent);
+    color: #1a0e07;
+    font-size: 11px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dropdown-sep {
+    height: 1px;
+    background: var(--line);
+    margin: 6px 0;
+  }
+
+  .dropdown-item {
+    width: 100%;
+    background: none;
+    border: 0;
+    text-align: left;
+    cursor: pointer;
+    font: inherit;
+
+    &.danger {
+      color: var(--danger, #ef4444);
+
+      &:hover {
+        background: rgba(239, 68, 68, 0.08);
+        color: var(--danger, #ef4444);
+      }
+    }
   }
 }
 
@@ -206,9 +311,11 @@
 
 /* --- Breakpoints --- */
 
-@media (max-width: 960px) {
-  .mail-btn {
-    display: none;
+// En pantallas móviles los atajos directos (campana, mail, tutorial) se
+// ocultan; quedan accesibles a través del dropdown del avatar.
+@media (max-width: 768px) {
+  .desktop-only-shortcut {
+    display: none !important;
   }
 }
 
@@ -230,12 +337,17 @@
     top: 100%;
     left: 0;
     right: 0;
+    // Panel sólido y opaco para máxima legibilidad (sin transparencias).
+    // Borde naranja arriba y abajo y sombra fuerte para destacar del fondo.
     background: var(--bg-1);
-    border-bottom: 1px solid var(--line);
+    border-top: 1px solid rgba(255, 122, 26, 0.35);
+    border-bottom: 1px solid rgba(255, 122, 26, 0.35);
+    box-shadow: 0 24px 40px -8px rgba(0, 0, 0, 0.6),
+                0 0 0 1px rgba(255, 122, 26, 0.08);
     flex-direction: column;
     justify-content: flex-start;
     gap: 0;
-    padding: 8px 0;
+    padding: 6px 0;
     display: none;
     z-index: 25;
 
@@ -246,12 +358,30 @@
     .nav-link {
       padding: 14px 24px;
       width: 100%;
-      font-size: 15px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-pri);
+      border-bottom: 1px solid var(--line-soft);
+      transition: background 120ms ease, color 120ms ease;
 
-      &.active::after {
-        left: 24px;
-        right: auto;
-        width: 24px;
+      &:last-child {
+        border-bottom: 0;
+      }
+
+      &:hover {
+        background: rgba(255, 122, 26, 0.08);
+        color: var(--accent-hi);
+      }
+
+      &.active {
+        background: rgba(255, 122, 26, 0.1);
+        color: var(--accent-hi);
+
+        &::after {
+          left: 24px;
+          right: auto;
+          width: 24px;
+        }
       }
     }
   }
@@ -259,7 +389,9 @@
   .mobile-backdrop {
     position: fixed;
     inset: 64px 0 0 0;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
     display: block;
     z-index: 20;
   }

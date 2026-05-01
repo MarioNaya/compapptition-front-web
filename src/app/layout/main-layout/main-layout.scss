@@ -6,4 +6,7 @@
 .main-content {
   display: block;
   min-height: calc(100vh - 68px - 100px);
+  // Compensa el navbar fixed (64px de alto) para que el contenido no quede
+  // oculto bajo la barra al cargar.
+  padding-top: 64px;
 }

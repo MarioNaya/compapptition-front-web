@@ -24,6 +24,42 @@
   border: 1px solid var(--line);
 }
 
+.invite-arbitro {
+  padding: 20px 24px;
+  margin: 12px 0 24px;
+
+  .panel-title {
+    font-size: 14px;
+    letter-spacing: 0.12em;
+    color: var(--accent-hi);
+    margin: 0 0 6px;
+  }
+
+  .hint {
+    color: var(--text-sec);
+    font-size: 12px;
+    line-height: 1.5;
+    margin: 0 0 14px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+
+    @media (max-width: 540px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+}
+
 .meta-item {
   display: flex;
   flex-direction: column;

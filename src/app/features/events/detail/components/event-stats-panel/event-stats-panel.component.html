@@ -52,7 +52,8 @@
         <input
           class="input"
           type="number"
-          [attr.step]="selectedTipo()?.tipoValor === TipoValor.ENTERO || selectedTipo()?.tipoValor === TipoValor.BOOLEANO ? '1' : '0.01'"
+          [attr.step]="stepForInput()"
+          [attr.max]="selectedTipo()?.tipoValor === TipoValor.BOOLEANO ? '1' : null"
           min="0"
           formControlName="valor"
         />

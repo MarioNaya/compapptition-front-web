@@ -11,6 +11,11 @@ import { PageableRequest, toPageableParams } from '@core/http/pageable';
 
 export interface EquipoFilters extends PageableRequest {
   readonly search?: string;
+  /**
+   * Si se omite, el backend devuelve solo los públicos (apto para selectores).
+   * Pasar `false` incluye también privados (uso administrativo).
+   */
+  readonly soloPublicos?: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -25,8 +30,23 @@ export class EquipoService {
 
   findAll$(filters: EquipoFilters = {}): Observable<PageResponse<Equipo>> {
     // El backend requiere `search` siempre (@RequestParam obligatorio). Mandamos "" si está vacío.
-    const params = toPageableParams(filters, { search: filters.search ?? '' });
+    const extras: Record<string, string> = { search: filters.search ?? '' };
+    if (filters.soloPublicos === false) extras['soloPublicos'] = 'false';
+    const params = toPageableParams(filters, extras);
     return this.http.get<PageResponse<Equipo>>(this.base, { params });
+  }
+
+  /**
+   * Localiza un equipo privado por su código de invitación. 404 si el código
+   * no existe o el equipo es público.
+   */
+  findByCodigo$(codigo: string): Observable<Equipo> {
+    return this.http.get<Equipo>(`${this.base}/codigo/${encodeURIComponent(codigo)}`);
+  }
+
+  /** Regenera el código de invitación de un equipo privado (invalida el anterior). */
+  regenerarCodigo$(equipoId: number): Observable<Equipo> {
+    return this.http.post<Equipo>(`${this.base}/${equipoId}/codigo-invitacion/regenerar`, null);
   }
 
   findById$(id: number): Observable<Equipo> {
@@ -110,8 +130,8 @@ export class EquipoService {
 
   /**
    * Crea un jugador "fantasma" (sin cuenta de usuario) y lo añade a la plantilla
-   * en una sola llamada. Solo permitido para equipos de tipo ESTANDAR; el backend
-   * rechaza la petición si el equipo es GESTIONADO.
+   * en una sola llamada. Cualquier equipo lo soporta tras eliminar la
+   * distinción GESTIONADO/ESTANDAR.
    */
   crearJugadorFantasma$(
     equipoId: number,
@@ -128,5 +148,22 @@ export class EquipoService {
 
   eliminarJugador$(equipoId: number, jugadorId: number): Observable<void> {
     return this.http.delete<void>(`${this.base}/${equipoId}/jugadores/${jugadorId}`);
+  }
+
+  /**
+   * Actualiza el dorsal de un jugador del equipo. Si {@code dorsal} es
+   * {@code null} el backend lo limpia.
+   */
+  actualizarDorsal$(
+    equipoId: number,
+    jugadorId: number,
+    dorsal: number | null,
+  ): Observable<{ message: string }> {
+    const params = dorsal != null ? { dorsal: String(dorsal) } : undefined;
+    return this.http.patch<{ message: string }>(
+      `${this.base}/${equipoId}/jugadores/${jugadorId}/dorsal`,
+      null,
+      params ? { params } : undefined,
+    );
   }
 }

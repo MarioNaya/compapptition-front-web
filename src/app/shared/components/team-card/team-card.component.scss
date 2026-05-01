@@ -64,3 +64,15 @@
   color: var(--text-mute);
   font-size: 11px;
 }
+
+.rol-badge {
+  background: rgba(255, 122, 26, 0.1);
+  border: 1px solid rgba(255, 122, 26, 0.35);
+  color: var(--accent-hi);
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}

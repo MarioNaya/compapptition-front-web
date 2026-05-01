@@ -30,6 +30,7 @@
         appClickOutside
         [enabled]="createOpen()"
         (clickOutside)="createOpen.set(false)"
+        data-tour="navbar-create"
       >
         <button
           class="icon-btn create-btn"
@@ -55,17 +56,95 @@
         }
       </div>
 
-      <app-notification-bell />
+      <!-- Atajos directos de bell/mail/tour: visibles solo en desktop. En
+           móvil se acceden vía el dropdown del avatar para no saturar. -->
+      <span class="desktop-only-shortcut" data-tour="navbar-bell">
+        <app-notification-bell />
+      </span>
 
-      <a class="icon-btn mail-btn" routerLink="/app/messages" aria-label="Mensajes">
+      <a
+        class="icon-btn mail-btn desktop-only-shortcut"
+        routerLink="/app/messages"
+        aria-label="Mensajes"
+        data-tour="navbar-mail"
+      >
         <app-icon name="mail" [size]="20" />
         @if (unreadMessages() > 0) {
           <span class="badge" aria-hidden="true"></span>
         }
       </a>
-      <a class="profile-btn" routerLink="/app/profile" [attr.aria-label]="'Perfil de ' + userDisplayName()">
-        <app-avatar [name]="userDisplayName() || '—'" size="md" />
-      </a>
+
+      <button
+        type="button"
+        class="icon-btn tour-btn desktop-only-shortcut"
+        (click)="startTour()"
+        aria-label="Iniciar tutorial guiado"
+        title="Tutorial guiado"
+        data-tour="navbar-tour"
+      >
+        <app-icon name="help" [size]="20" />
+      </button>
+
+      <!-- Dropdown del avatar: agrupa Mi perfil, Notificaciones, Mensajes,
+           Tutorial y Cerrar sesión. En móvil es la principal puerta a
+           mensajes/notifs/tutorial. -->
+      <div
+        class="profile-wrap"
+        appClickOutside
+        [enabled]="profileOpen()"
+        (clickOutside)="profileOpen.set(false)"
+      >
+        <button
+          type="button"
+          class="profile-btn"
+          (click)="toggleProfile()"
+          [attr.aria-expanded]="profileOpen()"
+          aria-haspopup="menu"
+          [attr.aria-label]="'Cuenta de ' + userDisplayName()"
+        >
+          <app-avatar [name]="userDisplayName() || '—'" size="md" />
+          @if (mobileBadgeCount() > 0) {
+            <span class="profile-badge" aria-hidden="true">{{ mobileBadgeCount() }}</span>
+          }
+        </button>
+        @if (profileOpen()) {
+          <div class="dropdown profile-dropdown" role="menu">
+            <div class="dropdown-header">
+              <span class="display-name">{{ userDisplayName() }}</span>
+              @if (user()?.email) {
+                <span class="email mono">{{ user()!.email }}</span>
+              }
+            </div>
+            <a class="dropdown-item" routerLink="/app/profile" role="menuitem" (click)="closeMenus()">
+              <app-icon name="user" [size]="16" />
+              <span>Mi perfil</span>
+            </a>
+            <a class="dropdown-item" routerLink="/app/notifications" role="menuitem" (click)="closeMenus()">
+              <app-icon name="bell" [size]="16" />
+              <span>Notificaciones</span>
+              @if (unreadNotifs() > 0) {
+                <span class="item-pill">{{ unreadNotifs() }}</span>
+              }
+            </a>
+            <a class="dropdown-item" routerLink="/app/messages" role="menuitem" (click)="closeMenus()">
+              <app-icon name="mail" [size]="16" />
+              <span>Mensajes</span>
+              @if (unreadMessages() > 0) {
+                <span class="item-pill">{{ unreadMessages() }}</span>
+              }
+            </a>
+            <button class="dropdown-item" type="button" role="menuitem" (click)="closeMenus(); startTour()">
+              <app-icon name="help" [size]="16" />
+              <span>Tutorial guiado</span>
+            </button>
+            <div class="dropdown-sep" aria-hidden="true"></div>
+            <button class="dropdown-item danger" type="button" role="menuitem" (click)="logout()">
+              <app-icon name="logout" [size]="16" />
+              <span>Cerrar sesión</span>
+            </button>
+          </div>
+        }
+      </div>
     </div>
   </div>
 

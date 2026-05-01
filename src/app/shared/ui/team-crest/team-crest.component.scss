@@ -1,5 +1,6 @@
 :host {
   display: inline-block;
+  flex-shrink: 0;
 }
 
 .crest {
@@ -14,6 +15,7 @@
   font-weight: 700;
   letter-spacing: 0.05em;
   overflow: hidden;
+  flex-shrink: 0;
 
   img {
     width: 100%;
@@ -44,4 +46,23 @@
   width: 104px;
   height: 104px;
   font-size: 32px;
+}
+
+// Reducciones móviles para que los escudos quepan en pantallas estrechas.
+@media (max-width: 540px) {
+  .crest-xl {
+    width: 64px;
+    height: 64px;
+    font-size: 22px;
+  }
+  .crest-lg {
+    width: 52px;
+    height: 52px;
+    font-size: 18px;
+  }
+  .crest-md {
+    width: 44px;
+    height: 44px;
+    font-size: 15px;
+  }
 }

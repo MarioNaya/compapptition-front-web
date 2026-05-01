@@ -1,0 +1,60 @@
+<div class="container notifs fade-in">
+  <app-page-header
+    [back]="true"
+    eyebrow="Notificaciones"
+    title="Histórico"
+    [subtitle]="totalElements() + ' notificación' + (totalElements() === 1 ? '' : 'es') + ' en total'"
+  >
+    <app-button variant="ghost" (clicked)="markAll()">
+      <app-icon name="check" [size]="14" /> Marcar todas
+    </app-button>
+    <app-button variant="orange-ghost" (clicked)="clearLeidas()">
+      <app-icon name="trash" [size]="14" /> Eliminar leídas
+    </app-button>
+  </app-page-header>
+
+  @if (loading() && items().length === 0) {
+    <div class="loading-box"><app-spinner size="md" label="Cargando" /></div>
+  } @else if (items().length === 0) {
+    <app-empty-state
+      icon="bell"
+      title="Sin notificaciones"
+      subtitle="Cuando recibas invitaciones, mensajes o avisos aparecerán aquí."
+    />
+  } @else {
+    <ul class="notif-list">
+      @for (n of items(); track n.id) {
+        <li class="notif-item card" [class.unread]="!n.leida">
+          <button type="button" class="notif-body" (click)="open(n)" (keydown.enter)="open(n)">
+            <span class="icon-box">
+              <app-icon [name]="ICONS[n.tipo]" [size]="16" />
+            </span>
+            <span class="notif-text">
+              <strong>{{ TITLES[n.tipo] }}</strong>
+              <span class="detail">{{ detail(n) }}</span>
+              <span class="time mono">{{ n.fechaCreacion | date: 'dd MMM yyyy HH:mm' }}</span>
+            </span>
+            @if (!n.leida) {
+              <span class="dot" aria-hidden="true"></span>
+            }
+          </button>
+          <button type="button" class="delete" (click)="remove(n, $event)" aria-label="Eliminar">
+            <app-icon name="trash" [size]="14" />
+          </button>
+        </li>
+      }
+    </ul>
+
+    @if (totalPages() > 1) {
+      <div class="pager">
+        <app-button variant="ghost" [disabled]="page() === 0" (clicked)="prev()">
+          <app-icon name="chev-l" [size]="14" /> Anterior
+        </app-button>
+        <span class="page-mono mono">Página {{ page() + 1 }} / {{ totalPages() }}</span>
+        <app-button variant="ghost" [disabled]="page() >= totalPages() - 1" (clicked)="next()">
+          Siguiente <app-icon name="chev-r" [size]="14" />
+        </app-button>
+      </div>
+    }
+  }
+</div>

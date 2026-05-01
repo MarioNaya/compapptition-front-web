@@ -28,6 +28,10 @@
   font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .name {
@@ -35,4 +39,14 @@
   margin: 0;
   color: var(--text-pri);
   line-height: 1.15;
+  // Limita a dos líneas con elipsis para que los nombres largos no
+  // sobrepasen el card. El navegador respeta line-clamp con -webkit-box.
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }

@@ -16,13 +16,13 @@
     </app-form-field>
 
     <app-form-field
-      label="Tipo"
-      [control]="form.controls.tipo"
-      hint="GESTIONADO: tú administras la plantilla. ESTANDAR: un equipo genérico para la competición."
+      label="Visibilidad"
+      [control]="form.controls.publico"
+      hint="Público: aparece en el buscador al inscribirse en una competición. Privado: solo se invita compartiendo un código que se generará al crearlo."
     >
-      <select class="select" formControlName="tipo">
-        <option value="GESTIONADO">Gestionado</option>
-        <option value="ESTANDAR">Estándar</option>
+      <select class="select" formControlName="publico">
+        <option [ngValue]="true">Público</option>
+        <option [ngValue]="false">Privado</option>
       </select>
     </app-form-field>
 

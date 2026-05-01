@@ -9,10 +9,31 @@
       [subtitle]="e.lugar ?? null"
     >
       <app-status-tag [state]="e.estado" />
-      <app-button variant="orange-ghost" (clicked)="askDelete()">
-        <app-icon name="trash" [size]="14" /> Eliminar
-      </app-button>
+      @if (canReopen()) {
+        <app-button variant="ghost" (clicked)="reabrir()">
+          <app-icon name="refresh" [size]="14" /> Reabrir
+        </app-button>
+      }
+      @if (canManageEvent()) {
+        <app-button variant="orange-ghost" (clicked)="askDelete()">
+          <app-icon name="trash" [size]="14" /> Eliminar
+        </app-button>
+      }
     </app-page-header>
+
+    @if (e.bloqueado) {
+      <section class="banner-locked card">
+        <app-icon name="clock" [size]="16" />
+        <div>
+          <strong>Partido bloqueado</strong>
+          <p class="hint mono">
+            Es un partido de playoff que depende de una fase aún no terminada
+            (liga, grupos o ronda anterior). Cuando termine podrás registrar
+            resultado y estadísticas.
+          </p>
+        </div>
+      </section>
+    }
 
     <section class="hero card">
       <app-team-pair
@@ -79,8 +100,9 @@
         [equipoLocalNombre]="e.equipoLocal?.nombre ?? 'Local'"
         [equipoVisitanteId]="e.equipoVisitante?.id ?? null"
         [equipoVisitanteNombre]="e.equipoVisitante?.nombre ?? 'Visitante'"
+        (registered)="refreshStats()"
       />
-    } @else if (competicion()) {
+    } @else if (competicion() && !competicion()!.estadisticasActivas) {
       <section class="empty-stats">
         <app-empty-state
           icon="stats"
@@ -89,6 +111,46 @@
         />
       </section>
     }
+
+    <section class="stats-list-section">
+      <h2 class="h-display section-title">Estadísticas del partido</h2>
+      @if (estadisticas().length === 0 || statsTable().tipos.length === 0 || statsTable().rows.length === 0) {
+        <app-empty-state
+          icon="stats"
+          title="Sin estadísticas registradas"
+          subtitle="Cuando se registre alguna estadística aparecerá aquí."
+        />
+      } @else {
+        <div class="stats-table-wrap card">
+          <table class="stats-table">
+            <thead>
+              <tr>
+                <th class="player-col">Jugador</th>
+                @for (t of statsTable().tipos; track t.id) {
+                  <th class="stat-col mono" [title]="t.nombre">{{ t.nombre }}</th>
+                }
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of statsTable().rows; track row.jugadorId) {
+                <tr [class.row-local]="row.lado === 'local'" [class.row-visitante]="row.lado === 'visitante'">
+                  <td class="player-col">
+                    @if (row.dorsal != null) {
+                      <span class="dorsal mono">#{{ row.dorsal }}</span>
+                    }
+                    <span class="player-name">{{ row.jugadorNombre }}</span>
+                    <span class="lado-pill mono" [attr.aria-label]="row.lado === 'local' ? 'Local' : 'Visitante'">{{ row.lado === 'local' ? 'L' : 'V' }}</span>
+                  </td>
+                  @for (v of row.valores; track $index) {
+                    <td class="stat-col mono" [class.zero]="v === 0">{{ v }}</td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
   } @else {
     <app-empty-state
       icon="x"

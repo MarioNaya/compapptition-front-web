@@ -4,6 +4,7 @@ import {
   DestroyRef,
   OnInit,
   TemplateRef,
+  computed,
   effect,
   inject,
   signal,
@@ -12,9 +13,10 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Equipo, TipoEquipo } from '@core/models/equipo/equipo.model';
+import { Equipo } from '@core/models/equipo/equipo.model';
 import { Jugador } from '@core/models/equipo/jugador.model';
 import { ApiError } from '@core/http/api-error.model';
+import { AuthService } from '@core/services/auth.service';
 import { RolCompeticion } from '@core/models/rol';
 import { ButtonComponent } from '@shared/ui/button/button.component';
 import { IconComponent } from '@shared/ui/icon/icon.component';
@@ -52,11 +54,20 @@ export class TeamDetailPage implements OnInit {
   private readonly router = inject(Router);
   private readonly service = inject(EquipoService);
   private readonly invitacionService = inject(InvitacionService);
+  private readonly auth = inject(AuthService);
   private readonly toast = inject(ToastService);
   private readonly confirm = inject(ConfirmDialogService);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly actionsCell = viewChild<TemplateRef<{ $implicit: Jugador; value: unknown }>>('actionsCell');
+  readonly dorsalCell = viewChild<TemplateRef<{ $implicit: Jugador; value: unknown }>>('dorsalCell');
+
+  /** ID del jugador cuyo dorsal está en modo edición; null = ninguno. */
+  readonly editingDorsalId = signal<number | null>(null);
+  /** Valor temporal del input de dorsal mientras se edita. */
+  readonly dorsalDraft = signal<number | null>(null);
+  /** ID del jugador con guardado en curso (deshabilita el input). */
+  readonly savingDorsalId = signal<number | null>(null);
 
   constructor() {
     // El template `#actionsCell` vive dentro del bloque `@else if (equipo(); as e)`,
@@ -65,6 +76,12 @@ export class TeamDetailPage implements OnInit {
     effect(() => {
       const tpl = this.actionsCell();
       if (!tpl) return;
+      // Solo añadimos la columna "Acciones" (botón dar de baja) cuando el usuario
+      // puede gestionar el equipo. Si no, la tabla queda en modo solo lectura.
+      if (!this.canManage()) {
+        this.columns.update((cols) => cols.filter((c) => c.key !== 'acciones'));
+        return;
+      }
       this.columns.update((cols) => {
         if (cols.some((c) => c.key === 'acciones')) return cols;
         return [
@@ -73,12 +90,44 @@ export class TeamDetailPage implements OnInit {
         ];
       });
     });
+
+    // Cuando el viewChild del dorsalCell esté listo y se pueda gestionar,
+    // sustituimos la columna #/dorsal por la versión editable inline.
+    effect(() => {
+      const tpl = this.dorsalCell();
+      if (!tpl) return;
+      const editable = this.canManage();
+      this.columns.update((cols) =>
+        cols.map((c) => {
+          if (c.key !== 'dorsal') return c;
+          return editable
+            ? { ...c, cellTemplate: tpl }
+            : { ...c, cellTemplate: undefined, accessor: (j: Jugador) => j.dorsal ?? '—' };
+        }),
+      );
+    });
   }
 
   readonly loading = signal(true);
   readonly equipo = signal<Equipo | null>(null);
   readonly jugadores = signal<readonly Jugador[]>([]);
   readonly removingId = signal<number | null>(null);
+
+  /**
+   * Mostramos los botones de gestión a quien claramente puede tocar el equipo:
+   * el creador y el admin del sistema. Managers y admins de competición tienen
+   * permiso real (lo concede el backend), pero como no tenemos en el DTO la
+   * lista de competiciones del equipo, evitamos mostrar el botón para no dar
+   * falsa expectativa. La acción canalizada vía competition-detail siempre
+   * está disponible.
+   */
+  readonly canManage = computed(() => {
+    const e = this.equipo();
+    if (!e) return false;
+    if (this.auth.isAdminSistema()) return true;
+    const u = this.auth.currentUser();
+    return !!u && e.creadorId === u.id;
+  });
 
   // Panel "Añadir jugador" — modo y estado
   readonly showAdd = signal(false);
@@ -131,8 +180,6 @@ export class TeamDetailPage implements OnInit {
       next: ({ equipo, jugadores }) => {
         this.equipo.set(equipo);
         this.jugadores.set(jugadores);
-        // Si el equipo es GESTIONADO, no se permite crear fantasma — forzamos modo invitar.
-        if (equipo.tipo === TipoEquipo.GESTIONADO) this.mode.set('invite');
         this.loading.set(false);
       },
       error: (err: ApiError) => {
@@ -142,8 +189,90 @@ export class TeamDetailPage implements OnInit {
     });
   }
 
+  /**
+   * Copia el código de invitación al portapapeles. Si el navegador no soporta
+   * Clipboard API caemos a una notificación informativa.
+   */
+  async copiarCodigo(): Promise<void> {
+    const e = this.equipo();
+    if (!e?.codigoInvitacion) return;
+    try {
+      await navigator.clipboard.writeText(e.codigoInvitacion);
+      this.toast.success('Código copiado al portapapeles');
+    } catch {
+      this.toast.error('No se pudo copiar el código; selecciónalo manualmente');
+    }
+  }
+
+  /**
+   * Pregunta confirmación e invalida el código de invitación actual emitiendo
+   * uno nuevo. Útil si se ha filtrado el código.
+   */
+  async regenerarCodigo(): Promise<void> {
+    const e = this.equipo();
+    if (!e || e.publico) return;
+    const ok = await this.confirm.ask({
+      title: '¿Regenerar código?',
+      message: 'El código actual dejará de ser válido inmediatamente. Tendrás que compartir el nuevo código a quien quieras que invite a este equipo.',
+      confirmLabel: 'Regenerar',
+      destructive: true,
+    });
+    if (!ok) return;
+    this.service.regenerarCodigo$(e.id).subscribe({
+      next: (equipo) => {
+        this.equipo.set(equipo);
+        this.toast.success('Código regenerado');
+      },
+      error: (err: ApiError) => this.toast.error(err.message ?? 'No se pudo regenerar el código'),
+    });
+  }
+
   openJugador(j: Jugador): void {
     this.router.navigate(['/app/players', j.id]);
+  }
+
+  /** Entra en modo edición del dorsal de un jugador. */
+  startEditDorsal(j: Jugador, ev?: Event): void {
+    if (ev) ev.stopPropagation();
+    this.editingDorsalId.set(j.id);
+    this.dorsalDraft.set(j.dorsal ?? null);
+  }
+
+  cancelEditDorsal(ev?: Event): void {
+    if (ev) ev.stopPropagation();
+    this.editingDorsalId.set(null);
+    this.dorsalDraft.set(null);
+  }
+
+  onDorsalDraftChange(value: string): void {
+    const n = Number(value);
+    this.dorsalDraft.set(value === '' ? null : Number.isFinite(n) && n >= 0 ? Math.floor(n) : null);
+  }
+
+  /** Persiste el dorsal en backend si ha cambiado; recarga la plantilla al terminar. */
+  saveDorsal(j: Jugador, ev?: Event): void {
+    if (ev) ev.stopPropagation();
+    const e = this.equipo();
+    if (!e) return;
+    const nuevo = this.dorsalDraft();
+    if (nuevo === (j.dorsal ?? null)) {
+      this.cancelEditDorsal();
+      return;
+    }
+    this.savingDorsalId.set(j.id);
+    this.service.actualizarDorsal$(e.id, j.id, nuevo).subscribe({
+      next: () => {
+        this.savingDorsalId.set(null);
+        this.editingDorsalId.set(null);
+        this.dorsalDraft.set(null);
+        this.toast.success('Dorsal actualizado');
+        this.load(e.id);
+      },
+      error: (err: ApiError) => {
+        this.savingDorsalId.set(null);
+        this.toast.error(err.message ?? 'No se pudo actualizar el dorsal');
+      },
+    });
   }
 
   async quitarJugador(j: Jugador, ev?: Event): Promise<void> {
@@ -188,11 +317,9 @@ export class TeamDetailPage implements OnInit {
     this.mode.set(m);
   }
 
-  isModeAvailable(m: AddMode): boolean {
-    if (m === 'create') {
-      const e = this.equipo();
-      return !!e && e.tipo === TipoEquipo.ESTANDAR;
-    }
+  isModeAvailable(_m: AddMode): boolean {
+    // Tras eliminar la distinción GESTIONADO/ESTANDAR, ambos modos están
+    // disponibles para cualquier equipo.
     return true;
   }
 
@@ -276,8 +403,7 @@ export class TeamDetailPage implements OnInit {
     this.nuevoDorsal.set(null);
     this.invitarEmail.set('');
     this.invitarUsername.set('');
-    const e = this.equipo();
-    this.mode.set(e && e.tipo === TipoEquipo.GESTIONADO ? 'invite' : 'create');
+    this.mode.set('create');
   }
 
   async askDelete(): Promise<void> {

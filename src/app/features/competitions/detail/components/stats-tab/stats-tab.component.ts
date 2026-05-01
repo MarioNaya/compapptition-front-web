@@ -37,7 +37,7 @@ export class StatsTabComponent implements OnInit {
   readonly columns: readonly ColumnDef<RankingRow>[] = [
     { key: 'pos', label: '#', width: '60px', align: 'center' },
     { key: 'jugadorNombre', label: 'Jugador' },
-    { key: 'totalValor', label: 'Total', width: '120px', align: 'end' },
+    { key: 'total', label: 'Total', width: '120px', align: 'end' },
   ];
 
   readonly rankingWithPos = computed<readonly RankingRow[]>(() =>

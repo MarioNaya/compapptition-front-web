@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, effect, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, effect, inject, input, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { forkJoin } from 'rxjs';
 import { Jugador } from '@core/models/equipo/jugador.model';
 import { TipoEstadistica, TipoValor } from '@core/models/estadistica/estadistica.model';
@@ -49,6 +50,9 @@ export class EventStatsPanelComponent implements OnInit {
   readonly equipoVisitanteId = input<number | null>(null);
   readonly equipoVisitanteNombre = input<string>('Visitante');
 
+  /** Emite cuando se registra/actualiza una estadística para que el padre refresque la lista. */
+  readonly registered = output<void>();
+
   readonly loading = signal(true);
   readonly saving = signal(false);
   readonly tipos = signal<readonly TipoEstadistica[]>([]);
@@ -60,9 +64,26 @@ export class EventStatsPanelComponent implements OnInit {
     valor: [0, [Validators.required, Validators.min(0)]],
   });
 
+  /** Señal reactiva del id del tipo seleccionado (escucha valueChanges del control). */
+  private readonly tipoIdSignal = toSignal(
+    this.form.controls.tipoEstadisticaId.valueChanges,
+    { initialValue: this.form.controls.tipoEstadisticaId.value },
+  );
+
   readonly selectedTipo = computed(() => {
-    const id = this.form.controls.tipoEstadisticaId.value;
+    const id = this.tipoIdSignal();
     return this.tipos().find((t) => t.id === id) ?? null;
+  });
+
+  /**
+   * Step del input según el tipo: 1 para enteros y boolean (la flechita
+   * sube/baja de 1 en 1), 0.01 para decimales y tiempo, 1 por defecto cuando
+   * todavía no hay tipo seleccionado para evitar el clásico 0,1 con ENTERO.
+   */
+  readonly stepForInput = computed(() => {
+    const t = this.selectedTipo()?.tipoValor;
+    if (t === TipoValor.DECIMAL || t === TipoValor.TIEMPO) return '0.01';
+    return '1';
   });
 
   readonly TipoValor = TipoValor;
@@ -75,6 +96,22 @@ export class EventStatsPanelComponent implements OnInit {
       const visitante = this.equipoVisitanteId();
       if (deporte == null) return;
       this.loadData(deporte, local, visitante);
+    });
+
+    // Al cambiar el tipo seleccionado, ajusta el valor para que sea
+    // consistente: enteros se redondean, booleanos se acotan a 0/1. Evita
+    // que arrastres "0.1" al pasar de DECIMAL a ENTERO.
+    effect(() => {
+      const tipo = this.selectedTipo();
+      if (!tipo) return;
+      const ctrl = this.form.controls.valor;
+      const v = ctrl.value;
+      if (tipo.tipoValor === TipoValor.ENTERO && v % 1 !== 0) {
+        ctrl.setValue(Math.round(v), { emitEvent: false });
+      } else if (tipo.tipoValor === TipoValor.BOOLEANO) {
+        const bin = v >= 0.5 ? 1 : 0;
+        if (v !== bin) ctrl.setValue(bin, { emitEvent: false });
+      }
     });
   }
 
@@ -161,6 +198,7 @@ export class EventStatsPanelComponent implements OnInit {
           this.saving.set(false);
           this.toast.success('Estadística registrada');
           this.form.patchValue({ valor: 0 });
+          this.registered.emit();
           // dejamos el jugador y tipo para registrar rápido varias filas
         },
         error: (err: ApiError) => {

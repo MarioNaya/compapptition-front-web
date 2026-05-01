@@ -52,6 +52,9 @@ export class InvitationsPage implements OnInit {
       next: () => {
         this.toast.success('Invitación aceptada');
         this.service.loadPendientes(userId);
+        // Aceptar una invitación añade un rol nuevo (admin/manager/árbitro/jugador):
+        // refrescamos el JWT para que el gating del frontend reconozca el rol.
+        this.auth.refreshToken().subscribe({ error: () => {} });
       },
       error: (err: ApiError) => this.toast.error(err.message ?? 'No se pudo aceptar'),
     });

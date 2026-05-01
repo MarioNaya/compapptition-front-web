@@ -7,6 +7,7 @@ import {
   Competicion,
   CompeticionSimple,
   EstadoCompeticion,
+  MisCompeticionesPorRol,
 } from '@core/models/competicion/competicion.model';
 import { CompeticionCreateRequest, CompeticionUpdateRequest } from '@core/models/competicion/competicion.requests';
 import { PageableRequest, toPageableParams } from '@core/http/pageable';
@@ -64,6 +65,12 @@ export class CompeticionService {
 
   misParticipadas$(usuarioId: number): Observable<CompeticionSimple[]> {
     return this.http.get<CompeticionSimple[]>(`${this.base}/mis-competiciones/participante`, {
+      params: { usuarioId: String(usuarioId) },
+    });
+  }
+
+  misCompeticionesPorRol$(usuarioId: number): Observable<MisCompeticionesPorRol> {
+    return this.http.get<MisCompeticionesPorRol>(`${this.base}/mis-competiciones/por-rol`, {
       params: { usuarioId: String(usuarioId) },
     });
   }

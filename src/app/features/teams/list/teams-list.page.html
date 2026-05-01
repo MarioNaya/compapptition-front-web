@@ -1,39 +1,74 @@
 <div class="container teams fade-in">
   <app-page-header
     eyebrow="Equipos"
-    title="Todos los equipos"
-    subtitle="Gestiona tus equipos o explora los de otros organizadores."
+    [title]="mode() === 'mine' ? 'Mis equipos' : 'Equipos públicos'"
+    [subtitle]="mode() === 'mine' ? 'Equipos donde participas como creador, manager o jugador.' : 'Explora los equipos públicos del sistema.'"
   >
     <app-button variant="primary" (clicked)="goNew()">
       <app-icon name="plus" [size]="14" /> Nuevo equipo
     </app-button>
   </app-page-header>
 
-  <section class="toolbar">
-    <app-search-bar
-      [value]="search()"
-      placeholder="Buscar por nombre…"
-      (valueChange)="onSearchChange($event)"
-    />
-  </section>
+  <div class="mode-tabs" role="tablist">
+    <button
+      type="button"
+      role="tab"
+      class="mode-tab"
+      [class.active]="mode() === 'mine'"
+      (click)="setMode('mine')"
+    >Mis equipos</button>
+    <button
+      type="button"
+      role="tab"
+      class="mode-tab"
+      [class.active]="mode() === 'all'"
+      (click)="setMode('all')"
+    >Explorar públicos</button>
+  </div>
 
-  @if (loading() && equipos().length === 0) {
+  @if (mode() === 'all') {
+    <section class="toolbar">
+      <app-search-bar
+        [value]="search()"
+        placeholder="Buscar por nombre…"
+        (valueChange)="onSearchChange($event)"
+      />
+    </section>
+  }
+
+  @if (loading()) {
     <div class="loading-box"><app-spinner size="md" label="Cargando equipos" /></div>
-  } @else if (equipos().length === 0) {
-    <app-empty-state
-      icon="users"
-      title="Sin equipos"
-      subtitle="Crea el primer equipo para empezar a gestionar plantillas e inscripciones."
-    >
-      <app-button variant="primary" (clicked)="goNew()">
-        <app-icon name="plus" [size]="14" /> Crear equipo
-      </app-button>
-    </app-empty-state>
+  } @else if (mode() === 'mine') {
+    @if (misEquipos().length === 0) {
+      <app-empty-state
+        icon="users"
+        title="Aún no participas en ningún equipo"
+        subtitle="Crea uno o pide al manager de un equipo que te invite."
+      >
+        <app-button variant="primary" (clicked)="goNew()">
+          <app-icon name="plus" [size]="14" /> Crear equipo
+        </app-button>
+      </app-empty-state>
+    } @else {
+      <div class="grid">
+        @for (e of misEquipos(); track e.id) {
+          <app-team-card [equipo]="e" [rolBadge]="e.rol" (opened)="open($event)" />
+        }
+      </div>
+    }
   } @else {
-    <div class="grid">
-      @for (e of equipos(); track e.id) {
-        <app-team-card [equipo]="e" (opened)="open($event)" />
-      }
-    </div>
+    @if (equiposPublicos().length === 0) {
+      <app-empty-state
+        icon="users"
+        title="Sin resultados"
+        subtitle="No hay equipos públicos que coincidan con la búsqueda."
+      />
+    } @else {
+      <div class="grid">
+        @for (e of equiposPublicos(); track e.id) {
+          <app-team-card [equipo]="e" (opened)="open($event)" />
+        }
+      </div>
+    }
   }
 </div>

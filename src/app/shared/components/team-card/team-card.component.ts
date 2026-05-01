@@ -13,6 +13,8 @@ import { TeamCrestComponent } from '@shared/ui/team-crest/team-crest.component';
 })
 export class TeamCardComponent {
   readonly equipo = input.required<Equipo>();
+  /** Etiqueta opcional con el rol del usuario en este equipo (Creador / Manager / Jugador). */
+  readonly rolBadge = input<string | null>(null);
 
   readonly opened = output<Equipo>();
 

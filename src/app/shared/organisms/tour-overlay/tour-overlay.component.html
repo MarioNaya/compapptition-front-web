@@ -1,0 +1,29 @@
+@if (running() && step(); as s) {
+  <div class="tour-root" role="dialog" aria-modal="true" aria-label="Tutorial guiado">
+    <div class="tour-spotlight" [attr.style]="spotlightStyle()"></div>
+    <div class="tour-tooltip" [attr.style]="tooltipStyle()">
+      <header>
+        <span class="step-counter mono">Paso {{ index() + 1 }} / {{ total() }}</span>
+        <button type="button" class="close" (click)="cancel()" aria-label="Cerrar tutorial">
+          <app-icon name="x" [size]="16" />
+        </button>
+      </header>
+      <h3 class="title h-display">{{ s.title }}</h3>
+      <p class="description">{{ s.description }}</p>
+      <footer class="actions">
+        <app-button variant="ghost" (clicked)="cancel()">Cancelar</app-button>
+        @if (!isFirst()) {
+          <app-button variant="ghost" (clicked)="prev()">
+            <app-icon name="chev-l" [size]="14" /> Anterior
+          </app-button>
+        }
+        <app-button variant="primary" (clicked)="next()">
+          {{ isLast() ? 'Cerrar' : 'Siguiente' }}
+          @if (!isLast()) {
+            <app-icon name="chev-r" [size]="14" />
+          }
+        </app-button>
+      </footer>
+    </div>
+  </div>
+}

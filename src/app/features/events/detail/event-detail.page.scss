@@ -13,6 +13,146 @@
   justify-content: center;
 }
 
+.stats-list-section {
+  margin-top: 28px;
+
+  .section-title {
+    font-size: 18px;
+    color: var(--text-pri);
+    margin: 0 0 14px;
+  }
+}
+
+.stats-table-wrap {
+  padding: 4px;
+  overflow-x: auto;
+}
+
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+
+  thead th {
+    position: sticky;
+    top: 0;
+    background: var(--bg-2);
+    color: var(--text-sec);
+    text-align: left;
+    padding: 12px 14px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-size: 11px;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+  }
+
+  tbody td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--line-soft);
+    color: var(--text-pri);
+    vertical-align: middle;
+  }
+
+  tbody tr:hover td {
+    background: rgba(255, 122, 26, 0.04);
+  }
+
+  .player-col {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 200px;
+    white-space: nowrap;
+  }
+
+  thead .player-col {
+    display: table-cell;
+  }
+
+  .stat-col {
+    text-align: center;
+    min-width: 70px;
+    font-weight: 600;
+    color: var(--accent-hi);
+
+    &.zero {
+      color: var(--text-mute);
+      font-weight: 400;
+    }
+  }
+
+  .dorsal {
+    color: var(--text-mute);
+    font-size: 11px;
+    min-width: 26px;
+  }
+
+  .player-name {
+    font-weight: 600;
+    color: var(--text-pri);
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .lado-pill {
+    margin-left: auto;
+    padding: 1px 6px;
+    border-radius: var(--radius-pill);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    border: 1px solid var(--line);
+    color: var(--text-mute);
+  }
+
+  .row-local .lado-pill {
+    border-color: rgba(255, 122, 26, 0.35);
+    color: var(--accent-hi);
+    background: rgba(255, 122, 26, 0.06);
+  }
+
+  .row-visitante .lado-pill {
+    border-color: rgba(180, 200, 220, 0.25);
+    color: var(--text-sec);
+  }
+
+  // Separador visible entre el bloque local y el visitante.
+  .row-local + .row-visitante td {
+    border-top: 2px solid var(--line);
+  }
+}
+
+.banner-locked {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 18px;
+  margin: 16px 0 24px;
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  background: rgba(251, 191, 36, 0.06);
+
+  app-icon {
+    color: var(--warning, #fbbf24);
+    flex-shrink: 0;
+    margin-top: 3px;
+  }
+
+  strong {
+    display: block;
+    color: var(--text-pri);
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+
+  .hint {
+    font-size: 12px;
+    color: var(--text-sec);
+    line-height: 1.5;
+    margin: 0;
+  }
+}
+
 .hero {
   padding: 32px;
   display: grid;

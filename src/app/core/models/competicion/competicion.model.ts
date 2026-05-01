@@ -42,6 +42,18 @@ export interface ConfiguracionCompeticion {
   numGrupos?: number | null;
 }
 
+/**
+ * Agrupa las competiciones del usuario por el rol con el que participa.
+ * Una misma competición puede aparecer en más de una lista (p.ej. admin que
+ * además es jugador de un equipo inscrito).
+ */
+export interface MisCompeticionesPorRol {
+  admin: CompeticionSimple[];
+  manager: CompeticionSimple[];
+  arbitro: CompeticionSimple[];
+  jugador: CompeticionSimple[];
+}
+
 export enum EstadoCompeticion {
   BORRADOR = 'BORRADOR',
   ACTIVA = 'ACTIVA',

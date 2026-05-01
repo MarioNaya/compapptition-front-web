@@ -1,0 +1,67 @@
+<div class="container matches fade-in">
+  <app-page-header
+    [back]="true"
+    eyebrow="Partidos"
+    title="Tus partidos"
+    subtitle="Calendario de los partidos de las competiciones en las que participas."
+  />
+
+  <div class="filters">
+    <button
+      type="button"
+      class="filter-pill"
+      [class.active]="filter() === 'PROXIMOS'"
+      (click)="setFilter('PROXIMOS')"
+    >Próximos {{ proximos() > 0 ? '(' + proximos() + ')' : '' }}</button>
+    <button
+      type="button"
+      class="filter-pill"
+      [class.active]="filter() === 'PASADOS'"
+      (click)="setFilter('PASADOS')"
+    >Pasados</button>
+    <button
+      type="button"
+      class="filter-pill"
+      [class.active]="filter() === 'TODOS'"
+      (click)="setFilter('TODOS')"
+    >Todos</button>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-box"><app-spinner size="md" label="Cargando partidos" /></div>
+  } @else if (events().length === 0) {
+    <app-empty-state
+      icon="calendar"
+      title="Sin partidos"
+      [subtitle]="filter() === 'PROXIMOS' ? 'No tienes próximos partidos programados.' : 'No hay partidos en este filtro.'"
+    />
+  } @else {
+    <ul class="match-list">
+      @for (e of events(); track e.id) {
+        <li class="match-item card" (click)="open(e)" (keydown.enter)="open(e)" tabindex="0">
+          <div class="when">
+            <span class="date mono">{{ (e.fechaHora | date: 'EEE dd MMM' : '' : 'es') | uppercase }}</span>
+            <span class="time mono">{{ e.fechaHora | date: 'HH:mm' }}</span>
+          </div>
+          <app-team-pair
+            [home]="e.equipoLocal?.nombre ?? 'TBD'"
+            [away]="e.equipoVisitante?.nombre ?? 'TBD'"
+            [homeCrest]="e.equipoLocal?.escudoUrl ?? null"
+            [awayCrest]="e.equipoVisitante?.escudoUrl ?? null"
+            size="md"
+          />
+          <div class="meta">
+            <span class="comp">{{ e.competicionNombre }}</span>
+            @if (e.lugar) {
+              <span class="venue mono"><app-icon name="pin" [size]="12" /> {{ e.lugar }}</span>
+            }
+            @if (e.resultadoLocal != null && e.resultadoVisitante != null) {
+              <span class="score mono">{{ e.resultadoLocal }} – {{ e.resultadoVisitante }}</span>
+            }
+          </div>
+          <app-icon name="chev-r" [size]="16" />
+        </li>
+      }
+    </ul>
+  }
+</div>

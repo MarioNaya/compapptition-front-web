@@ -3,7 +3,43 @@
     eyebrow="Mensajes"
     title="Bandeja de entrada"
     subtitle="Conversaciones con otros usuarios de la plataforma."
-  />
+  >
+    <app-button variant="primary" (clicked)="toggleNew()">
+      <app-icon [name]="showNew() ? 'x' : 'plus'" [size]="14" />
+      {{ showNew() ? 'Cerrar' : 'Nuevo mensaje' }}
+    </app-button>
+  </app-page-header>
+
+  @if (showNew()) {
+    <section class="new-conv card">
+      <h3 class="h-display panel-title">Nueva conversación</h3>
+      <p class="hint mono">
+        Indica el nombre de usuario de la persona con la que quieres hablar. Si
+        ya existe una conversación con ella se abrirá la actual.
+      </p>
+      <div class="row">
+        <input
+          class="input"
+          type="text"
+          placeholder="nombre de usuario"
+          [value]="newUsername()"
+          (input)="onUsernameChange($any($event.target).value)"
+          (keydown.enter)="startConversation()"
+        />
+        <app-button
+          variant="primary"
+          (clicked)="startConversation()"
+          [disabled]="starting() || !newUsername().trim()"
+        >
+          @if (starting()) {
+            <app-spinner size="sm" />
+          } @else {
+            <app-icon name="chat" [size]="14" /> Iniciar conversación
+          }
+        </app-button>
+      </div>
+    </section>
+  }
 
   @if (loading() && conversaciones().length === 0) {
     <div class="loading-box"><app-spinner size="md" label="Cargando conversaciones" /></div>
@@ -11,8 +47,12 @@
     <app-empty-state
       icon="mail"
       title="Sin conversaciones"
-      subtitle="Aún no has intercambiado mensajes con nadie. Puedes iniciar una conversación desde el perfil de otro usuario."
-    />
+      subtitle='Aún no has intercambiado mensajes con nadie. Pulsa "Nuevo mensaje" para empezar una conversación con otro usuario.'
+    >
+      <app-button variant="primary" (clicked)="toggleNew()">
+        <app-icon name="plus" [size]="14" /> Nuevo mensaje
+      </app-button>
+    </app-empty-state>
   } @else {
     <ul class="conv-list">
       @for (c of conversaciones(); track c.id) {

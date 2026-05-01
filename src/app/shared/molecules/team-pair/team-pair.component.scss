@@ -1,43 +1,65 @@
 :host {
-  display: inline-block;
+  display: block;
+  max-width: 100%;
 }
 
 .team-pair {
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
   color: var(--text-pri);
+  max-width: 100%;
+  min-width: 0;
+
+  // Permite que el contenido (escudos + nombres) se reparta sin desbordar.
+  > * {
+    min-width: 0;
+  }
 
   &.size-md {
     gap: 12px;
-    .name {
-      font-size: 18px;
-    }
-    .vs {
-      font-size: 18px;
-    }
+    .name { font-size: 18px; }
+    .vs { font-size: 18px; }
   }
 
   &.size-lg {
     gap: 14px;
-    .name {
-      font-size: 20px;
-    }
-    .vs {
-      font-size: 20px;
-    }
+    .name { font-size: 20px; }
+    .vs { font-size: 20px; }
   }
 
   &.size-xl {
     gap: 24px;
     .name {
-      font-size: 36px;
+      font-size: clamp(20px, 5vw, 36px);
       letter-spacing: 0.01em;
       font-family: var(--font-display);
       text-transform: uppercase;
     }
     .vs {
-      font-size: 28px;
+      font-size: clamp(18px, 4vw, 28px);
+    }
+  }
+
+  // En móvil reducimos drásticamente para que escudos y texto quepan.
+  @media (max-width: 540px) {
+    gap: 10px;
+
+    &.size-xl {
+      gap: 12px;
+      .name {
+        font-size: clamp(16px, 4.5vw, 22px);
+      }
+      .vs {
+        font-size: 18px;
+      }
+    }
+
+    &.size-lg {
+      gap: 10px;
+      .name { font-size: 16px; }
+      .vs { font-size: 16px; }
     }
   }
 }
@@ -45,6 +67,12 @@
 .name {
   font-weight: 700;
   font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1 1 auto;
+  min-width: 0;
+  text-align: center;
 }
 
 .vs {

@@ -15,8 +15,9 @@ export interface EstadisticaAcumulada {
   jugadorNombre: string;
   tipoEstadisticaId: number;
   tipoEstadisticaNombre: string;
-  totalValor: number;
-  competicionId: number;
+  /** Suma del valor del tipo de estadística para el jugador en la competición. */
+  total: number;
+  competicionId?: number;
 }
 
 export interface TipoEstadistica {

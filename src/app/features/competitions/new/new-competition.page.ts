@@ -10,6 +10,7 @@ import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';
 import { PageHeaderComponent } from '@shared/molecules/page-header/page-header.component';
 import { FormFieldComponent } from '@shared/molecules/form-field/form-field.component';
 import { ToastService } from '@shared/services/toast.service';
+import { AuthService } from '@core/services/auth.service';
 import { CompeticionService } from '@features/competitions/services/competicion.service';
 import { DeporteService } from '@features/admin/sports/services/deporte.service';
 
@@ -48,6 +49,7 @@ export class NewCompetitionPage implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly service = inject(CompeticionService);
   private readonly deporteService = inject(DeporteService);
+  private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly toast = inject(ToastService);
 
@@ -140,7 +142,14 @@ export class NewCompetitionPage implements OnInit {
       .subscribe({
         next: (comp) => {
           this.toast.success('Competición creada');
-          this.router.navigate(['/app/competitions', comp.id]);
+          // El backend asigna ADMIN_COMPETICION al creador, pero el JWT
+          // actual lleva los roles cacheados al login. Refrescamos el token
+          // para que el frontend reconozca el rol nuevo y muestre los CTAs
+          // de gestión (invitar manager/árbitro, añadir equipos, etc.).
+          this.auth.refreshToken().subscribe({
+            next: () => this.router.navigate(['/app/competitions', comp.id]),
+            error: () => this.router.navigate(['/app/competitions', comp.id]),
+          });
         },
         error: (err: ApiError) => {
           this.saving.set(false);

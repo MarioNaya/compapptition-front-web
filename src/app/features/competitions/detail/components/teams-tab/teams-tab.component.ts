@@ -4,7 +4,7 @@ import { Subject, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from '@core/services/auth.service';
 import { ApiError } from '@core/http/api-error.model';
-import { Equipo, TipoEquipo } from '@core/models/equipo/equipo.model';
+import { Equipo } from '@core/models/equipo/equipo.model';
 import { EstadoCompeticion } from '@core/models/competicion/competicion.model';
 import { RolCompeticion } from '@core/models/rol';
 import { ButtonComponent } from '@shared/ui/button/button.component';
@@ -51,7 +51,7 @@ export class TeamsTabComponent implements OnInit {
   readonly showInvite = signal(false);
   readonly showCreate = signal(false);
 
-  // búsqueda + invitación
+  // búsqueda + invitación (solo equipos públicos)
   readonly searchTerm = signal('');
   readonly searching = signal(false);
   readonly searchResults = signal<readonly Equipo[]>([]);
@@ -59,11 +59,24 @@ export class TeamsTabComponent implements OnInit {
   readonly managerEmail = signal('');
   readonly sending = signal(false);
 
+  // búsqueda por código (equipos privados)
+  readonly codigoInput = signal('');
+  readonly resolvingCodigo = signal(false);
+  readonly codigoError = signal<string | null>(null);
+
   // creación inline
   readonly newTeamName = signal('');
   readonly creating = signal(false);
 
-  readonly canAddTeam = computed(() => this.estado() === EstadoCompeticion.BORRADOR);
+  /**
+   * Solo el admin de la competición (o admin de sistema) puede añadir equipos,
+   * y únicamente mientras la competición esté en BORRADOR.
+   */
+  readonly canAddTeam = computed(
+    () =>
+      this.estado() === EstadoCompeticion.BORRADOR
+      && this.auth.isAdminCompeticion(this.competicionId()),
+  );
 
   readonly availableResults = computed(() => {
     const inscritosIds = new Set(this.equipos().map((e) => e.id));
@@ -77,6 +90,7 @@ export class TeamsTabComponent implements OnInit {
         distinctUntilChanged(),
         switchMap((term) => {
           this.searching.set(true);
+          // Solo equipos públicos: los privados no deben aparecer en el buscador.
           return this.service.findAll$({ search: term, size: 10 });
         }),
         takeUntilDestroyed(),
@@ -118,8 +132,41 @@ export class TeamsTabComponent implements OnInit {
       this.searchTerm.set('');
       this.selectedEquipo.set(null);
       this.managerEmail.set('');
+      this.codigoInput.set('');
+      this.codigoError.set(null);
       this.searchSubject.next('');
     }
+  }
+
+  onCodigoChange(value: string): void {
+    this.codigoInput.set(value);
+    this.codigoError.set(null);
+  }
+
+  /**
+   * Resuelve un código de invitación de equipo privado y, si existe, lo
+   * pasa al paso 2 (envío de invitación al manager). Los equipos públicos no
+   * tienen código y se descubren con el buscador de arriba.
+   */
+  resolverCodigo(): void {
+    const codigo = this.codigoInput().trim();
+    if (!codigo) return;
+    this.resolvingCodigo.set(true);
+    this.codigoError.set(null);
+    this.service.findByCodigo$(codigo).subscribe({
+      next: (equipo) => {
+        this.resolvingCodigo.set(false);
+        if (this.equipos().some((e) => e.id === equipo.id)) {
+          this.codigoError.set('Ese equipo ya está inscrito en la competición');
+          return;
+        }
+        this.selectTeam(equipo);
+      },
+      error: () => {
+        this.resolvingCodigo.set(false);
+        this.codigoError.set('No se ha encontrado ningún equipo con ese código');
+      },
+    });
   }
 
   toggleCreate(): void {
@@ -190,7 +237,7 @@ export class TeamsTabComponent implements OnInit {
     if (!userId || !nombre) return;
 
     this.creating.set(true);
-    this.service.create$({ nombre, tipo: TipoEquipo.GESTIONADO }).subscribe({
+    this.service.create$({ nombre, publico: true }).subscribe({
       next: (equipo) => {
         this.service
           .inscribirEnCompeticion$(this.competicionId(), equipo.id, userId)

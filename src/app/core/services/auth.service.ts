@@ -8,7 +8,9 @@ import {
   LoginRequest,
   RegistroRequest,
   Usuario,
+  UsuarioRolCompeticionResumen,
 } from '../models/usuario';
+import { RolCompeticion } from '../models/rol/rol.model';
 
 @Injectable({
   providedIn: 'root',
@@ -96,11 +98,83 @@ export class AuthService {
     return localStorage.getItem(this.REFRESH_TOKEN_KEY);
   }
 
+  /// === HELPERS RBAC ===
+  ///
+  /// Operan sobre el claim `competiciones` del JWT (decodificado al hacer login)
+  /// y permiten que las páginas oculten o deshabiliten acciones sin esperar
+  /// al backend. El backend siempre repite la comprobación con `@PreAuthorize`.
+
+  /** El usuario tiene rol global de admin del sistema (atajo, supera todo lo demás). */
+  isAdminSistema(): boolean {
+    return !!this.currentUserSignal()?.esAdminSistema;
+  }
+
+  /** Roles del usuario en una competición concreta (tras decodificar el JWT). */
+  rolesEnCompeticion(competicionId: number | null | undefined): RolCompeticion[] {
+    if (competicionId == null) return [];
+    return (this.currentUserSignal()?.rolesCompeticion ?? [])
+      .filter((r) => r.id === competicionId)
+      .map((r) => r.rol);
+  }
+
+  hasRole(competicionId: number | null | undefined, rol: RolCompeticion): boolean {
+    if (this.isAdminSistema()) return true;
+    return this.rolesEnCompeticion(competicionId).includes(rol);
+  }
+
+  /** Admin de la competición concreta (incluye admin de sistema). */
+  isAdminCompeticion(competicionId: number | null | undefined): boolean {
+    return this.hasRole(competicionId, RolCompeticion.ADMIN_COMPETICION);
+  }
+
+  /** Árbitro de la competición. */
+  isArbitroCompeticion(competicionId: number | null | undefined): boolean {
+    return this.hasRole(competicionId, RolCompeticion.ARBITRO);
+  }
+
+  /**
+   * Puede registrar/editar resultados y estadísticas en la competición.
+   * Lo permitimos a admin de competición y árbitros (admin de sistema incluido).
+   */
+  puedeEditarResultadosEnCompeticion(competicionId: number | null | undefined): boolean {
+    return this.isAdminCompeticion(competicionId) || this.isArbitroCompeticion(competicionId);
+  }
+
   private handleAuthResponse(response: AuthResponse): void {
     localStorage.setItem(this.TOKEN_KEY, response.accessToken);
     localStorage.setItem(this.REFRESH_TOKEN_KEY, response.refreshToken);
-    localStorage.setItem(this.USER_KEY, JSON.stringify(response.usuario));
-    this.currentUserSignal.set(response.usuario);
+    const enriched: Usuario = {
+      ...response.usuario,
+      rolesCompeticion: this.parseRolesFromJwt(response.accessToken),
+    };
+    localStorage.setItem(this.USER_KEY, JSON.stringify(enriched));
+    this.currentUserSignal.set(enriched);
+  }
+
+  /**
+   * Decodifica el JWT y devuelve el claim `competiciones` como array tipado.
+   * No verifica firma (eso es trabajo del backend); solo lee el payload.
+   */
+  private parseRolesFromJwt(token: string): UsuarioRolCompeticionResumen[] {
+    try {
+      const payload = token.split('.')[1];
+      // base64url → base64 → string. atob no soporta UTF-8, así que lo
+      // pasamos por TextDecoder por si algún nombre lleva acentos.
+      const json = decodeURIComponent(
+        atob(payload.replace(/-/g, '+').replace(/_/g, '/'))
+          .split('')
+          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join(''),
+      );
+      const claims = JSON.parse(json) as { competiciones?: { id: number; nombre: string; rol: string }[] };
+      return (claims.competiciones ?? []).map((c) => ({
+        id: c.id,
+        nombre: c.nombre,
+        rol: c.rol as RolCompeticion,
+      }));
+    } catch {
+      return [];
+    }
   }
 
   private clearSession(): void {
