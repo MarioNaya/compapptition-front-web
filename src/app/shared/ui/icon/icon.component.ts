@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import { NgSwitch, NgSwitchCase } from '@angular/common';
 
 export type IconName =
   | 'bell'
@@ -38,7 +37,7 @@ export type IconName =
 @Component({
   selector: 'app-icon',
   standalone: true,
-  imports: [NgSwitch, NgSwitchCase],
+  imports: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './icon.component.html',
   styleUrl: './icon.component.scss',

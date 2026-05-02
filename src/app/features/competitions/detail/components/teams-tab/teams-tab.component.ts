@@ -237,27 +237,33 @@ export class TeamsTabComponent implements OnInit {
     if (!userId || !nombre) return;
 
     this.creating.set(true);
-    this.service.create$({ nombre, publico: true }).subscribe({
-      next: (equipo) => {
-        this.service
-          .inscribirEnCompeticion$(this.competicionId(), equipo.id)
-          .subscribe({
-            next: () => {
-              this.toast.success(`"${equipo.nombre}" creado e inscrito`);
-              this.creating.set(false);
-              this.showCreate.set(false);
-              this.newTeamName.set('');
-              this.load();
-            },
-            error: (err: ApiError) => {
-              this.creating.set(false);
-              this.toast.error(err.message ?? 'Equipo creado pero no se pudo inscribir');
-            },
-          });
+    // switchMap encadena create + inscribir en una sola cadena reactiva,
+    // evita subscribes anidados y devuelve un único Observable suscribible
+    // (cierra AF-2). Si el componente se destruye en mitad, la cadena se
+    // cancela cleanly via takeUntilDestroyed.
+    let equipoCreado: Equipo;
+    this.service.create$({ nombre, publico: true }).pipe(
+      switchMap((equipo) => {
+        equipoCreado = equipo;
+        return this.service.inscribirEnCompeticion$(this.competicionId(), equipo.id);
+      }),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
+      next: () => {
+        this.toast.success(`"${equipoCreado.nombre}" creado e inscrito`);
+        this.creating.set(false);
+        this.showCreate.set(false);
+        this.newTeamName.set('');
+        this.load();
       },
       error: (err: ApiError) => {
         this.creating.set(false);
-        this.toast.error(err.message ?? 'No se pudo crear el equipo');
+        // Si el error viene del primer paso (create), el equipo no existe;
+        // si viene del segundo (inscribir), el equipo ya está creado.
+        const msg = equipoCreado
+          ? (err.message ?? 'Equipo creado pero no se pudo inscribir')
+          : (err.message ?? 'No se pudo crear el equipo');
+        this.toast.error(msg);
       },
     });
   }

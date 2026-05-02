@@ -13,6 +13,13 @@ export class TeamCrestComponent {
   readonly name = input.required<string>();
   readonly imageUrl = input<string | null>(null);
   readonly size = input<CrestSize>('md');
+  /**
+   * Cuando el escudo va junto al nombre del equipo en el mismo bloque (team-pair,
+   * competition-card, etc.), el lector de pantalla repite el nombre. Pasar
+   * {@code [decorative]="true"} pone {@code alt=""} para evitar el doble anuncio
+   * (cierra AF-21).
+   */
+  readonly decorative = input<boolean>(false);
 
   readonly initials = computed(() => {
     const parts = this.name().trim().split(/\s+/);

@@ -22,6 +22,11 @@ export class NotificationService {
   private eventSource: EventSource | null = null;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private retryDelayMs = 1_500;
+  /** Cap de reintentos SSE por sesión: tras 8 fallos consecutivos se rinde
+   * y deja de intentar reconexión hasta el próximo {@link connect()} manual
+   * o cambio de sesión (cierra SF-17 — antes podía intentar indefinidamente). */
+  private static readonly MAX_RETRIES = 8;
+  private retriesAttempted = 0;
 
   constructor() {
     this.destroyRef.onDestroy(() => this.disconnect());
@@ -59,6 +64,7 @@ export class NotificationService {
 
     this.eventSource.onopen = () => {
       this.retryDelayMs = 1_500;
+      this.retriesAttempted = 0;
     };
   }
 
@@ -81,11 +87,20 @@ export class NotificationService {
     this.disconnect();
     this._items.set([]);
     this.retryDelayMs = 1_500;
+    this.retriesAttempted = 0;
   }
 
   private scheduleReconnect(): void {
     if (!this.auth.isAuthenticated()) return;
     if (this.reconnectTimer) return;
+    if (this.retriesAttempted >= NotificationService.MAX_RETRIES) {
+      // Cap alcanzado (cierra SF-17): si el backend está caído del todo
+      // dejamos de pelear con él hasta que el usuario haga login de nuevo
+      // o llame manualmente a connect(). Reset a 1500ms ocurre al
+      // próximo onopen.
+      return;
+    }
+    this.retriesAttempted++;
     const delay = Math.min(this.retryDelayMs, 30_000);
     this.reconnectTimer = setTimeout(() => {
       this.reconnectTimer = null;

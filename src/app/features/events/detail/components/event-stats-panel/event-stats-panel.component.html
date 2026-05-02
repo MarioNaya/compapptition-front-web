@@ -39,15 +39,7 @@
       <app-form-field
         label="Valor"
         [control]="form.controls.valor"
-        [hint]="
-          selectedTipo()?.tipoValor === TipoValor.BOOLEANO
-            ? 'Introduce 1 (sí) o 0 (no).'
-            : selectedTipo()?.tipoValor === TipoValor.ENTERO
-              ? 'Número entero ≥ 0.'
-              : selectedTipo()?.tipoValor === TipoValor.TIEMPO
-                ? 'Tiempo en segundos (decimal admitido).'
-                : null
-        "
+        [hint]="valorHint()"
       >
         <input
           class="input"

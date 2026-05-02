@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, injec
 import { ActivatedRoute, Router } from '@angular/router';
 import { DatePipe, UpperCasePipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { forkJoin } from 'rxjs';
+import { forkJoin, switchMap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Evento, EstadoEvento } from '@core/models/evento/evento.model';
 import { Competicion } from '@core/models/competicion/competicion.model';
@@ -247,29 +247,38 @@ export class EventDetailPage implements OnInit {
       return;
     }
     this.saving.set(true);
+    // switchMap encadena registrarResultado + findById sin subscribes
+    // anidados (cierra AF-2). Si el componente se destruye en mitad
+    // takeUntilDestroyed cancela cleanly.
+    let resultadoOk = false;
     this.service
       .registrarResultado$(compId, e.id, this.resultForm.getRawValue())
-      .subscribe({
-        next: () => {
+      .pipe(
+        switchMap(() => {
+          resultadoOk = true;
           this.toast.success('Resultado registrado');
           // Recargar el evento detalle para tener `bloqueado`, `estado` y
           // resto de campos del DTO completo. El endpoint /resultado devuelve
           // un DTO reducido y nos quedaríamos sin esa info, lo que provoca
           // que el panel de stats interprete mal el estado.
-          this.service.findById$(compId, e.id).subscribe({
-            next: (updated) => {
-              this.evento.set(updated);
-              this.saving.set(false);
-              this.refreshStats();
-            },
-            error: () => {
-              this.saving.set(false);
-            },
-          });
+          return this.service.findById$(compId, e.id);
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: (updated) => {
+          this.evento.set(updated);
+          this.saving.set(false);
+          this.refreshStats();
         },
         error: (err: ApiError) => {
           this.saving.set(false);
-          this.toast.error(err.message ?? 'No se pudo registrar el resultado');
+          if (!resultadoOk) {
+            this.toast.error(err.message ?? 'No se pudo registrar el resultado');
+          }
+          // Si resultadoOk pero falla el reload, no toast — el resultado
+          // ya quedó en BD. La UI quedará desincronizada hasta el próximo
+          // navegar, sin riesgo de datos.
         },
       });
   }

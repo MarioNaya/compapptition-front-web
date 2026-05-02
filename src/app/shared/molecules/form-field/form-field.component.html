@@ -4,8 +4,8 @@
   }
   <ng-content />
   @if (showError()) {
-    <span class="field-error">{{ errorMessage() }}</span>
+    <span class="field-error" [id]="descriptionId" role="alert">{{ errorMessage() }}</span>
   } @else if (hint(); as h) {
-    <span class="hint">{{ h }}</span>
+    <span class="hint" [id]="descriptionId">{{ h }}</span>
   }
 </div>

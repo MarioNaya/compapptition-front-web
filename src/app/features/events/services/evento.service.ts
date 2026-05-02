@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '@env/environment';
 import { Evento } from '@core/models/evento/evento.model';
 import { EventoCreateRequest, ResultadoRequest } from '@core/models/evento/evento.requests';
+import { EstadisticaJugador } from '@core/models/estadistica/estadistica.model';
 
 @Injectable({ providedIn: 'root' })
 export class EventoService {
@@ -93,9 +94,9 @@ export class EventoService {
   estadisticas$(
     competicionId: number,
     eventoId: number,
-  ): Observable<import('@core/models/estadistica/estadistica.model').EstadisticaJugador[]> {
-    return this.http.get<
-      import('@core/models/estadistica/estadistica.model').EstadisticaJugador[]
-    >(`${this.base}/${competicionId}/eventos/${eventoId}/estadisticas`);
+  ): Observable<EstadisticaJugador[]> {
+    return this.http.get<EstadisticaJugador[]>(
+      `${this.base}/${competicionId}/eventos/${eventoId}/estadisticas`,
+    );
   }
 }

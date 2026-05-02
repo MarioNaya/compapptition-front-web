@@ -86,6 +86,22 @@ export class EventStatsPanelComponent implements OnInit {
     return '1';
   });
 
+  /**
+   * Hint contextual mostrado bajo el input del valor según el tipo de
+   * estadística seleccionado. Map estática para evitar ternarios anidados
+   * en el template (cierra AF-15).
+   */
+  private static readonly HINT_BY_TIPO: Partial<Record<TipoValor, string>> = {
+    [TipoValor.BOOLEANO]: 'Introduce 1 (sí) o 0 (no).',
+    [TipoValor.ENTERO]: 'Número entero ≥ 0.',
+    [TipoValor.TIEMPO]: 'Tiempo en segundos (decimal admitido).',
+  };
+
+  readonly valorHint = computed(() => {
+    const tipo = this.selectedTipo()?.tipoValor;
+    return tipo ? (EventStatsPanelComponent.HINT_BY_TIPO[tipo] ?? null) : null;
+  });
+
   readonly TipoValor = TipoValor;
 
   constructor() {

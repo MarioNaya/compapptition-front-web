@@ -13,6 +13,12 @@ export class AvatarComponent {
   readonly name = input.required<string>();
   readonly imageUrl = input<string | null>(null);
   readonly size = input<AvatarSize>('md');
+  /**
+   * Cuando el avatar va junto al nombre del usuario en el mismo bloque, el
+   * lector de pantalla repite el nombre. Pasar {@code [decorative]="true"}
+   * pone {@code alt=""} para evitar el doble anuncio (cierra AF-21).
+   */
+  readonly decorative = input<boolean>(false);
 
   readonly initials = computed(() => {
     const parts = this.name().trim().split(/\s+/);

@@ -1,4 +1,6 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, effect, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, effect, inject, input, signal } from '@angular/core';
+import { switchMap } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EstadisticaAcumulada, TipoEstadistica } from '@core/models/estadistica/estadistica.model';
 import { ApiError } from '@core/http/api-error.model';
 import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';
@@ -25,6 +27,7 @@ export class StatsTabComponent implements OnInit {
   private readonly deporteService = inject(DeporteService);
   private readonly statsService = inject(EstadisticaService);
   private readonly toast = inject(ToastService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly competicionId = input.required<number>();
 
@@ -64,18 +67,18 @@ export class StatsTabComponent implements OnInit {
 
   private loadTipos(): void {
     this.loadingTipos.set(true);
-    // Cargamos la competición para obtener el deporteId y luego sus tipos de estadística
-    this.competicionService.findByIdDetalle$(this.competicionId()).subscribe({
-      next: (c) => {
-        this.deporteService.findTiposEstadistica$(c.deporteId).subscribe({
-          next: (tipos) => {
-            const sorted = [...tipos].sort((a, b) => a.orden - b.orden);
-            this.tipos.set(sorted);
-            this.loadingTipos.set(false);
-            if (sorted.length > 0) this.selectedTipoId.set(sorted[0].id);
-          },
-          error: () => this.loadingTipos.set(false),
-        });
+    // switchMap encadena findByIdDetalle + findTiposEstadistica sin
+    // subscribes anidados (cierra AF-2). Si el componente se destruye, la
+    // cadena se cancela limpio via takeUntilDestroyed.
+    this.competicionService.findByIdDetalle$(this.competicionId()).pipe(
+      switchMap((c) => this.deporteService.findTiposEstadistica$(c.deporteId)),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
+      next: (tipos) => {
+        const sorted = [...tipos].sort((a, b) => a.orden - b.orden);
+        this.tipos.set(sorted);
+        this.loadingTipos.set(false);
+        if (sorted.length > 0) this.selectedTipoId.set(sorted[0].id);
       },
       error: () => this.loadingTipos.set(false),
     });

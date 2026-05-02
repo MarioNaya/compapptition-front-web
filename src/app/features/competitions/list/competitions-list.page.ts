@@ -7,6 +7,7 @@ import {
   EstadoCompeticion,
   MisCompeticionesPorRol,
 } from '@core/models/competicion/competicion.model';
+import { EMPTY_POR_ROL } from '@core/models/competicion/empty-por-rol.const';
 import { ApiError } from '@core/http/api-error.model';
 import { AuthService } from '@core/services/auth.service';
 import { ToastService } from '@shared/services/toast.service';
@@ -32,13 +33,6 @@ interface CompGroup {
   readonly title: string;
   readonly items: readonly CompeticionSimple[];
 }
-
-const EMPTY_POR_ROL: MisCompeticionesPorRol = {
-  admin: [],
-  manager: [],
-  arbitro: [],
-  jugador: [],
-};
 
 @Component({
   selector: 'app-competitions-list-page',
@@ -112,10 +106,10 @@ export class CompetitionsListPage implements OnInit {
     this.searchSubject
       .pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed())
       .subscribe((term) => {
-        this.loading.set(true);
+        // El loading visible viene del signal del servicio singleton; aquí
+        // solo despachamos la búsqueda. Antes había un setTimeout(0) para
+        // bajar un loading local que no servía para nada (cierra AF-9).
         this.service.loadList({ search: term, size: 50 });
-        // El servicio gestiona su propio loading; nosotros solo lo simulamos.
-        setTimeout(() => this.loading.set(false), 0);
       });
   }
 

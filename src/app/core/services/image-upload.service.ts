@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { environment } from '@env/environment';
 
 export type UploadFolder = 'escudos' | 'fotos' | 'iconos' | 'misc';
@@ -19,14 +19,17 @@ export class ImageUploadService {
 
   /**
    * Valida el archivo y lo sube al backend (que a su vez firma y lo sube a Cloudinary).
-   * @throws Error con mensaje descriptivo si el archivo no pasa las validaciones cliente.
+   * Las validaciones cliente se transportan vía {@code throwError} dentro del
+   * Observable (en lugar de lanzar síncrono); así los consumidores las reciben
+   * por el callback {@code error:} del subscribe sin necesidad de try/catch
+   * (cierra AF-12).
    */
   upload$(file: File, folder: UploadFolder = 'misc'): Observable<UploadResponse> {
     if (!ALLOWED_TYPES.has(file.type)) {
-      throw new Error('Formato no admitido. Usa JPG, PNG, WebP o GIF.');
+      return throwError(() => new Error('Formato no admitido. Usa JPG, PNG, WebP o GIF.'));
     }
     if (file.size > MAX_SIZE_BYTES) {
-      throw new Error(`El archivo supera el máximo de ${MAX_SIZE_BYTES / 1024 / 1024} MB.`);
+      return throwError(() => new Error(`El archivo supera el máximo de ${MAX_SIZE_BYTES / 1024 / 1024} MB.`));
     }
     const fd = new FormData();
     fd.append('file', file);

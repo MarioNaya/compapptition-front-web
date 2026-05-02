@@ -2,40 +2,10 @@ import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, effec
 import { Router, RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { NotificationService } from '@core/services/notification.service';
-import { Notificacion, TipoNotificacion } from '@core/models/notificacion';
 import { AuthService } from '@core/services/auth.service';
 import { IconComponent } from '@shared/ui/icon/icon.component';
 import { ClickOutsideDirective } from '@shared/directives/click-outside.directive';
-
-interface NotifView {
-  readonly id: number;
-  readonly icon: 'bell' | 'mail' | 'trophy' | 'users' | 'check';
-  readonly title: string;
-  readonly detail: string;
-  readonly leida: boolean;
-  readonly fechaCreacion: string;
-  readonly link: readonly unknown[] | null;
-}
-
-const TITLES: Record<TipoNotificacion, string> = {
-  INVITACION_RECIBIDA: 'Nueva invitación',
-  EQUIPO_ACEPTADO: 'Equipo aceptado',
-  RESULTADO_REGISTRADO: 'Resultado registrado',
-  MENSAJE_RECIBIDO: 'Nuevo mensaje',
-  COMPETICION_ACTIVADA: 'Competición activada',
-  SOLICITUD_VINCULACION_RECIBIDA: 'Solicitud de vinculación',
-  SOLICITUD_VINCULACION_RESUELTA: 'Vinculación resuelta',
-};
-
-const ICONS: Record<TipoNotificacion, NotifView['icon']> = {
-  INVITACION_RECIBIDA: 'bell',
-  EQUIPO_ACEPTADO: 'check',
-  RESULTADO_REGISTRADO: 'trophy',
-  MENSAJE_RECIBIDO: 'mail',
-  COMPETICION_ACTIVADA: 'trophy',
-  SOLICITUD_VINCULACION_RECIBIDA: 'users',
-  SOLICITUD_VINCULACION_RESUELTA: 'check',
-};
+import { NotificationView, toNotificationView } from '@shared/utils/notification-mapper.util';
 
 @Component({
   selector: 'app-notification-bell',
@@ -54,8 +24,8 @@ export class NotificationBellComponent implements OnInit {
   readonly unreadCount = this.service.unreadCount;
   readonly open = signal(false);
 
-  readonly items = computed<readonly NotifView[]>(() =>
-    this.service.items().map((n) => this.toView(n)),
+  readonly items = computed<readonly NotificationView[]>(() =>
+    this.service.items().map((n) => toNotificationView(n)),
   );
 
   constructor() {
@@ -91,88 +61,14 @@ export class NotificationBellComponent implements OnInit {
     this.service.marcarTodasLeidas$().subscribe();
   }
 
-  onClick(n: NotifView): void {
+  onClick(n: NotificationView): void {
     this.service.marcarLeida$(n.id).subscribe();
     this.close();
     if (n.link) this.router.navigate([...n.link]);
   }
 
-  remove(n: NotifView, ev: Event): void {
+  remove(n: NotificationView, ev: Event): void {
     ev.stopPropagation();
     this.service.eliminar$(n.id).subscribe();
-  }
-
-  private toView(n: Notificacion): NotifView {
-    const payload = n.payload ?? {};
-    let detail = '';
-    let link: readonly unknown[] | null = null;
-
-    switch (n.tipo) {
-      case TipoNotificacion.INVITACION_RECIBIDA: {
-        detail = String(payload['competicionNombre'] ?? 'Revisa tu bandeja');
-        link = ['/app/invitations'];
-        break;
-      }
-      case TipoNotificacion.EQUIPO_ACEPTADO: {
-        const team = payload['equipoNombre'] ?? '';
-        const comp = payload['competicionNombre'] ?? '';
-        detail = `${team}${comp ? ' · ' + comp : ''}`.trim() || 'Equipo aceptado en la competición';
-        const compId = payload['competicionId'];
-        link = compId != null ? ['/app/competitions', compId] : null;
-        break;
-      }
-      case TipoNotificacion.RESULTADO_REGISTRADO: {
-        const local = payload['localNombre'];
-        const visitante = payload['visitanteNombre'];
-        const resultado = payload['resultado'];
-        if (local && visitante && resultado) {
-          detail = `${local} vs ${visitante} · ${resultado}`;
-        } else if (local && visitante) {
-          detail = `${local} vs ${visitante}`;
-        } else {
-          detail = String(resultado ?? 'Nuevo resultado en un partido');
-        }
-        const compId = payload['competicionId'];
-        const eventoId = payload['eventoId'];
-        link = compId != null && eventoId != null ? ['/app/competitions', compId, 'events', eventoId] : null;
-        break;
-      }
-      case TipoNotificacion.MENSAJE_RECIBIDO: {
-        detail = String(payload['autorUsername'] ?? 'Tienes un nuevo mensaje');
-        const convId = payload['conversacionId'];
-        link = convId != null ? ['/app/messages', convId] : ['/app/messages'];
-        break;
-      }
-      case TipoNotificacion.COMPETICION_ACTIVADA: {
-        detail = String(payload['competicionNombre'] ?? 'Una competición ha empezado');
-        const compId = payload['competicionId'];
-        link = compId != null ? ['/app/competitions', compId] : null;
-        break;
-      }
-      case TipoNotificacion.SOLICITUD_VINCULACION_RECIBIDA: {
-        const jugador = payload['jugadorNombre'] ?? '';
-        const equipo = payload['equipoNombre'] ?? '';
-        detail = `${jugador}${equipo ? ' · ' + equipo : ''}`.trim() || 'Solicitud pendiente de respuesta';
-        link = ['/app/players/vinculaciones'];
-        break;
-      }
-      case TipoNotificacion.SOLICITUD_VINCULACION_RESUELTA: {
-        const jugador = payload['jugadorNombre'] ?? '';
-        const aceptada = payload['aceptada'];
-        detail = `${jugador} · ${aceptada ? 'aceptada' : 'rechazada'}`.trim();
-        link = ['/app/players/vinculaciones'];
-        break;
-      }
-    }
-
-    return {
-      id: n.id,
-      icon: ICONS[n.tipo],
-      title: TITLES[n.tipo] ?? 'Notificación',
-      detail,
-      leida: n.leida,
-      fechaCreacion: n.fechaCreacion,
-      link,
-    };
   }
 }

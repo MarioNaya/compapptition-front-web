@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, input, output, signal, untracked } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Evento } from '@core/models/evento/evento.model';
@@ -42,9 +42,10 @@ export class CalendarStripComponent {
   readonly windowDays = input<number>(15);
 
   readonly selectedDate = signal<string>(toIso(new Date()));
-  readonly windowStart = signal<Date>(
-    startOfDay(new Date(Date.now() - Math.floor(15 / 2) * DAY_MS)),
-  );
+  // Inicializamos hoy y dejamos que el effect del constructor centre la
+  // ventana según el input windowDays(); antes el literal 15 quedaba
+  // hardcoded y descentraba si alguien pasaba otro valor (cierra AF-10).
+  readonly windowStart = signal<Date>(startOfDay(new Date()));
 
   // Estado de drag: al arrastrar horizontalmente, la ventana de días se
   // desplaza (1 día por cada PX_PER_DAY px). No tocamos scrollLeft interno.
@@ -54,6 +55,18 @@ export class CalendarStripComponent {
   private dragged = false;
 
   readonly selected = output<string>();
+
+  constructor() {
+    // Centra la ventana al cargar y cuando windowDays() cambia (cierra AF-10).
+    // untracked evita que la lectura de Date.now() / sets convierta este
+    // effect en un loop reactivo.
+    effect(() => {
+      const half = Math.floor(this.windowDays() / 2);
+      untracked(() => {
+        this.windowStart.set(startOfDay(new Date(Date.now() - half * DAY_MS)));
+      });
+    });
+  }
 
   readonly days = computed<readonly DayCell[]>(() => {
     const start = this.windowStart();

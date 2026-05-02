@@ -23,6 +23,20 @@ export class FormFieldComponent {
   readonly control = input<AbstractControl | null>(null);
   readonly errorMessages = input<Record<string, string>>({});
 
+  /**
+   * Id estable del span de error/hint para que el input proyectado pueda
+   * referirlo con {@code aria-describedby="..."} y el lector de pantalla
+   * anuncie el mensaje al hacer focus (cierra AF-22). Los call-sites con
+   * exigencia de a11y pueden hacer:
+   * <pre>
+   *   <app-form-field #f label="...">
+   *     <input ... [attr.aria-describedby]="f.descriptionId" />
+   *   </app-form-field>
+   * </pre>
+   */
+  private static idCounter = 0;
+  readonly descriptionId = `ff-${++FormFieldComponent.idCounter}`;
+
   // Tick que se incrementa en cada evento del FormControl (status/value/touch).
   // Necesario porque los computed() solo reaccionan a signals, y AbstractControl
   // es observable-based.

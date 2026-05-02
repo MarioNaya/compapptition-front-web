@@ -90,26 +90,32 @@ export class InboxPage implements OnInit {
       return;
     }
     this.starting.set(true);
-    this.usuarioService.buscarPorUsername$(username).subscribe({
-      next: (user) => {
-        this.service.buscarOCrear$({ destinatarioId: user.id }).subscribe({
-          next: (conv) => {
-            this.starting.set(false);
-            this.showNew.set(false);
-            this.newUsername.set('');
-            this.router.navigate(['/app/messages', conv.id]);
-          },
-          error: (err: ApiError) => {
-            this.starting.set(false);
-            this.toast.error(err.message ?? 'No se pudo abrir la conversación');
-          },
-        });
+    // switchMap encadena buscarPorUsername + buscarOCrear sin subscribes
+    // anidados (cierra AF-2). takeUntilDestroyed cancela si el usuario
+    // sale de la página antes de que termine la cadena.
+    let foundUserId = false;
+    this.usuarioService.buscarPorUsername$(username).pipe(
+      switchMap((user) => {
+        foundUserId = true;
+        return this.service.buscarOCrear$({ destinatarioId: user.id });
+      }),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
+      next: (conv) => {
+        this.starting.set(false);
+        this.showNew.set(false);
+        this.newUsername.set('');
+        this.router.navigate(['/app/messages', conv.id]);
       },
       error: (err: ApiError) => {
         this.starting.set(false);
-        this.toast.error(
-          err.status === 404 ? 'No existe ningún usuario con ese nombre' : (err.message ?? 'Error buscando usuario'),
-        );
+        if (!foundUserId) {
+          this.toast.error(
+            err.status === 404 ? 'No existe ningún usuario con ese nombre' : (err.message ?? 'Error buscando usuario'),
+          );
+        } else {
+          this.toast.error(err.message ?? 'No se pudo abrir la conversación');
+        }
       },
     });
   }

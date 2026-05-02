@@ -8,7 +8,9 @@ import {
   EstadoCompeticion,
   MisCompeticionesPorRol,
 } from '@core/models/competicion/competicion.model';
+import { EMPTY_POR_ROL } from '@core/models/competicion/empty-por-rol.const';
 import { Equipo } from '@core/models/equipo/equipo.model';
+import { EquipoConRol } from '@core/models/equipo/equipo-con-rol.model';
 import { Evento, EstadoEvento } from '@core/models/evento/evento.model';
 import { Invitacion, EstadoInvitacion } from '@core/models/invitacion/invitacion.model';
 import { ApiError } from '@core/http/api-error.model';
@@ -27,8 +29,6 @@ import { EventoService } from '@features/events/services/evento.service';
 import { EquipoService } from '@features/teams/services/equipo.service';
 import { InvitacionService } from '@features/invitations/services/invitacion.service';
 
-type EquipoConRol = Equipo & { rol: string };
-
 type RolKey = 'admin' | 'manager' | 'arbitro' | 'jugador';
 
 interface CompGroup {
@@ -37,13 +37,6 @@ interface CompGroup {
   readonly emptyMessage: string;
   readonly items: readonly CompeticionSimple[];
 }
-
-const EMPTY_POR_ROL: MisCompeticionesPorRol = {
-  admin: [],
-  manager: [],
-  arbitro: [],
-  jugador: [],
-};
 
 @Component({
   selector: 'app-dashboard-page',

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
-import { Notificacion, TipoNotificacion } from '@core/models/notificacion';
+import { Notificacion } from '@core/models/notificacion';
 import { ApiError } from '@core/http/api-error.model';
 import { NotificationService } from '@core/services/notification.service';
 import { ButtonComponent } from '@shared/ui/button/button.component';
@@ -11,26 +11,12 @@ import { PageHeaderComponent } from '@shared/molecules/page-header/page-header.c
 import { EmptyStateComponent } from '@shared/molecules/empty-state/empty-state.component';
 import { ToastService } from '@shared/services/toast.service';
 import { ConfirmDialogService } from '@shared/services/confirm-dialog.service';
-
-const TITLES: Record<TipoNotificacion, string> = {
-  INVITACION_RECIBIDA: 'Nueva invitación',
-  EQUIPO_ACEPTADO: 'Equipo aceptado',
-  RESULTADO_REGISTRADO: 'Resultado registrado',
-  MENSAJE_RECIBIDO: 'Nuevo mensaje',
-  COMPETICION_ACTIVADA: 'Competición activada',
-  SOLICITUD_VINCULACION_RECIBIDA: 'Solicitud de vinculación',
-  SOLICITUD_VINCULACION_RESUELTA: 'Vinculación resuelta',
-};
-
-const ICONS: Record<TipoNotificacion, 'bell' | 'mail' | 'trophy' | 'users' | 'check'> = {
-  INVITACION_RECIBIDA: 'bell',
-  EQUIPO_ACEPTADO: 'check',
-  RESULTADO_REGISTRADO: 'trophy',
-  MENSAJE_RECIBIDO: 'mail',
-  COMPETICION_ACTIVADA: 'trophy',
-  SOLICITUD_VINCULACION_RECIBIDA: 'users',
-  SOLICITUD_VINCULACION_RESUELTA: 'check',
-};
+import {
+  NOTIFICATION_ICONS,
+  NOTIFICATION_TITLES,
+  notificationDetail,
+  notificationLink,
+} from '@shared/utils/notification-mapper.util';
 
 @Component({
   selector: 'app-notifications-page',
@@ -61,8 +47,9 @@ export class NotificationsPage implements OnInit {
   readonly totalElements = signal(0);
   readonly size = 20;
 
-  readonly TITLES = TITLES;
-  readonly ICONS = ICONS;
+  // Expuestos al template; mappers compartidos en shared/utils (cierra AF-4).
+  readonly TITLES = NOTIFICATION_TITLES;
+  readonly ICONS = NOTIFICATION_ICONS;
 
   ngOnInit(): void {
     this.load(0);
@@ -93,60 +80,14 @@ export class NotificationsPage implements OnInit {
     if (this.page() < this.totalPages() - 1) this.load(this.page() + 1);
   }
 
+  // Expuestos como métodos de instancia para que el template pueda llamar
+  // sin importar funciones top-level. Delegan al util compartido (AF-4).
   link(n: Notificacion): readonly unknown[] | null {
-    const p = (n.payload ?? {}) as Record<string, unknown>;
-    switch (n.tipo) {
-      case TipoNotificacion.INVITACION_RECIBIDA:
-        return ['/app/invitations'];
-      case TipoNotificacion.EQUIPO_ACEPTADO:
-      case TipoNotificacion.COMPETICION_ACTIVADA:
-        return p['competicionId'] != null ? ['/app/competitions', p['competicionId']] : null;
-      case TipoNotificacion.RESULTADO_REGISTRADO:
-        return p['competicionId'] != null && p['eventoId'] != null
-          ? ['/app/competitions', p['competicionId'], 'events', p['eventoId']]
-          : null;
-      case TipoNotificacion.MENSAJE_RECIBIDO:
-        return p['conversacionId'] != null ? ['/app/messages', p['conversacionId']] : ['/app/messages'];
-      case TipoNotificacion.SOLICITUD_VINCULACION_RECIBIDA:
-      case TipoNotificacion.SOLICITUD_VINCULACION_RESUELTA:
-        return ['/app/players/vinculaciones'];
-    }
-    return null;
+    return notificationLink(n);
   }
 
   detail(n: Notificacion): string {
-    const p = (n.payload ?? {}) as Record<string, unknown>;
-    switch (n.tipo) {
-      case TipoNotificacion.INVITACION_RECIBIDA:
-        return String(p['competicionNombre'] ?? 'Tienes una invitación pendiente');
-      case TipoNotificacion.EQUIPO_ACEPTADO: {
-        const team = p['equipoNombre'] ?? '';
-        const comp = p['competicionNombre'] ?? '';
-        return `${team}${comp ? ' · ' + comp : ''}`.trim() || 'Equipo aceptado';
-      }
-      case TipoNotificacion.RESULTADO_REGISTRADO: {
-        const local = p['localNombre'];
-        const visitante = p['visitanteNombre'];
-        const resultado = p['resultado'];
-        if (local && visitante && resultado) return `${local} vs ${visitante} · ${resultado}`;
-        if (local && visitante) return `${local} vs ${visitante}`;
-        return String(resultado ?? 'Resultado registrado');
-      }
-      case TipoNotificacion.MENSAJE_RECIBIDO:
-        return String(p['autorUsername'] ?? 'Nuevo mensaje');
-      case TipoNotificacion.COMPETICION_ACTIVADA:
-        return String(p['competicionNombre'] ?? 'Competición activada');
-      case TipoNotificacion.SOLICITUD_VINCULACION_RECIBIDA: {
-        const j = p['jugadorNombre'] ?? '';
-        const e = p['equipoNombre'] ?? '';
-        return `${j}${e ? ' · ' + e : ''}`.trim() || 'Solicitud pendiente';
-      }
-      case TipoNotificacion.SOLICITUD_VINCULACION_RESUELTA: {
-        const j = p['jugadorNombre'] ?? '';
-        return `${j} · ${p['aceptada'] ? 'aceptada' : 'rechazada'}`.trim();
-      }
-    }
-    return '';
+    return notificationDetail(n);
   }
 
   open(n: Notificacion): void {

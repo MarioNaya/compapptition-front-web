@@ -1,7 +1,7 @@
 <div class="crest" [class]="'crest-' + size()">
   @if (hasImage()) {
-    <img [src]="imageUrl()" [alt]="name()" />
+    <img [src]="imageUrl()" [alt]="decorative() ? '' : name()" />
   } @else {
-    <span class="initials">{{ initials() }}</span>
+    <span class="initials" [attr.aria-hidden]="decorative() ? 'true' : null">{{ initials() }}</span>
   }
 </div>

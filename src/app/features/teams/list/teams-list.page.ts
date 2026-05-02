@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged, forkJoin, Subject } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Equipo } from '@core/models/equipo/equipo.model';
+import { EquipoConRol } from '@core/models/equipo/equipo-con-rol.model';
 import { ApiError } from '@core/http/api-error.model';
 import { AuthService } from '@core/services/auth.service';
 import { ButtonComponent } from '@shared/ui/button/button.component';
@@ -16,7 +17,6 @@ import { ToastService } from '@shared/services/toast.service';
 import { EquipoService } from '@features/teams/services/equipo.service';
 
 type Mode = 'mine' | 'all';
-type EquipoConRol = Equipo & { rol: string };
 
 @Component({
   selector: 'app-teams-list-page',
