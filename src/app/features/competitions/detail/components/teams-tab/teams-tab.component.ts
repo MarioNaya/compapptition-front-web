@@ -240,7 +240,7 @@ export class TeamsTabComponent implements OnInit {
     this.service.create$({ nombre, publico: true }).subscribe({
       next: (equipo) => {
         this.service
-          .inscribirEnCompeticion$(this.competicionId(), equipo.id, userId)
+          .inscribirEnCompeticion$(this.competicionId(), equipo.id)
           .subscribe({
             next: () => {
               this.toast.success(`"${equipo.nombre}" creado e inscrito`);

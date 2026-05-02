@@ -148,10 +148,9 @@ export class CompetitionDetailPage implements OnInit {
 
   changeEstado(target: EstadoCompeticion): void {
     const c = this.competicion();
-    const user = this.auth.currentUser();
-    if (!c || !user) return;
+    if (!c) return;
 
-    this.service.patchEstado$(c.id, target, user.id).subscribe({
+    this.service.patchEstado$(c.id, target).subscribe({
       next: () => {
         this.toast.success(`Estado actualizado a ${target}`);
         this.service.loadDetalle(c.id);
@@ -230,8 +229,7 @@ export class CompetitionDetailPage implements OnInit {
 
   async askDelete(): Promise<void> {
     const c = this.competicion();
-    const user = this.auth.currentUser();
-    if (!c || !user) return;
+    if (!c) return;
 
     const ok = await this.confirm.ask({
       title: '¿Eliminar competición?',
@@ -241,7 +239,7 @@ export class CompetitionDetailPage implements OnInit {
     });
     if (!ok) return;
 
-    this.service.delete$(c.id, user.id).subscribe({
+    this.service.delete$(c.id).subscribe({
       next: () => {
         this.toast.success('Competición eliminada');
         this.router.navigate(['/app/competitions']);

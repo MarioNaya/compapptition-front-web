@@ -39,19 +39,17 @@ export class InvitationsPage implements OnInit {
   );
 
   ngOnInit(): void {
-    const userId = this.auth.currentUser()?.id;
-    if (userId == null) return;
-    this.service.loadPendientes(userId);
-    this.service.loadEnviadas(userId);
+    if (this.auth.currentUser()?.id == null) return;
+    this.service.loadPendientes();
+    this.service.loadEnviadas();
   }
 
   accept(inv: Invitacion): void {
-    const userId = this.auth.currentUser()?.id;
-    if (!inv.token || userId == null) return;
-    this.service.aceptar$(inv.token, userId).subscribe({
+    if (!inv.token || this.auth.currentUser()?.id == null) return;
+    this.service.aceptar$(inv.token).subscribe({
       next: () => {
         this.toast.success('Invitación aceptada');
-        this.service.loadPendientes(userId);
+        this.service.loadPendientes();
         // Aceptar una invitación añade un rol nuevo (admin/manager/árbitro/jugador):
         // refrescamos el JWT para que el gating del frontend reconozca el rol.
         this.auth.refreshToken().subscribe({ error: () => {} });
@@ -61,12 +59,11 @@ export class InvitationsPage implements OnInit {
   }
 
   reject(inv: Invitacion): void {
-    const userId = this.auth.currentUser()?.id;
-    if (!inv.token || userId == null) return;
-    this.service.rechazar$(inv.token, userId).subscribe({
+    if (!inv.token || this.auth.currentUser()?.id == null) return;
+    this.service.rechazar$(inv.token).subscribe({
       next: () => {
         this.toast.success('Invitación rechazada');
-        this.service.loadPendientes(userId);
+        this.service.loadPendientes();
       },
       error: (err: ApiError) => this.toast.error(err.message ?? 'No se pudo rechazar'),
     });

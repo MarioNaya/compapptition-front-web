@@ -177,7 +177,6 @@ export class EditCompetitionPage implements OnInit {
             numGrupos: showGrupos && cfg.numGrupos != null ? cfg.numGrupos : undefined,
           },
         },
-        user.id,
       )
       .subscribe({
         next: () => {

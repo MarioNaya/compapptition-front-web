@@ -90,13 +90,12 @@ export class TeamsListPage implements OnInit {
   }
 
   private loadMine(): void {
-    const userId = this.auth.currentUser()?.id;
-    if (userId == null) return;
+    if (this.auth.currentUser()?.id == null) return;
     this.loading.set(true);
     forkJoin({
-      creados: this.service.misEquiposCreados$(userId),
-      managers: this.service.misEquiposManager$(userId),
-      jugador: this.service.misEquiposJugador$(userId),
+      creados: this.service.misEquiposCreados$(),
+      managers: this.service.misEquiposManager$(),
+      jugador: this.service.misEquiposJugador$(),
     }).subscribe({
       next: ({ creados, managers, jugador }) => {
         this._equiposCreados.set(creados);

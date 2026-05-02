@@ -128,10 +128,9 @@ export class CompetitionsListPage implements OnInit {
 
   private refresh(): void {
     if (this.mode() === 'mine') {
-      const userId = this.auth.currentUser()?.id;
-      if (userId == null) return;
+      if (this.auth.currentUser()?.id == null) return;
       this.loading.set(true);
-      this.service.misCompeticionesPorRol$(userId).subscribe({
+      this.service.misCompeticionesPorRol$().subscribe({
         next: (porRol) => {
           this.misPorRol.set(porRol);
           this.loading.set(false);

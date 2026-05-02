@@ -239,21 +239,22 @@ export class DashboardPage implements OnInit {
   });
 
   ngOnInit(): void {
-    const userId = this.user()?.id;
-    if (userId == null) return;
-    this.loadAll(userId);
+    if (this.user()?.id == null) return;
+    this.loadAll();
   }
 
   /**
    * Lanza las 7 cargas independientes (participadas, creadas, 3 fuentes de
    * equipos, invitaciones recibidas y enviadas) + fan-out de eventos.
    * Cada una tiene su propio spinner y actualiza su signal al llegar.
+   * El identificador del usuario se obtiene del JWT en el backend, por lo que
+   * los services no requieren parámetro.
    */
-  private loadAll(userId: number): void {
+  private loadAll(): void {
     // Competiciones del usuario agrupadas por rol + fan-out de eventos sobre
     // la unión deduplicada de las 4 listas.
     this.compService
-      .misCompeticionesPorRol$(userId)
+      .misCompeticionesPorRol$()
       .pipe(
         switchMap((porRol) => {
           this.misPorRol.set(porRol);
@@ -282,7 +283,7 @@ export class DashboardPage implements OnInit {
       });
 
     // Competiciones creadas (para gestiones pendientes).
-    this.compService.misCreadas$(userId).subscribe({
+    this.compService.misCreadas$().subscribe({
       next: (list) => {
         this.misCreadas.set(list);
         this.loadingCreadas.set(false);
@@ -291,7 +292,7 @@ export class DashboardPage implements OnInit {
     });
 
     // Equipos: 3 fuentes que el computed `misEquipos` deduplica.
-    this.equipoService.misEquiposCreados$(userId).subscribe({
+    this.equipoService.misEquiposCreados$().subscribe({
       next: (list) => {
         this._equiposCreados.set(list);
         this.loadingEquiposCreados.set(false);
@@ -299,7 +300,7 @@ export class DashboardPage implements OnInit {
       error: () => this.loadingEquiposCreados.set(false),
     });
 
-    this.equipoService.misEquiposManager$(userId).subscribe({
+    this.equipoService.misEquiposManager$().subscribe({
       next: (list) => {
         this._equiposManager.set(list);
         this.loadingEquiposManager.set(false);
@@ -307,7 +308,7 @@ export class DashboardPage implements OnInit {
       error: () => this.loadingEquiposManager.set(false),
     });
 
-    this.equipoService.misEquiposJugador$(userId).subscribe({
+    this.equipoService.misEquiposJugador$().subscribe({
       next: (list) => {
         this._equiposJugador.set(list);
         this.loadingEquiposJugador.set(false);
@@ -316,7 +317,7 @@ export class DashboardPage implements OnInit {
     });
 
     // Invitaciones recibidas.
-    this.invitacionService.findPendientes$(userId).subscribe({
+    this.invitacionService.findPendientes$().subscribe({
       next: (list) => {
         this.invitacionesRecibidas.set(list);
         this.loadingRecibidas.set(false);
@@ -325,7 +326,7 @@ export class DashboardPage implements OnInit {
     });
 
     // Invitaciones enviadas.
-    this.invitacionService.findEnviadas$(userId).subscribe({
+    this.invitacionService.findEnviadas$().subscribe({
       next: (list) => {
         this.invitacionesEnviadas.set(list);
         this.loadingEnviadas.set(false);

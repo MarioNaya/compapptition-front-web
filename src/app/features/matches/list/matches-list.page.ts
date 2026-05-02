@@ -69,11 +69,10 @@ export class MatchesListPage implements OnInit {
   });
 
   ngOnInit(): void {
-    const userId = this.auth.currentUser()?.id;
-    if (userId == null) return;
+    if (this.auth.currentUser()?.id == null) return;
     this.loading.set(true);
     this.compService
-      .misCompeticionesPorRol$(userId)
+      .misCompeticionesPorRol$()
       .pipe(
         switchMap((porRol) => {
           const ids = new Set<number>();

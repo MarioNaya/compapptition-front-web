@@ -123,7 +123,7 @@ export class NavbarComponent implements OnInit {
     // Recarga invitaciones pendientes al cambiar el usuario autenticado.
     effect(() => {
       const u = this.user();
-      if (u) this.invitacionService.loadPendientes(u.id);
+      if (u) this.invitacionService.loadPendientes();
     });
 
     // Cierra menús al navegar.
@@ -141,12 +141,12 @@ export class NavbarComponent implements OnInit {
   ngOnInit(): void {
     const u = this.user();
     if (u) {
-      this.invitacionService.loadPendientes(u.id);
+      this.invitacionService.loadPendientes();
       this.mensajeriaService.refresh();
       // Cuenta de equipos creados (cubre el caso de un creador sin rol todavía
       // en ninguna competición). Si el endpoint falla lo ignoramos: el link
       // "Equipos" aparece igualmente si el JWT tiene roles team-related.
-      this.equipoService.misEquiposCreados$(u.id).subscribe({
+      this.equipoService.misEquiposCreados$().subscribe({
         next: (list) => this.equiposCreadosCount.set(list.length),
         error: () => this.equiposCreadosCount.set(0),
       });

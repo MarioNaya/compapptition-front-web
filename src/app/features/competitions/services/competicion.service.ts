@@ -57,43 +57,33 @@ export class CompeticionService {
     return this.http.get<CompeticionSimple>(`${this.base}/${id}/simple`);
   }
 
-  misCreadas$(usuarioId: number): Observable<CompeticionSimple[]> {
-    return this.http.get<CompeticionSimple[]>(`${this.base}/mis-competiciones/creador`, {
-      params: { usuarioId: String(usuarioId) },
-    });
+  misCreadas$(): Observable<CompeticionSimple[]> {
+    return this.http.get<CompeticionSimple[]>(`${this.base}/mis-competiciones/creador`);
   }
 
-  misParticipadas$(usuarioId: number): Observable<CompeticionSimple[]> {
-    return this.http.get<CompeticionSimple[]>(`${this.base}/mis-competiciones/participante`, {
-      params: { usuarioId: String(usuarioId) },
-    });
+  misParticipadas$(): Observable<CompeticionSimple[]> {
+    return this.http.get<CompeticionSimple[]>(`${this.base}/mis-competiciones/participante`);
   }
 
-  misCompeticionesPorRol$(usuarioId: number): Observable<MisCompeticionesPorRol> {
-    return this.http.get<MisCompeticionesPorRol>(`${this.base}/mis-competiciones/por-rol`, {
-      params: { usuarioId: String(usuarioId) },
-    });
+  misCompeticionesPorRol$(): Observable<MisCompeticionesPorRol> {
+    return this.http.get<MisCompeticionesPorRol>(`${this.base}/mis-competiciones/por-rol`);
   }
 
   create$(req: CompeticionCreateRequest): Observable<Competicion> {
     return this.http.post<Competicion>(this.base, req);
   }
 
-  update$(id: number, req: CompeticionUpdateRequest, usuarioId: number): Observable<Competicion> {
-    return this.http.put<Competicion>(`${this.base}/${id}`, req, {
-      params: { usuarioId: String(usuarioId) },
-    });
+  update$(id: number, req: CompeticionUpdateRequest): Observable<Competicion> {
+    return this.http.put<Competicion>(`${this.base}/${id}`, req);
   }
 
-  delete$(id: number, usuarioId: number): Observable<void> {
-    return this.http.delete<void>(`${this.base}/${id}`, {
-      params: { usuarioId: String(usuarioId) },
-    });
+  delete$(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.base}/${id}`);
   }
 
-  patchEstado$(id: number, estado: EstadoCompeticion, usuarioId: number): Observable<Competicion> {
+  patchEstado$(id: number, estado: EstadoCompeticion): Observable<Competicion> {
     return this.http.patch<Competicion>(`${this.base}/${id}/estado`, null, {
-      params: { estado, usuarioId: String(usuarioId) },
+      params: { estado },
     });
   }
 

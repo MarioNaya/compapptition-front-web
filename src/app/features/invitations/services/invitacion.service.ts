@@ -22,16 +22,12 @@ export class InvitacionService {
     () => this._recibidas().filter((i) => i.estado === EstadoInvitacion.PENDIENTE).length,
   );
 
-  findPendientes$(usuarioId: number): Observable<Invitacion[]> {
-    return this.http.get<Invitacion[]>(`${this.base}/pendientes`, {
-      params: { usuarioId: String(usuarioId) },
-    });
+  findPendientes$(): Observable<Invitacion[]> {
+    return this.http.get<Invitacion[]>(`${this.base}/pendientes`);
   }
 
-  findEnviadas$(usuarioId: number): Observable<Invitacion[]> {
-    return this.http.get<Invitacion[]>(`${this.base}/enviadas`, {
-      params: { usuarioId: String(usuarioId) },
-    });
+  findEnviadas$(): Observable<Invitacion[]> {
+    return this.http.get<Invitacion[]>(`${this.base}/enviadas`);
   }
 
   findByCompeticion$(competicionId: number): Observable<Invitacion[]> {
@@ -43,26 +39,22 @@ export class InvitacionService {
     return this.http.post<Invitacion>(this.base, req);
   }
 
-  aceptar$(token: string, usuarioId: number): Observable<Invitacion> {
-    return this.http.put<Invitacion>(`${this.base}/${token}/aceptar`, null, {
-      params: { usuarioId: String(usuarioId) },
-    });
+  aceptar$(token: string): Observable<Invitacion> {
+    return this.http.put<Invitacion>(`${this.base}/${token}/aceptar`, null);
   }
 
-  rechazar$(token: string, usuarioId: number): Observable<Invitacion> {
-    return this.http.put<Invitacion>(`${this.base}/${token}/rechazar`, null, {
-      params: { usuarioId: String(usuarioId) },
-    });
+  rechazar$(token: string): Observable<Invitacion> {
+    return this.http.put<Invitacion>(`${this.base}/${token}/rechazar`, null);
   }
 
-  loadPendientes(usuarioId: number): void {
-    this.findPendientes$(usuarioId).subscribe({
+  loadPendientes(): void {
+    this.findPendientes$().subscribe({
       next: (list) => this._recibidas.set(list),
     });
   }
 
-  loadEnviadas(usuarioId: number): void {
-    this.findEnviadas$(usuarioId).subscribe({
+  loadEnviadas(): void {
+    this.findEnviadas$().subscribe({
       next: (list) => this._enviadas.set(list),
     });
   }

@@ -65,22 +65,16 @@ export class EquipoService {
     return this.http.get<Jugador[]>(`${this.base}/${equipoId}/jugadores-detalle`);
   }
 
-  misEquiposManager$(usuarioId: number): Observable<Equipo[]> {
-    return this.http.get<Equipo[]>(`${this.base}/mis-equipos/manager`, {
-      params: { id: String(usuarioId) },
-    });
+  misEquiposManager$(): Observable<Equipo[]> {
+    return this.http.get<Equipo[]>(`${this.base}/mis-equipos/manager`);
   }
 
-  misEquiposJugador$(usuarioId: number): Observable<Equipo[]> {
-    return this.http.get<Equipo[]>(`${this.base}/mis-equipos/jugador`, {
-      params: { id: String(usuarioId) },
-    });
+  misEquiposJugador$(): Observable<Equipo[]> {
+    return this.http.get<Equipo[]>(`${this.base}/mis-equipos/jugador`);
   }
 
-  misEquiposCreados$(usuarioId: number): Observable<Equipo[]> {
-    return this.http.get<Equipo[]>(`${this.base}/mis-equipos/creados`, {
-      params: { id: String(usuarioId) },
-    });
+  misEquiposCreados$(): Observable<Equipo[]> {
+    return this.http.get<Equipo[]>(`${this.base}/mis-equipos/creados`);
   }
 
   create$(req: EquipoCreateRequest): Observable<Equipo> {
@@ -99,23 +93,19 @@ export class EquipoService {
   inscribirEnCompeticion$(
     competicionId: number,
     equipoId: number,
-    usuarioId: number,
   ): Observable<{ message: string }> {
     return this.http.post<{ message: string }>(
       `${this.competicionesBase}/${competicionId}/equipos/${equipoId}`,
       null,
-      { params: { usuarioId: String(usuarioId) } },
     );
   }
 
   retirarDeCompeticion$(
     competicionId: number,
     equipoId: number,
-    usuarioId: number,
   ): Observable<void> {
     return this.http.delete<void>(
       `${this.competicionesBase}/${competicionId}/equipos/${equipoId}`,
-      { params: { usuarioId: String(usuarioId) } },
     );
   }
 
