@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, Injector, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '@env/environment';
 import { catchError, finalize, Observable, tap, throwError } from 'rxjs';
@@ -26,6 +26,11 @@ interface JwtClaims {
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
+  // Injector para resolver de forma perezosa los services con estado a
+  // resetear en logout (NotificationService, MensajeriaService,
+  // InvitacionService) sin generar dependencia circular ni cargarlos antes
+  // de tiempo (cierra SF-5 / SF-7 sin acoplar AuthService a features).
+  private readonly injector = inject(Injector);
 
   private readonly API_URL = `${environment.apiUrl}/auth`;
   private readonly USUARIOS_URL = `${environment.apiUrl}/usuarios`;
@@ -46,6 +51,28 @@ export class AuthService {
     if (this.getToken()) {
       this.loadCurrentUser().subscribe({
         error: () => this.clearSession(),
+      });
+    }
+
+    // Sincronización multi-pestaña (cierra SF-12): si en otra pestaña se hace
+    // logout (TOKEN_KEY desaparece) o login con cuenta distinta (TOKEN_KEY
+    // cambia), reflejamos el estado aquí. window/storage events solo se
+    // disparan en pestañas DISTINTAS de la que escribió la clave.
+    if (typeof window !== 'undefined') {
+      window.addEventListener('storage', (event) => {
+        if (event.key !== this.TOKEN_KEY) return;
+        if (event.newValue === null) {
+          // Otra pestaña hizo logout. Limpiamos también aquí.
+          if (this.currentUserSignal() !== null) {
+            this.clearSession();
+          }
+        } else if (event.newValue !== event.oldValue) {
+          // Otra pestaña cambió la sesión (login con cuenta distinta).
+          // Recargamos el currentUser desde /usuarios/me con el nuevo token.
+          this.loadCurrentUser().subscribe({
+            error: () => this.clearSession(),
+          });
+        }
       });
     }
   }
@@ -134,8 +161,35 @@ export class AuthService {
     this.clearSessionInProgress = true;
     localStorage.removeItem(this.TOKEN_KEY);
     this.currentUserSignal.set(null);
+    this.resetFeatureServices();
     this.router.navigate(['/auth/login'], { replaceUrl: true })
       .finally(() => { this.clearSessionInProgress = false; });
+  }
+
+  /**
+   * Resetea el estado en memoria de los services con datos de sesión y cierra
+   * recursos abiertos (SSE) para que la sesión saliente no contamine la
+   * entrante (cierra SF-5 y SF-7). Resolución perezosa vía {@link Injector}
+   * para evitar dependencia circular con AuthService.
+   *
+   * Se hace late-bind sin tipar las clases para evitar acoplar este core
+   * service a feature modules; cada service expone un método público
+   * {@code reset(): void} (contrato).
+   */
+  private resetFeatureServices(): void {
+    const tryReset = (token: unknown) => {
+      try {
+        const svc = this.injector.get(token as never, null) as { reset?: () => void } | null;
+        svc?.reset?.();
+      } catch {
+        // ignore: service no registrado en este momento (test, lazy chunk no cargado).
+      }
+    };
+    // Imports dinámicos para no acoplar AuthService a features. Los tokens
+    // se resuelven solo si están en el injector tree.
+    import('./notification.service').then(m => tryReset(m.NotificationService));
+    import('@features/messages/services/mensajeria.service').then(m => tryReset(m.MensajeriaService));
+    import('@features/invitations/services/invitacion.service').then(m => tryReset(m.InvitacionService));
   }
 
   private clearSessionInProgress = false;

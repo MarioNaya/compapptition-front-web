@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
@@ -22,7 +22,7 @@ import { ToastService } from '@shared/services/toast.service';
   templateUrl: './reset-password.page.html',
   styleUrl: './reset-password.page.scss',
 })
-export class ResetPasswordPage {
+export class ResetPasswordPage implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly auth = inject(AuthService);
   private readonly toast = inject(ToastService);
@@ -31,6 +31,21 @@ export class ResetPasswordPage {
 
   readonly loading = signal(false);
   readonly token = this.route.snapshot.queryParamMap.get('token') ?? '';
+
+  ngOnInit(): void {
+    // Limpiar el token de la URL una vez capturado en memoria, para evitar
+    // que quede en historial del navegador, logs de proxy o referrer
+    // outbound al hacer clic en otro enlace (cierra SF-11). El token
+    // ya está en `this.token` y se enviará en el body del POST.
+    if (this.token) {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { token: null },
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      });
+    }
+  }
 
   readonly form = this.fb.nonNullable.group(
     {

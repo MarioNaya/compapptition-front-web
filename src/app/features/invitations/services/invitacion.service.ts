@@ -58,4 +58,14 @@ export class InvitacionService {
       next: (list) => this._enviadas.set(list),
     });
   }
+
+  /**
+   * Resetea ambos signals al cerrar sesión. Lo invoca {@link AuthService.clearSession}
+   * para que las invitaciones de la sesión saliente no queden visibles
+   * tras login con otra cuenta (cierra SF-5).
+   */
+  reset(): void {
+    this._recibidas.set([]);
+    this._enviadas.set([]);
+  }
 }

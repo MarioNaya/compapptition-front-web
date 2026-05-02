@@ -1,6 +1,19 @@
 import { Routes } from '@angular/router';
 import { authGuard } from '@core/guards/auth.guard';
 import { guestGuard } from '@core/guards/guest.guard';
+import { environment } from '@env/environment';
+
+/**
+ * Galería de UI sólo se registra en builds NO productivos. En producción
+ * la ruta `/_ui` cae al wildcard `**` y devuelve 404 (cierra SF-15).
+ */
+const UI_GALLERY_ROUTE = environment.production
+  ? []
+  : [{
+      path: '_ui',
+      loadComponent: () =>
+        import('@features/_ui-gallery/ui-gallery.page').then((m) => m.UiGalleryPage),
+    }];
 
 export const routes: Routes = [
   {
@@ -9,11 +22,7 @@ export const routes: Routes = [
     loadComponent: () =>
       import('@features/landing/landing.page').then((m) => m.LandingPage),
   },
-  {
-    path: '_ui',
-    loadComponent: () =>
-      import('@features/_ui-gallery/ui-gallery.page').then((m) => m.UiGalleryPage),
-  },
+  ...UI_GALLERY_ROUTE,
   {
     path: 'auth',
     canActivate: [guestGuard],

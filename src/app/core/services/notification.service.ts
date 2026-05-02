@@ -71,6 +71,18 @@ export class NotificationService {
     }
   }
 
+  /**
+   * Resetea estado y cierra la conexión SSE. Lo invoca {@link AuthService.clearSession}
+   * en logout para que la sesión saliente no contamine la entrante (cierra
+   * SF-5 y SF-7: signals huérfanos visibles en la pestaña tras login con
+   * otra cuenta y SSE que sigue vivo apuntando al token caducado).
+   */
+  reset(): void {
+    this.disconnect();
+    this._items.set([]);
+    this.retryDelayMs = 1_500;
+  }
+
   private scheduleReconnect(): void {
     if (!this.auth.isAuthenticated()) return;
     if (this.reconnectTimer) return;

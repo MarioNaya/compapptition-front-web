@@ -8,6 +8,40 @@
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=3">
   <meta name="theme-color" content="#0a0808">
 
+  <!--
+    Política Referrer (cierra SF-9): no enviamos nunca el path/query a
+    dominios externos; en navegación same-origin va el origin completo.
+  -->
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+
+  <!--
+    CSP base aplicada vía <meta> como defensa en profundidad (cierra SF-13).
+    Restricciones:
+      - script-src 'self' (no eval, no inline) — Angular bundle local.
+      - style-src 'self' 'unsafe-inline' + Google Fonts (necesario para
+        styles inline que genera Angular Material/Tailwind).
+      - img-src 'self' + data: (avatares default) + Cloudinary (escudos/fotos).
+      - font-src 'self' + Google Fonts.
+      - connect-src 'self' + dominios reales del backend para XHR/SSE
+        (`https://api.compapption.com` en prod, `http://localhost:8080` en dev).
+        Cierra SF-24 (la versión inicial con sólo `'self'` rompía todo el XHR
+        cuando frontend y API se sirven desde dominios distintos).
+      - frame-ancestors 'none' (no embedible en iframes externos).
+      - form-action 'self' (los <form> solo postean al propio origin).
+    El backend duplica esta política por header HTTP en SecurityConfig (T4.7).
+  -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    img-src 'self' data: https://res.cloudinary.com;
+    font-src 'self' https://fonts.gstatic.com data:;
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+    script-src 'self';
+    connect-src 'self' https://api.compapption.com http://localhost:8080;
+    frame-ancestors 'none';
+    base-uri 'self';
+    form-action 'self'
+  ">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link

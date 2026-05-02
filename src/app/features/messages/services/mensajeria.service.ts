@@ -58,4 +58,13 @@ export class MensajeriaService {
   refresh(): void {
     this.listar$().subscribe();
   }
+
+  /**
+   * Resetea estado al cerrar sesión. Lo invoca {@link AuthService.clearSession}
+   * para que la bandeja de mensajería de la sesión saliente no quede visible
+   * tras un login con otra cuenta (cierra SF-5).
+   */
+  reset(): void {
+    this._conversaciones.set([]);
+  }
 }

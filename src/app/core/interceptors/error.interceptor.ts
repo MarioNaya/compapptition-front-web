@@ -1,5 +1,6 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { catchError, throwError } from 'rxjs';
+import { environment } from '@env/environment';
 import { M } from '@shared/messages';
 
 /**
@@ -21,6 +22,15 @@ function resolveUserMessage(error: HttpErrorResponse): string {
 }
 
 /**
+ * Sanitiza la URL antes de loggearla: elimina cualquier parámetro `token`
+ * (recovery, SSE) que pudiera filtrarse a la consola del navegador o a
+ * herramientas de monitorización (cierra SF-8). Conserva el resto.
+ */
+function sanitizarUrl(url: string): string {
+  return url.replace(/([?&])token=[^&]*/g, '$1token=<redacted>');
+}
+
+/**
  * Interceptor de presentación: normaliza errores HTTP en un objeto con
  * {@code message} + {@code status} + {@code errors} para consumo del UI.
  *
@@ -28,12 +38,17 @@ function resolveUserMessage(error: HttpErrorResponse): string {
  * {@link './refresh.interceptor'} (single-flight) y el cierre definitivo
  * lo dispara {@code AuthService.clearSession()} desde dentro de ese
  * interceptor cuando el refresh falla.
+ *
+ * En producción NO emite {@code console.error} para no exponer cuerpos de
+ * respuesta sensibles desde DevTools / extensiones (cierra SF-8).
  */
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
       const message = resolveUserMessage(error);
-      console.error('[HTTP]', error.status, req.method, req.url, error.error ?? error.message);
+      if (!environment.production) {
+        console.error('[HTTP]', error.status, req.method, sanitizarUrl(req.url), error.error ?? error.message);
+      }
 
       return throwError(() => ({
         status: error.status,

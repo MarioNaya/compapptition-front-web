@@ -36,6 +36,10 @@ export class RegisterPage {
     password: ['', [Validators.required, Validators.minLength(8)]],
     nombre: [''],
     apellidos: [''],
+    // Honeypot anti-bot (cierra SF-14 parcial). Campo oculto a usuarios humanos
+    // por CSS. Los bots que rellenan formularios automáticos sí lo poblarán.
+    // Si llega no vacío, abortamos sin avisar (parecemos éxito desde fuera).
+    hpField: [''],
   });
 
   submit(): void {
@@ -43,8 +47,14 @@ export class RegisterPage {
       this.form.markAllAsTouched();
       return;
     }
+    // Honeypot check (SF-14): si un bot rellenó el campo invisible, simulamos
+    // éxito para no darle señal de detección. El registro NO se ejecuta.
+    if (this.form.controls.hpField.value) {
+      this.toast.success('Cuenta creada. ¡Bienvenido!');
+      return;
+    }
     this.loading.set(true);
-    const { nombre, apellidos, ...rest } = this.form.getRawValue();
+    const { nombre, apellidos, hpField: _hp, ...rest } = this.form.getRawValue();
     const payload = {
       ...rest,
       nombre: nombre || undefined,
