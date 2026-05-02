@@ -44,8 +44,7 @@ export class LoginPage {
     this.loading.set(true);
     this.auth.login(this.form.getRawValue()).subscribe({
       next: () => {
-        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/app/dashboard';
-        this.router.navigateByUrl(returnUrl);
+        this.router.navigateByUrl(this.safeReturnUrl());
       },
       error: (err: ApiError) => {
         this.loading.set(false);
@@ -55,5 +54,14 @@ export class LoginPage {
         this.toast.error(msg);
       },
     });
+  }
+
+  private safeReturnUrl(): string {
+    const fallback = '/app/dashboard';
+    const raw = this.route.snapshot.queryParamMap.get('returnUrl');
+    if (!raw) return fallback;
+    if (!raw.startsWith('/') || raw.startsWith('//') || raw.startsWith('/\\')) return fallback;
+    if (raw !== '/app' && !raw.startsWith('/app/')) return fallback;
+    return raw;
   }
 }
