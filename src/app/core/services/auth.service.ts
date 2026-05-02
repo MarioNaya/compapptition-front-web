@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { computed, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '@env/environment';
 import { catchError, finalize, Observable, tap, throwError } from 'rxjs';
@@ -12,51 +12,73 @@ import {
 } from '../models/usuario';
 import { RolCompeticion } from '../models/rol/rol.model';
 
+interface JwtClaims {
+  readonly sub?: string;
+  readonly userId?: number;
+  readonly esAdminSistema?: boolean;
+  readonly exp?: number;
+  readonly competiciones?: ReadonlyArray<{ id: number; nombre: string; rol: string }>;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private readonly API_URL = `${environment.apiUrl}/auth`;
-  private readonly TOKEN_KEY = 'access_token';
-  private readonly REFRESH_TOKEN_KEY = 'refresh_token';
-  private readonly USER_KEY = 'user';
+  private readonly http = inject(HttpClient);
+  private readonly router = inject(Router);
 
-  private currentUserSignal = signal<Usuario | null>(this.getStoredUser());
+  private readonly API_URL = `${environment.apiUrl}/auth`;
+  private readonly USUARIOS_URL = `${environment.apiUrl}/usuarios`;
+  private readonly TOKEN_KEY = 'access_token';
+
+  /**
+   * Estado del usuario autenticado. Se inicializa de forma síncrona desde
+   * los claims del JWT (si hay token persistido) para evitar el flash de
+   * "no autenticado" durante el bootstrap; en el constructor se hidrata con
+   * los datos canónicos de {@code GET /usuarios/me} (cierra SF-2).
+   */
+  private currentUserSignal = signal<Usuario | null>(this.bootstrapUserFromToken());
 
   readonly currentUser = this.currentUserSignal.asReadonly();
   readonly isAuthenticated = computed(() => !!this.currentUserSignal());
 
-  constructor(
-    private http: HttpClient,
-    private router: Router,
-  ) {}
-
-  login(request: LoginRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.API_URL}/login`, request).pipe(
-      tap((response) => this.handleAuthResponse(response)),
-      catchError((error) => throwError(() => error)),
-    );
+  constructor() {
+    if (this.getToken()) {
+      this.loadCurrentUser().subscribe({
+        error: () => this.clearSession(),
+      });
+    }
   }
 
-  registro(request: RegistroRequest): Observable<AuthResponse> {
+  login(request: LoginRequest): Observable<AuthResponse> {
     return this.http
-      .post<AuthResponse>(`${this.API_URL}/registro`, request)
+      .post<AuthResponse>(`${this.API_URL}/login`, request, { withCredentials: true })
       .pipe(
         tap((response) => this.handleAuthResponse(response)),
         catchError((error) => throwError(() => error)),
       );
   }
 
-  refreshToken(): Observable<AuthResponse> {
-    const refreshToken = this.getRefreshToken();
+  registro(request: RegistroRequest): Observable<AuthResponse> {
     return this.http
-      .post<AuthResponse>(`${this.API_URL}/refresh`, { refreshToken })
+      .post<AuthResponse>(`${this.API_URL}/registro`, request, { withCredentials: true })
       .pipe(
         tap((response) => this.handleAuthResponse(response)),
-        catchError((error) => {
-          this.logout();
-          return throwError(() => error);
-        }),
+        catchError((error) => throwError(() => error)),
+      );
+  }
+
+  /**
+   * Renueva el access token. El refresh token vive en una cookie HttpOnly
+   * gestionada por el backend; el cliente solo necesita enviar la petición
+   * con {@code withCredentials: true} (cierra SF-4 y S-17).
+   */
+  refreshToken(): Observable<AuthResponse> {
+    return this.http
+      .post<AuthResponse>(`${this.API_URL}/refresh`, {}, { withCredentials: true })
+      .pipe(
+        tap((response) => this.handleAuthResponse(response)),
+        catchError((error) => throwError(() => error)),
       );
   }
 
@@ -64,7 +86,7 @@ export class AuthService {
     // Garantiza la limpieza local aunque el POST al backend falle (401, 500,
     // timeout, sin red): finalize se dispara tanto en next como en error.
     this.http
-      .post(`${this.API_URL}/logout`, {})
+      .post(`${this.API_URL}/logout`, {}, { withCredentials: true })
       .pipe(finalize(() => this.clearSession()))
       .subscribe({
         error: () => {
@@ -94,9 +116,29 @@ export class AuthService {
     return localStorage.getItem(this.TOKEN_KEY);
   }
 
-  getRefreshToken(): string | null {
-    return localStorage.getItem(this.REFRESH_TOKEN_KEY);
+  /**
+   * Limpia el estado local de la sesión. Usado por el refresh interceptor
+   * cuando el refresh falla (no podemos llamar a logout porque el backend
+   * ya rechazó el token), y por bootstrap si {@code /usuarios/me} devuelve
+   * 401 al arrancar. No emite HTTP — la cookie se limpia en logout(),
+   * aquí solo borramos el estado cliente y redirigimos.
+   *
+   * Re-entrante seguro: si se invoca dos veces en cascada (p. ej. bootstrap
+   * con token y cookie ambos caducados, donde el refresh interceptor llama a
+   * clearSession y el subscribe del constructor también lo intenta), la
+   * segunda llamada se ignora para evitar doble navigate y futuros side-effects
+   * múltiples si se añade lógica de reset (cierra SF-23).
+   */
+  clearSession(): void {
+    if (this.clearSessionInProgress) return;
+    this.clearSessionInProgress = true;
+    localStorage.removeItem(this.TOKEN_KEY);
+    this.currentUserSignal.set(null);
+    this.router.navigate(['/auth/login'], { replaceUrl: true })
+      .finally(() => { this.clearSessionInProgress = false; });
   }
+
+  private clearSessionInProgress = false;
 
   /// === HELPERS RBAC ===
   ///
@@ -140,15 +182,72 @@ export class AuthService {
     return this.isAdminCompeticion(competicionId) || this.isArbitroCompeticion(competicionId);
   }
 
+  // -------------------------------------------------------------------------
+  // Privados
+  // -------------------------------------------------------------------------
+
   private handleAuthResponse(response: AuthResponse): void {
     localStorage.setItem(this.TOKEN_KEY, response.accessToken);
-    localStorage.setItem(this.REFRESH_TOKEN_KEY, response.refreshToken);
     const enriched: Usuario = {
       ...response.usuario,
       rolesCompeticion: this.parseRolesFromJwt(response.accessToken),
     };
-    localStorage.setItem(this.USER_KEY, JSON.stringify(enriched));
     this.currentUserSignal.set(enriched);
+  }
+
+  /**
+   * Hidrata {@code currentUser} con los datos canónicos del backend a partir
+   * del token actual. Se llama en el constructor (rehidratación tras refresh
+   * de página) y al recibirse un 401 manejado por el refresh interceptor.
+   */
+  private loadCurrentUser(): Observable<Usuario> {
+    return this.http.get<Usuario>(`${this.USUARIOS_URL}/me`).pipe(
+      tap((user) => {
+        const token = this.getToken();
+        const enriched: Usuario = {
+          ...user,
+          rolesCompeticion: token ? this.parseRolesFromJwt(token) : [],
+        };
+        this.currentUserSignal.set(enriched);
+      }),
+    );
+  }
+
+  /**
+   * Construye un {@link Usuario} provisional desde los claims del JWT para
+   * evitar el flash "no autenticado" durante el bootstrap. Solo expone
+   * username, id, esAdminSistema y rolesCompeticion: el resto (email,
+   * nombre, apellidos) se completa cuando llega {@code GET /usuarios/me}.
+   */
+  private bootstrapUserFromToken(): Usuario | null {
+    const token = this.getTokenSafe();
+    if (!token) return null;
+    const claims = this.decodeJwtClaims(token);
+    if (!claims?.userId) return null;
+    // Si el JWT está caducado no hidratamos: dejamos que el flujo del
+    // refresh interceptor (disparado por la primera petición que falle)
+    // decida si recuperar la sesión o forzar login. Cierra SF-22 (ventana
+    // visual de "sesión fantasma" tras token caducado en localStorage).
+    if (claims.exp && claims.exp * 1000 < Date.now()) {
+      return null;
+    }
+    return {
+      id: claims.userId,
+      username: claims.sub ?? '',
+      email: '',
+      activo: true,
+      esAdminSistema: !!claims.esAdminSistema,
+      rolesCompeticion: this.mapRoles(claims.competiciones),
+    };
+  }
+
+  /**
+   * Lectura defensiva de localStorage para entornos donde no exista (SSR,
+   * Karma sin DOM, etc.). En el navegador real es equivalente a getToken().
+   */
+  private getTokenSafe(): string | null {
+    if (typeof localStorage === 'undefined') return null;
+    return localStorage.getItem(this.TOKEN_KEY);
   }
 
   /**
@@ -156,6 +255,20 @@ export class AuthService {
    * No verifica firma (eso es trabajo del backend); solo lee el payload.
    */
   private parseRolesFromJwt(token: string): UsuarioRolCompeticionResumen[] {
+    return this.mapRoles(this.decodeJwtClaims(token)?.competiciones);
+  }
+
+  private mapRoles(
+    raw: ReadonlyArray<{ id: number; nombre: string; rol: string }> | undefined,
+  ): UsuarioRolCompeticionResumen[] {
+    return (raw ?? []).map((c) => ({
+      id: c.id,
+      nombre: c.nombre,
+      rol: c.rol as RolCompeticion,
+    }));
+  }
+
+  private decodeJwtClaims(token: string): JwtClaims | null {
     try {
       const payload = token.split('.')[1];
       // base64url → base64 → string. atob no soporta UTF-8, así que lo
@@ -166,27 +279,9 @@ export class AuthService {
           .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
           .join(''),
       );
-      const claims = JSON.parse(json) as { competiciones?: { id: number; nombre: string; rol: string }[] };
-      return (claims.competiciones ?? []).map((c) => ({
-        id: c.id,
-        nombre: c.nombre,
-        rol: c.rol as RolCompeticion,
-      }));
+      return JSON.parse(json) as JwtClaims;
     } catch {
-      return [];
+      return null;
     }
-  }
-
-  private clearSession(): void {
-    localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem(this.REFRESH_TOKEN_KEY);
-    localStorage.removeItem(this.USER_KEY);
-    this.currentUserSignal.set(null);
-    this.router.navigate(['/auth/login']);
-  }
-
-  private getStoredUser(): Usuario | null {
-    const userJson = localStorage.getItem(this.USER_KEY);
-    return userJson ? JSON.parse(userJson) : null;
   }
 }

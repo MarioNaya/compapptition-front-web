@@ -1,8 +1,5 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
-import { inject } from '@angular/core';
-import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
-import { AuthService } from '@core/services/auth.service';
 import { M } from '@shared/messages';
 
 /**
@@ -23,17 +20,18 @@ function resolveUserMessage(error: HttpErrorResponse): string {
   return backendMsg || M.generic.genericError;
 }
 
+/**
+ * Interceptor de presentación: normaliza errores HTTP en un objeto con
+ * {@code message} + {@code status} + {@code errors} para consumo del UI.
+ *
+ * No gestiona 401: la renovación de sesión la hace
+ * {@link './refresh.interceptor'} (single-flight) y el cierre definitivo
+ * lo dispara {@code AuthService.clearSession()} desde dentro de ese
+ * interceptor cuando el refresh falla.
+ */
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
-  const router = inject(Router);
-  const authService = inject(AuthService);
-
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401 && !req.url.includes('/auth/')) {
-        authService.logout();
-        router.navigate(['/auth/login']);
-      }
-
       const message = resolveUserMessage(error);
       console.error('[HTTP]', error.status, req.method, req.url, error.error ?? error.message);
 
