@@ -1,0 +1,66 @@
+@if (loading()) {
+  <div class="ticket-loading"><app-spinner size="md" /></div>
+} @else if (ticket(); as t) {
+  <app-page-header
+    [title]="'Ticket #' + t.id"
+    [subtitle]="t.asunto"
+  />
+
+  <section class="ticket-card">
+    <div class="ticket-meta">
+      <div class="meta-item">
+        <span class="meta-label">Estado</span>
+        <span class="estado-badge" [class]="estadoClass(t.estado)">{{ labels[t.estado] }}</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Autor</span>
+        <span class="meta-value">
+          {{ t.usuarioUsername }}
+          @if (isAdmin()) {
+            <span class="meta-soft mono">· {{ t.usuarioEmail }}</span>
+          }
+        </span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Creado</span>
+        <span class="meta-value mono">{{ t.fechaCreacion | date:'dd MMM yy, HH:mm' }}</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Actualizado</span>
+        <span class="meta-value mono">{{ t.fechaActualizacion | date:'dd MMM yy, HH:mm' }}</span>
+      </div>
+    </div>
+
+    <h2 class="ticket-asunto">{{ t.asunto }}</h2>
+    <pre class="ticket-descripcion">{{ t.descripcion }}</pre>
+  </section>
+
+  @if (isAdmin()) {
+    <section class="admin-actions">
+      <h3 class="admin-title">Cambiar estado</h3>
+      <p class="admin-hint">El autor del ticket recibirá una notificación in-app cuando guardes el cambio.</p>
+      <div class="estado-buttons">
+        @for (e of estados; track e) {
+          <app-button
+            variant="ghost"
+            [disabled]="mutating() || t.estado === e"
+            (clicked)="cambiarEstado(e)"
+          >
+            {{ labels[e] }}
+          </app-button>
+        }
+      </div>
+    </section>
+  } @else {
+    <section class="user-hint">
+      <p>
+        Tu ticket está en estado <strong>{{ labels[t.estado] }}</strong>. Te
+        notificaremos por la campana cuando avancemos. Si necesitas añadir
+        información, abre un ticket nuevo y referencia este (#{{ t.id }}) en el
+        asunto.
+      </p>
+    </section>
+  }
+
+  <a class="back-link" routerLink="/app/tickets">← Volver al listado</a>
+}

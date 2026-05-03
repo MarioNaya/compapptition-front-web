@@ -66,7 +66,22 @@
       </label>
     </div>
 
-    <app-button variant="primary" type="submit" [fullWidth]="true" [disabled]="loading()">
+    <label class="legal-ack">
+      <input type="checkbox" formControlName="aceptaLegal" />
+      <span class="legal-ack-text">
+        He leído y acepto los
+        <a routerLink="/legal/terminos" target="_blank" rel="noopener">Términos de uso</a>
+        y la
+        <a routerLink="/legal/privacidad" target="_blank" rel="noopener">Política de privacidad</a>.
+      </span>
+    </label>
+
+    <app-button
+      variant="primary"
+      type="submit"
+      [fullWidth]="true"
+      [disabled]="loading() || form.controls.aceptaLegal.value !== true"
+    >
       @if (loading()) {
         <app-spinner size="sm" />
       } @else {

@@ -9,6 +9,11 @@
       [subtitle]="e.lugar ?? null"
     >
       <app-status-tag [state]="e.estado" />
+      @if (canNotifyPlayers()) {
+        <app-button variant="ghost" [disabled]="saving()" (clicked)="notificarJugadores()">
+          <app-icon name="bell" [size]="14" /> Avisar jugadores
+        </app-button>
+      }
       @if (canReopen()) {
         <app-button variant="ghost" (clicked)="reabrir()">
           <app-icon name="refresh" [size]="14" /> Reabrir

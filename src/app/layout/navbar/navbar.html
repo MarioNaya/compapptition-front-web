@@ -74,16 +74,60 @@
         }
       </a>
 
-      <button
-        type="button"
-        class="icon-btn tour-btn desktop-only-shortcut"
-        (click)="startTour()"
-        aria-label="Iniciar tutorial guiado"
-        title="Tutorial guiado"
+      <!-- Dropdown de ayuda: agrupa el tutorial guiado por ruta y un enlace
+           al manual de usuario HTML estático (abre en pestaña nueva). -->
+      <div
+        class="help-wrap desktop-only-shortcut"
+        appClickOutside
+        [enabled]="helpOpen()"
+        (clickOutside)="helpOpen.set(false)"
         data-tour="navbar-tour"
       >
-        <app-icon name="help" [size]="20" />
-      </button>
+        <button
+          type="button"
+          class="icon-btn tour-btn"
+          (click)="toggleHelp()"
+          [attr.aria-expanded]="helpOpen()"
+          aria-haspopup="menu"
+          aria-label="Ayuda: tutorial guiado o manual de usuario"
+          title="Ayuda"
+        >
+          <app-icon name="help" [size]="20" />
+        </button>
+        @if (helpOpen()) {
+          <div class="dropdown" role="menu">
+            <button
+              class="dropdown-item"
+              type="button"
+              role="menuitem"
+              (click)="closeMenus(); startTour()"
+            >
+              <app-icon name="help" [size]="16" />
+              <span>Tutorial guiado</span>
+            </button>
+            <a
+              class="dropdown-item"
+              role="menuitem"
+              href="/manual-usuario.html"
+              target="_blank"
+              rel="noopener"
+              (click)="closeMenus()"
+            >
+              <app-icon name="book" [size]="16" />
+              <span>Manual de usuario</span>
+            </a>
+            <a
+              class="dropdown-item"
+              routerLink="/app/tickets/nuevo"
+              role="menuitem"
+              (click)="closeMenus()"
+            >
+              <app-icon name="inbox" [size]="16" />
+              <span>Soporte</span>
+            </a>
+          </div>
+        }
+      </div>
 
       <!-- Dropdown del avatar: agrupa Mi perfil, Notificaciones, Mensajes,
            Tutorial y Cerrar sesión. En móvil es la principal puerta a
@@ -137,6 +181,26 @@
               <app-icon name="help" [size]="16" />
               <span>Tutorial guiado</span>
             </button>
+            <a
+              class="dropdown-item"
+              role="menuitem"
+              href="/manual-usuario.html"
+              target="_blank"
+              rel="noopener"
+              (click)="closeMenus()"
+            >
+              <app-icon name="book" [size]="16" />
+              <span>Manual de usuario</span>
+            </a>
+            <a
+              class="dropdown-item"
+              routerLink="/app/tickets/nuevo"
+              role="menuitem"
+              (click)="closeMenus()"
+            >
+              <app-icon name="inbox" [size]="16" />
+              <span>Soporte</span>
+            </a>
             <div class="dropdown-sep" aria-hidden="true"></div>
             <button class="dropdown-item danger" type="button" role="menuitem" (click)="logout()">
               <app-icon name="logout" [size]="16" />

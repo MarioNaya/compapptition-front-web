@@ -5,7 +5,6 @@ import { Evento } from '@core/models/evento/evento.model';
 import { ApiError } from '@core/http/api-error.model';
 import { IconComponent } from '@shared/ui/icon/icon.component';
 import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';
-import { EmptyStateComponent } from '@shared/molecules/empty-state/empty-state.component';
 import { ToastService } from '@shared/services/toast.service';
 import { EventoService } from '@features/events/services/evento.service';
 
@@ -38,7 +37,7 @@ function startOfMonth(y: number, m: number): Date {
 @Component({
   selector: 'app-calendar-tab',
   standalone: true,
-  imports: [DatePipe, IconComponent, SpinnerComponent, EmptyStateComponent],
+  imports: [DatePipe, IconComponent, SpinnerComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './calendar-tab.component.html',
   styleUrl: './calendar-tab.component.scss',

@@ -32,7 +32,8 @@ export type IconName =
   | 'menu'
   | 'copy'
   | 'refresh'
-  | 'help';
+  | 'help'
+  | 'book';
 
 @Component({
   selector: 'app-icon',

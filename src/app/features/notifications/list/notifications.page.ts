@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { Notificacion } from '@core/models/notificacion';
 import { ApiError } from '@core/http/api-error.model';
@@ -23,7 +23,6 @@ import {
   standalone: true,
   imports: [
     DatePipe,
-    RouterLink,
     ButtonComponent,
     IconComponent,
     SpinnerComponent,

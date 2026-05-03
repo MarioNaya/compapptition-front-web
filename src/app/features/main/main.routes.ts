@@ -46,6 +46,11 @@ export const MAIN_ROUTES: Routes = [
     loadChildren: () => import('@features/profile/profile.routes').then((m) => m.PROFILE_ROUTES),
   },
   {
+    path: 'tickets',
+    loadChildren: () =>
+      import('@features/tickets/tickets.routes').then((m) => m.TICKETS_ROUTES),
+  },
+  {
     path: 'admin',
     canActivate: [adminGuard],
     loadChildren: () => import('@features/admin/admin.routes').then((m) => m.ADMIN_ROUTES),

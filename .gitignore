@@ -37,6 +37,14 @@ testem.log
 /typings
 __screenshots__/
 
+# Generated docs (Compodoc)
+/documentation
+
+# Playwright outputs (NOT the e2e/ source dir)
+/playwright-report
+/test-results
+/playwright/.cache
+
 # System files
 .DS_Store
 Thumbs.db

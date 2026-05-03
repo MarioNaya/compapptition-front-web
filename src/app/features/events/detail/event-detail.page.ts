@@ -131,6 +131,17 @@ export class EventDetailPage implements OnInit {
     this.auth.isAdminCompeticion(this.competicionId()),
   );
 
+  /**
+   * El admin de competición solo puede disparar la notificación manual cuando
+   * el partido sigue PROGRAMADO. En otros estados (FINALIZADO/SUSPENDIDO/etc.)
+   * no tiene sentido avisar a los jugadores y el backend rechaza la petición.
+   */
+  readonly canNotifyPlayers = computed(() => {
+    if (!this.canManageEvent()) return false;
+    const e = this.evento();
+    return e != null && e.estado === EstadoEvento.PROGRAMADO;
+  });
+
   readonly canRegister = computed(() => {
     const e = this.evento();
     if (!e) return false;
@@ -315,6 +326,41 @@ export class EventDetailPage implements OnInit {
       next: (list) => this.estadisticas.set(list),
       error: () => {
         // No bloqueamos UX por un fallo de refresco; el usuario verá la stat al recargar.
+      },
+    });
+  }
+
+  /**
+   * Notifica manualmente por email a los jugadores activos de los dos equipos
+   * sobre el partido. Útil tras un cambio de fecha o lugar: el backend ignora
+   * el flag de "ya notificado" y re-envía. La notificación automática 24h
+   * antes se gestiona en background y no requiere esta acción.
+   */
+  async notificarJugadores(): Promise<void> {
+    const e = this.evento();
+    const compId = this.competicionId();
+    if (!e || compId == null) return;
+    const ok = await this.confirm.ask({
+      title: '¿Notificar a los jugadores?',
+      message: 'Se enviará un email a todos los jugadores activos de ambos equipos con la fecha y el lugar del partido.',
+      confirmLabel: 'Enviar emails',
+    });
+    if (!ok) return;
+    this.saving.set(true);
+    this.service.notificarJugadores$(compId, e.id).subscribe({
+      next: ({ emailsEnviados }) => {
+        this.saving.set(false);
+        if (emailsEnviados === 0) {
+          this.toast.success('No hay jugadores con cuenta activa a los que avisar');
+        } else if (emailsEnviados === 1) {
+          this.toast.success('Email enviado a 1 jugador');
+        } else {
+          this.toast.success(`Emails enviados a ${emailsEnviados} jugadores`);
+        }
+      },
+      error: (err: ApiError) => {
+        this.saving.set(false);
+        this.toast.error(err.message ?? 'No se pudieron enviar los emails');
       },
     });
   }

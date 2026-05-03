@@ -44,4 +44,28 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+
+  .auth-legal-links {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px 10px;
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+    text-transform: none;
+
+    a {
+      color: var(--text-sec);
+      transition: color 120ms ease;
+
+      &:hover { color: var(--accent-hi); }
+    }
+
+    span { opacity: 0.5; }
+  }
 }

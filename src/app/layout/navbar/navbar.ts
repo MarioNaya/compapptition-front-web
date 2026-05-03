@@ -18,11 +18,11 @@ import { ClickOutsideDirective } from '@shared/directives/click-outside.directiv
 import { InvitacionService } from '@features/invitations/services/invitacion.service';
 import { MensajeriaService } from '@features/messages/services/mensajeria.service';
 import { EquipoService } from '@features/teams/services/equipo.service';
-import { RolCompeticion } from '@core/models/rol';
 import { TourService } from '@core/services/tour.service';
 import { findTourForRoute } from '@core/services/tour.registry';
 import { ToastService } from '@shared/services/toast.service';
 import { NotificationService } from '@core/services/notification.service';
+import { tieneEquiposVisibles } from './utils/has-teams.util';
 
 interface NavLink {
   readonly path: string;
@@ -78,17 +78,12 @@ export class NavbarComponent implements OnInit {
   private readonly equiposCreadosCount = signal(0);
 
   /**
-   * El link a "Equipos" se muestra a creadores, managers y jugadores. Para
-   * los dos últimos miramos los roles del JWT; para el creador miramos el
-   * resultado de `misEquiposCreados$`.
+   * El link a "Equipos" se muestra a creadores, managers y jugadores. Lógica
+   * extraída a {@link tieneEquiposVisibles} para tests unitarios aislados.
    */
-  readonly hasTeams = computed(() => {
-    if (this.equiposCreadosCount() > 0) return true;
-    const roles = this.user()?.rolesCompeticion ?? [];
-    return roles.some(
-      (r) => r.rol === RolCompeticion.MANAGER_EQUIPO || r.rol === RolCompeticion.JUGADOR,
-    );
-  });
+  readonly hasTeams = computed(() =>
+    tieneEquiposVisibles(this.equiposCreadosCount(), this.user()?.rolesCompeticion),
+  );
 
   readonly userDisplayName = computed(() => {
     const u = this.user();
@@ -118,6 +113,8 @@ export class NavbarComponent implements OnInit {
   readonly createOpen = signal(false);
   // dropdown del avatar (perfil/mensajes/notifs/tutorial/logout)
   readonly profileOpen = signal(false);
+  // dropdown de ayuda (tutorial guiado + manual de usuario)
+  readonly helpOpen = signal(false);
 
   constructor() {
     // Recarga invitaciones pendientes al cambiar el usuario autenticado.
@@ -135,6 +132,7 @@ export class NavbarComponent implements OnInit {
       .subscribe(() => {
         this.menuOpen.set(false);
         this.createOpen.set(false);
+        this.helpOpen.set(false);
       });
   }
 
@@ -158,6 +156,7 @@ export class NavbarComponent implements OnInit {
     if (this.menuOpen()) {
       this.createOpen.set(false);
       this.profileOpen.set(false);
+      this.helpOpen.set(false);
     }
   }
 
@@ -166,6 +165,7 @@ export class NavbarComponent implements OnInit {
     if (this.createOpen()) {
       this.menuOpen.set(false);
       this.profileOpen.set(false);
+      this.helpOpen.set(false);
     }
   }
 
@@ -174,6 +174,16 @@ export class NavbarComponent implements OnInit {
     if (this.profileOpen()) {
       this.menuOpen.set(false);
       this.createOpen.set(false);
+      this.helpOpen.set(false);
+    }
+  }
+
+  toggleHelp(): void {
+    this.helpOpen.update((v) => !v);
+    if (this.helpOpen()) {
+      this.menuOpen.set(false);
+      this.createOpen.set(false);
+      this.profileOpen.set(false);
     }
   }
 
@@ -186,6 +196,7 @@ export class NavbarComponent implements OnInit {
     this.menuOpen.set(false);
     this.createOpen.set(false);
     this.profileOpen.set(false);
+    this.helpOpen.set(false);
   }
 
   /**

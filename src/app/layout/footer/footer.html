@@ -1,4 +1,18 @@
 <footer class="footer container">
-  <span class="mono">© {{ year }} · Compapption</span>
-  <span class="mono hint">TFG · Mario Naya</span>
+  <div class="footer-block footer-brand">
+    <span class="mono">© {{ year }} · Compapption</span>
+    <span class="mono hint">TFG · Mario Naya · No comercial</span>
+  </div>
+
+  <nav class="footer-block footer-links" aria-label="Enlaces legales y soporte">
+    <a routerLink="/legal/privacidad" class="footer-link">Privacidad</a>
+    <span class="footer-sep" aria-hidden="true">·</span>
+    <a routerLink="/legal/aviso-legal" class="footer-link">Aviso legal</a>
+    <span class="footer-sep" aria-hidden="true">·</span>
+    <a routerLink="/legal/terminos" class="footer-link">Términos</a>
+    <span class="footer-sep" aria-hidden="true">·</span>
+    <a href="/manual-usuario.html" target="_blank" rel="noopener" class="footer-link">Manual</a>
+    <span class="footer-sep" aria-hidden="true">·</span>
+    <a routerLink="/app/tickets/nuevo" class="footer-link">Soporte</a>
+  </nav>
 </footer>

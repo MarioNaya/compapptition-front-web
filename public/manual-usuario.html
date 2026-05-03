@@ -1,0 +1,1098 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Manual de usuario · Compapption</title>
+<meta name="description" content="Manual de usuario de Compapption — gestión de competiciones deportivas amateur." />
+<meta name="robots" content="noindex" />
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-soft: #faf6f1;
+    --bg-warm: #f5ede1;
+    --bg-code: #f2ebe0;
+    --ink: #1a1a1a;
+    --ink-muted: #6b5f52;
+    --ink-soft: #8a7f72;
+    --accent: #ff7a1a;
+    --accent-soft: #ffe8d6;
+    --accent-deep: #c95900;
+    --border: #e5ddd3;
+    --border-strong: #d4c8b8;
+    --shadow: 0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(201,89,0,0.06);
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    line-height: 1.6;
+    font-size: 16px;
+  }
+
+  a { color: var(--accent-deep); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  code, pre, .mono {
+    font-family: "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+    font-size: 0.92em;
+  }
+  code {
+    background: var(--bg-code);
+    padding: 0.1em 0.4em;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+  pre {
+    background: var(--bg-code);
+    padding: 1rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    overflow-x: auto;
+  }
+  pre code { background: transparent; border: none; padding: 0; }
+
+  /* Layout */
+  .topbar {
+    background: linear-gradient(135deg, #ffffff 0%, var(--bg-warm) 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 1.25rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    backdrop-filter: saturate(120%) blur(6px);
+  }
+  .topbar-inner {
+    max-width: 1180px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 700;
+    font-size: 1.15rem;
+    letter-spacing: 0.01em;
+  }
+  .brand-mark {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: var(--accent);
+    color: #fff;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    box-shadow: var(--shadow);
+  }
+  .brand-word .accent { color: var(--accent); }
+  .topbar-meta {
+    color: var(--ink-muted);
+    font-size: 0.92rem;
+  }
+  .back-app {
+    background: var(--accent);
+    color: #fff;
+    padding: 0.55rem 1rem;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: background 120ms ease;
+  }
+  .back-app:hover { background: var(--accent-deep); text-decoration: none; }
+
+  .layout {
+    max-width: 1180px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 2.5rem;
+    padding: 2.5rem 2rem 6rem;
+  }
+  @media (max-width: 880px) {
+    .layout { grid-template-columns: 1fr; padding: 1.5rem 1rem 4rem; }
+    .toc { position: static !important; max-height: none !important; }
+  }
+
+  /* Table of contents */
+  .toc {
+    position: sticky;
+    top: 96px;
+    align-self: start;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem 1rem;
+    background: var(--bg-soft);
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+  }
+  .toc-title {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+    font-weight: 700;
+    margin: 0 0 0.75rem;
+  }
+  .toc ol {
+    list-style: none;
+    padding: 0; margin: 0;
+    counter-reset: toc;
+  }
+  .toc li {
+    counter-increment: toc;
+    margin: 0.4rem 0;
+    font-size: 0.93rem;
+  }
+  .toc li::before {
+    content: counter(toc) ".";
+    color: var(--accent);
+    font-weight: 700;
+    margin-right: 0.4rem;
+  }
+  .toc a {
+    color: var(--ink);
+  }
+  .toc a:hover { color: var(--accent-deep); text-decoration: none; }
+
+  /* Article */
+  article { min-width: 0; }
+  article > section + section { margin-top: 3rem; }
+
+  h1 {
+    font-size: 2.25rem;
+    line-height: 1.2;
+    margin: 0 0 0.5rem;
+    color: var(--ink);
+  }
+  h2 {
+    font-size: 1.55rem;
+    margin: 2.5rem 0 1rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 2px solid var(--accent-soft);
+    color: var(--accent-deep);
+    scroll-margin-top: 90px;
+  }
+  h3 {
+    font-size: 1.18rem;
+    margin: 1.75rem 0 0.6rem;
+    color: var(--ink);
+    scroll-margin-top: 90px;
+  }
+  h4 {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--ink-soft);
+    margin: 1.25rem 0 0.4rem;
+  }
+  p { margin: 0.6rem 0 1rem; }
+
+  ul, ol { padding-left: 1.4rem; }
+  li { margin: 0.25rem 0; }
+
+  .lede {
+    font-size: 1.1rem;
+    color: var(--ink-muted);
+    border-left: 3px solid var(--accent);
+    padding: 0.6rem 1rem;
+    background: var(--bg-warm);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    margin: 1rem 0 1.75rem;
+  }
+
+  /* Callouts */
+  .callout {
+    border-left: 4px solid var(--accent);
+    background: var(--bg-warm);
+    padding: 0.85rem 1.1rem;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    margin: 1.25rem 0;
+  }
+  .callout.tip { border-color: #1a8f5e; background: #e9f6ee; }
+  .callout.warn { border-color: #d97706; background: #fff5e8; }
+  .callout.info { border-color: var(--accent); }
+  .callout-title {
+    font-weight: 700;
+    margin: 0 0 0.25rem;
+    font-size: 0.92rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* Step list */
+  .steps {
+    counter-reset: step;
+    list-style: none;
+    padding: 0;
+    margin: 1.25rem 0;
+  }
+  .steps > li {
+    counter-increment: step;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    padding: 1rem 1.25rem 1rem 3.25rem;
+    border-radius: var(--radius-sm);
+    margin: 0.6rem 0;
+    position: relative;
+  }
+  .steps > li::before {
+    content: counter(step);
+    position: absolute;
+    top: 0.85rem; left: 0.85rem;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    display: inline-flex;
+    align-items: center; justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+
+  /* Pills (roles, badges) */
+  .pill {
+    display: inline-block;
+    background: var(--accent-soft);
+    color: var(--accent-deep);
+    padding: 0.1em 0.6em;
+    border-radius: 999px;
+    font-size: 0.82em;
+    font-weight: 600;
+    border: 1px solid var(--border-strong);
+  }
+  .pill.muted { background: var(--bg-warm); color: var(--ink-muted); }
+
+  /* Tables */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem 0;
+    font-size: 0.95rem;
+  }
+  th, td {
+    border: 1px solid var(--border);
+    padding: 0.55rem 0.8rem;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background: var(--bg-soft);
+    color: var(--accent-deep);
+    font-weight: 700;
+  }
+  tr:nth-child(even) td { background: #fbf8f3; }
+
+  /* FAQ */
+  details {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-soft);
+    padding: 0;
+    margin: 0.5rem 0;
+    overflow: hidden;
+  }
+  details summary {
+    padding: 0.85rem 1.1rem;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--ink);
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::after {
+    content: "+";
+    color: var(--accent);
+    font-size: 1.25rem;
+    line-height: 1;
+    font-weight: 400;
+  }
+  details[open] summary::after { content: "−"; }
+  details[open] summary { background: var(--bg-warm); }
+  details > *:not(summary) {
+    padding: 0 1.1rem 1rem;
+  }
+  details p:first-of-type { margin-top: 0.6rem; }
+
+  /* Screenshot placeholders */
+  .screenshot {
+    background: repeating-linear-gradient(
+      45deg,
+      var(--bg-warm) 0,
+      var(--bg-warm) 12px,
+      var(--bg-soft) 12px,
+      var(--bg-soft) 24px
+    );
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius);
+    padding: 3rem 1rem;
+    text-align: center;
+    color: var(--ink-soft);
+    font-style: italic;
+    margin: 1.25rem 0;
+    font-size: 0.92rem;
+  }
+  .screenshot::before {
+    content: "📷 ";
+    font-style: normal;
+    margin-right: 0.4rem;
+  }
+
+  /* Footer */
+  footer.docfooter {
+    border-top: 1px solid var(--border);
+    background: var(--bg-soft);
+    padding: 2rem;
+    text-align: center;
+    color: var(--ink-muted);
+    font-size: 0.9rem;
+  }
+  footer.docfooter a { color: var(--accent-deep); }
+  footer.docfooter .small { font-size: 0.82rem; color: var(--ink-soft); margin-top: 0.5rem; }
+
+  /* Print */
+  @media print {
+    .topbar, .toc, .back-app { display: none; }
+    .layout { display: block; padding: 0; }
+    body { font-size: 11pt; }
+    h2 { page-break-after: avoid; }
+    section { page-break-inside: avoid; }
+  }
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="brand-mark">C</span>
+      <span class="brand-word">COMP<span class="accent">APP</span>TITION</span>
+    </div>
+    <div class="topbar-meta">Manual de usuario · v0.0.1 · Beta</div>
+    <a class="back-app" href="/app/dashboard">Volver a la app</a>
+  </div>
+</header>
+
+<div class="layout">
+
+<aside class="toc" aria-label="Índice del manual">
+  <p class="toc-title">Contenido</p>
+  <ol>
+    <li><a href="#bienvenida">Bienvenida</a></li>
+    <li><a href="#inicio-rapido">Inicio rápido</a></li>
+    <li><a href="#competiciones">Crear y gestionar competiciones</a></li>
+    <li><a href="#equipos">Equipos y jugadores</a></li>
+    <li><a href="#partidos">Calendario y partidos</a></li>
+    <li><a href="#estadisticas">Estadísticas y clasificación</a></li>
+    <li><a href="#mensajeria">Mensajería 1-a-1</a></li>
+    <li><a href="#notificaciones">Notificaciones</a></li>
+    <li><a href="#perfil">Perfil y configuración</a></li>
+    <li><a href="#faq">Preguntas frecuentes</a></li>
+    <li><a href="#contacto">Contacto y soporte</a></li>
+  </ol>
+</aside>
+
+<article>
+
+<!-- 1. BIENVENIDA -->
+<section id="bienvenida">
+  <h1>Bienvenida a Compapption</h1>
+  <p class="lede">
+    Compapption es una aplicación para organizar competiciones deportivas amateur — ligas,
+    eliminatorias y formatos mixtos — sin la fricción habitual de hojas de cálculo, mensajes
+    sueltos y calendarios desordenados. Desde crear una competición con tus amigos hasta
+    cargar resultados, ver clasificación, programar partidos y comunicarte con el resto de
+    participantes, todo ocurre en la misma app.
+  </p>
+
+  <h3>¿Qué puedes hacer con Compapption?</h3>
+  <ul>
+    <li><strong>Crear competiciones</strong> en formato liga, playoff (eliminatoria) o mixto (liga + playoff final).</li>
+    <li><strong>Gestionar equipos</strong> con varios miembros y un manager responsable.</li>
+    <li><strong>Programar partidos</strong> con fecha, hora y lugar. Los participantes reciben aviso por email cuando se acerca la cita.</li>
+    <li><strong>Cargar resultados</strong> y eventos del partido (goles, asistencias, cartulinas, etc).</li>
+    <li><strong>Consultar clasificación</strong> actualizada en tiempo real y estadísticas individuales.</li>
+    <li><strong>Comunicarte uno-a-uno</strong> con otros usuarios de la app vía mensajería privada.</li>
+    <li><strong>Recibir notificaciones</strong> en tiempo real cuando algo relevante ocurre (mensajes, invitaciones, partidos, resultados).</li>
+  </ul>
+
+  <h3>Roles que existen en la app</h3>
+  <p>
+    Cuando te registras eres un usuario corriente. A partir de ahí puedes adoptar varios roles
+    según el contexto, sin tener que crear cuentas distintas:
+  </p>
+
+  <table>
+    <thead>
+      <tr><th>Rol</th><th>¿Cómo se obtiene?</th><th>¿Qué te permite?</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="pill">Admin de competición</span></td>
+        <td>Crear una competición o ser invitado como administrador por su creador.</td>
+        <td>Configurar la competición, gestionar equipos inscritos, programar partidos, validar resultados.</td>
+      </tr>
+      <tr>
+        <td><span class="pill">Manager de equipo</span></td>
+        <td>Crear un equipo o ser nombrado manager por el creador del equipo.</td>
+        <td>Gestionar la plantilla, invitar jugadores, inscribir el equipo en competiciones, cargar resultados.</td>
+      </tr>
+      <tr>
+        <td><span class="pill">Jugador</span></td>
+        <td>Aceptar una invitación a un equipo.</td>
+        <td>Ver el calendario y la clasificación de las competiciones de su equipo, consultar estadísticas, recibir avisos.</td>
+      </tr>
+      <tr>
+        <td><span class="pill muted">Espectador</span></td>
+        <td>Es el rol por defecto antes de unirse a equipos o crear competiciones.</td>
+        <td>Navegar por la app, crear competiciones nuevas o equipos nuevos.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout info">
+    <p class="callout-title">Una persona, varios roles</p>
+    <p>
+      No es excluyente: puedes ser admin de una competición, manager de un equipo y jugador
+      en otro, todo a la vez. La app adapta automáticamente lo que ves a los roles que tengas.
+    </p>
+  </div>
+</section>
+
+<!-- 2. INICIO RÁPIDO -->
+<section id="inicio-rapido">
+  <h2>Inicio rápido</h2>
+  <p>Tres minutos para tenerte dentro y mirando el dashboard.</p>
+
+  <h3>Registro</h3>
+  <ol class="steps">
+    <li>
+      Abre la página principal y pulsa <strong>Registrarse</strong>.
+    </li>
+    <li>
+      Rellena nombre de usuario, email y contraseña. La contraseña debe tener al menos
+      <strong>8 caracteres, una mayúscula y un dígito</strong>.
+    </li>
+    <li>
+      Acepta los <a href="/legal/terminos" target="_blank" rel="noopener">Términos de uso</a>
+      y la <a href="/legal/privacidad" target="_blank" rel="noopener">Política de privacidad</a>.
+    </li>
+    <li>
+      Pulsa <strong>Crear cuenta</strong>. Quedarás logueado automáticamente.
+    </li>
+  </ol>
+
+  <div class="screenshot">Captura: pantalla de registro con los campos básicos y el checkbox legal.</div>
+
+  <h3>Iniciar sesión</h3>
+  <ol class="steps">
+    <li>Pulsa <strong>Iniciar sesión</strong> en la página principal.</li>
+    <li>Introduce tu usuario o email y la contraseña.</li>
+    <li>Pulsa <strong>Entrar</strong>. Llegarás al dashboard.</li>
+  </ol>
+
+  <div class="callout warn">
+    <p class="callout-title">5 intentos fallidos = bloqueo temporal</p>
+    <p>
+      Si fallas la contraseña 5 veces seguidas, tu cuenta se bloquea durante 15 minutos
+      por seguridad. Si te pasa, espera o usa "He olvidado mi contraseña".
+    </p>
+  </div>
+
+  <h3>Recuperar contraseña</h3>
+  <ol class="steps">
+    <li>En la página de login, pulsa <strong>¿Has olvidado tu contraseña?</strong>.</li>
+    <li>Introduce el email asociado a tu cuenta.</li>
+    <li>
+      Recibirás un email con un enlace de recuperación válido durante un tiempo limitado.
+      Si no lo ves, revisa la carpeta de spam.
+    </li>
+    <li>Sigue el enlace, define una contraseña nueva y vuelve a entrar.</li>
+  </ol>
+
+  <h3>Tu primer dashboard</h3>
+  <p>
+    Al entrar verás un resumen con tus competiciones activas, los próximos partidos de
+    los equipos donde participas y las invitaciones pendientes. Si acabas de registrarte
+    estará vacío — es normal: el siguiente paso es crear una competición o aceptar una invitación.
+  </p>
+
+  <div class="screenshot">Captura: dashboard recién creado con tarjetas vacías.</div>
+</section>
+
+<!-- 3. COMPETICIONES -->
+<section id="competiciones">
+  <h2>Crear y gestionar competiciones</h2>
+
+  <h3>Crear una competición</h3>
+  <ol class="steps">
+    <li>
+      En la barra superior, pulsa el icono <strong>+</strong> y elige <strong>Nueva competición</strong>.
+    </li>
+    <li>
+      Completa el formulario:
+      <ul>
+        <li><strong>Nombre</strong> de la competición.</li>
+        <li><strong>Deporte</strong> (fútbol, baloncesto, voleibol, pádel, tenis, pickleball, ping pong…).</li>
+        <li><strong>Formato</strong>: liga, playoff o mixto.</li>
+        <li><strong>Fechas</strong> de inicio y fin previstas.</li>
+        <li><strong>Reglas específicas</strong> del formato (ida-vuelta, número de equipos clasificados al playoff, sistema de puntos, etc).</li>
+      </ul>
+    </li>
+    <li>Pulsa <strong>Crear</strong>. Pasas a ser <span class="pill">Admin de competición</span>.</li>
+  </ol>
+
+  <div class="screenshot">Captura: formulario de creación de competición.</div>
+
+  <h3>Inscribir equipos</h3>
+  <p>Una vez creada la competición, puedes hacer que se inscriban equipos de varias formas:</p>
+  <ul>
+    <li>
+      <strong>Compartir el código de la competición</strong>: cualquier manager con el código
+      puede inscribir su equipo.
+    </li>
+    <li>
+      <strong>Invitar a equipos por email</strong>: si conoces a un manager, le envías una
+      invitación directa al email asociado a su cuenta.
+    </li>
+    <li>
+      <strong>Aceptar inscripciones manualmente</strong>: los equipos solicitan unirse y tú
+      aceptas o rechazas desde el panel de la competición.
+    </li>
+  </ul>
+
+  <h3>Configurar el calendario</h3>
+  <p>
+    Con los equipos inscritos, llega el momento de programar los partidos. La app te
+    propone un calendario automático según el formato:
+  </p>
+  <ul>
+    <li>
+      <strong>Liga</strong>: todos contra todos a una vuelta o ida-vuelta. Puedes ajustar
+      jornadas y reorganizar emparejamientos.
+    </li>
+    <li>
+      <strong>Playoff</strong>: bracket eliminatorio según el número de equipos. Configurable
+      a partido único o ida-vuelta.
+    </li>
+    <li>
+      <strong>Mixto</strong>: liga regular seguida de playoff final con los N primeros
+      clasificados.
+    </li>
+  </ul>
+  <p>
+    Para cada partido, puedes definir <strong>fecha</strong>, <strong>hora</strong> y
+    <strong>lugar</strong>. Cuando guardes, los participantes verán el partido en su calendario.
+  </p>
+
+  <h3>Cerrar la competición</h3>
+  <p>
+    Cuando todos los partidos previstos estén jugados, la app te marca la competición
+    como <strong>finalizada</strong>. La clasificación queda congelada y todo el historial
+    sigue disponible para consulta.
+  </p>
+
+  <div class="callout info">
+    <p class="callout-title">Imágenes de la competición</p>
+    <p>
+      Puedes subir un logo o una imagen representativa de la competición desde su página
+      de detalle. Compapption se encarga del almacenamiento y optimización (servicio
+      Cloudinary). Formatos aceptados: PNG, JPG, WebP. Tamaño máximo orientativo: 5 MB.
+    </p>
+  </div>
+</section>
+
+<!-- 4. EQUIPOS -->
+<section id="equipos">
+  <h2>Equipos y jugadores</h2>
+
+  <h3>Crear un equipo</h3>
+  <ol class="steps">
+    <li>
+      En la barra superior, pulsa el icono <strong>+</strong> y elige <strong>Nuevo equipo</strong>.
+    </li>
+    <li>
+      Rellena nombre, deporte principal y opcionalmente un escudo o foto.
+    </li>
+    <li>
+      Pulsa <strong>Crear</strong>. Eres <span class="pill">Manager de equipo</span> automáticamente.
+    </li>
+  </ol>
+
+  <h3>Invitar jugadores</h3>
+  <p>
+    Como manager, en la página del equipo tienes un botón <strong>Invitar jugador</strong>
+    que abre un formulario para introducir el email del jugador. La app envía un correo
+    con un enlace de aceptación. Cuando el jugador acepta:
+  </p>
+  <ul>
+    <li>Si ya tiene cuenta en Compapption, queda inscrito en el equipo de inmediato.</li>
+    <li>
+      Si no tiene cuenta, puede registrarse desde el enlace y la inscripción se completa
+      al terminar el registro.
+    </li>
+  </ul>
+
+  <div class="screenshot">Captura: panel de equipo con la lista de jugadores y botón de invitar.</div>
+
+  <h3>Ceder o transferir el manager</h3>
+  <p>
+    Si quieres dejar de ser manager de un equipo, puedes <strong>transferir el rol</strong>
+    a cualquier otro jugador del equipo. El nuevo manager tendrá las mismas capacidades
+    y tú quedas como jugador (a menos que decidas también dejar el equipo).
+  </p>
+
+  <h3>Inscribir el equipo en una competición</h3>
+  <ol class="steps">
+    <li>Entra a la página del equipo.</li>
+    <li>
+      Pulsa <strong>Inscribir en competición</strong> e introduce el código que te haya
+      pasado el admin de la competición, o busca competiciones abiertas.
+    </li>
+    <li>
+      Si la competición acepta inscripciones automáticas, quedáis dentro al instante.
+      Si requiere validación manual, el admin recibe la solicitud.
+    </li>
+  </ol>
+
+  <h3>Salir de un equipo</h3>
+  <p>
+    Como jugador, puedes salir de un equipo desde la página del equipo. Si eres el
+    manager, primero debes transferir el rol a otro jugador o disolver el equipo.
+  </p>
+
+  <div class="callout warn">
+    <p class="callout-title">Si disuelves un equipo inscrito en competiciones activas</p>
+    <p>
+      No es posible disolver un equipo que esté inscrito en competiciones todavía no
+      finalizadas. Antes debes retirar el equipo de cada competición activa o esperar
+      a que terminen.
+    </p>
+  </div>
+</section>
+
+<!-- 5. PARTIDOS -->
+<section id="partidos">
+  <h2>Calendario y partidos</h2>
+
+  <h3>Ver el calendario</h3>
+  <p>
+    El calendario es la vista que reúne todos los partidos relevantes para ti — los
+    de las competiciones que administras y los de los equipos donde juegas o managas.
+    Puedes filtrar por competición y cambiar entre vista lista y vista mensual.
+  </p>
+
+  <div class="screenshot">Captura: calendario mensual con varios partidos marcados.</div>
+
+  <h3>Detalle de un partido</h3>
+  <p>Cada partido tiene una página propia con:</p>
+  <ul>
+    <li>Equipos enfrentados, con sus escudos.</li>
+    <li>Fecha, hora y lugar.</li>
+    <li>Estado: <em>programado</em>, <em>en curso</em>, <em>finalizado</em> o <em>aplazado</em>.</li>
+    <li>Resultado y eventos cuando ya se ha cargado.</li>
+    <li>Histórico de cambios (quién cargó qué y cuándo).</li>
+  </ul>
+
+  <h3>Cargar resultado</h3>
+  <p>
+    Como admin de competición o manager de uno de los dos equipos, puedes cargar el
+    resultado del partido una vez finalizado:
+  </p>
+  <ol class="steps">
+    <li>Entra al detalle del partido.</li>
+    <li>Pulsa <strong>Cargar resultado</strong>.</li>
+    <li>Introduce el marcador final.</li>
+    <li>
+      Opcionalmente, añade <strong>eventos</strong>: goles (con jugador y minuto),
+      asistencias, tarjetas, cambios… Esto enriquece la estadística personal de cada
+      jugador.
+    </li>
+    <li>Confirma. La clasificación se actualiza automáticamente.</li>
+  </ol>
+
+  <div class="callout info">
+    <p class="callout-title">Aviso 24 horas antes del partido</p>
+    <p>
+      Compapption envía automáticamente un email a todos los jugadores de ambos equipos
+      cuando faltan aproximadamente 24 horas para el partido, recordando fecha, hora y
+      lugar. Si cambias el partido después de ese envío, puedes <strong>renotificar
+      manualmente</strong> a los participantes desde el detalle del partido.
+    </p>
+  </div>
+
+  <h3>Aplazar o reprogramar</h3>
+  <p>
+    Si necesitas cambiar la fecha o el lugar de un partido ya programado, hazlo desde
+    el detalle del partido. El sistema registra el cambio en el histórico y los
+    afectados verán la nueva fecha en su calendario. Si lo haces a menos de 24 horas
+    del partido original, conviene renotificar manualmente para asegurar que todos
+    se enteran.
+  </p>
+</section>
+
+<!-- 6. ESTADÍSTICAS -->
+<section id="estadisticas">
+  <h2>Estadísticas y clasificación</h2>
+
+  <h3>Clasificación de la competición</h3>
+  <p>
+    Cada competición tiene su pestaña de clasificación. En ligas se calcula con el
+    sistema de puntos configurado (típicamente 3 victoria / 1 empate / 0 derrota,
+    desempates por diferencia de marcador, marcador a favor, etc). En playoff se
+    muestra el bracket con los resultados ya conocidos y los enfrentamientos pendientes.
+  </p>
+
+  <div class="screenshot">Captura: tabla de clasificación de una liga con varios equipos.</div>
+
+  <h3>Estadísticas individuales</h3>
+  <p>
+    Compapption agrega estadísticas por jugador a partir de los eventos cargados en
+    cada partido:
+  </p>
+  <ul>
+    <li>Partidos jugados.</li>
+    <li>Goles / puntos / sets ganados (según deporte).</li>
+    <li>Asistencias.</li>
+    <li>Tarjetas amarillas y rojas (deportes con disciplina).</li>
+    <li>Promedios y tendencias.</li>
+  </ul>
+  <p>
+    Cada jugador puede ver sus propias estadísticas en su página de perfil; los
+    managers ven las de toda la plantilla; los admins ven las del conjunto de la competición.
+  </p>
+
+  <h3>Ranking por jugador</h3>
+  <p>
+    Dentro de cada competición hay un ranking que ordena a los jugadores por
+    diferentes métricas (máximos goleadores, líder de asistencias, etc) y que se
+    actualiza automáticamente al cargar resultados.
+  </p>
+</section>
+
+<!-- 7. MENSAJERÍA -->
+<section id="mensajeria">
+  <h2>Mensajería 1-a-1</h2>
+
+  <h3>Cómo funciona</h3>
+  <p>
+    Compapption integra mensajería privada uno-a-uno entre usuarios. Es un canal
+    directo, sin grupos, pensado para la comunicación operativa (avisar al rival,
+    hablar con tu manager, coordinar un cambio de fecha…).
+  </p>
+
+  <h3>Iniciar una conversación</h3>
+  <ol class="steps">
+    <li>
+      Abre la sección <strong>Mensajes</strong> desde el icono del sobre en la barra
+      superior o desde el menú del avatar.
+    </li>
+    <li>
+      Pulsa <strong>Nueva conversación</strong> y elige el destinatario. Sólo puedes
+      iniciar conversación con usuarios con los que tengas algún contexto (compartir
+      equipo, competición o invitación).
+    </li>
+    <li>Escribe el mensaje y envía.</li>
+  </ol>
+
+  <h3>Mensajes en tiempo real</h3>
+  <p>
+    Cuando el destinatario tiene la app abierta, recibe los mensajes nuevos al
+    instante. Si no, los verá la próxima vez que entre y aparecerá una notificación
+    no leída.
+  </p>
+
+  <div class="screenshot">Captura: vista de conversación con mensajes alternados.</div>
+
+  <h3>Marcar como leído</h3>
+  <p>
+    Los mensajes se marcan como leídos automáticamente al abrir la conversación
+    correspondiente. El badge del icono del sobre refleja el total de mensajes no
+    leídos en todas tus conversaciones.
+  </p>
+
+  <div class="callout info">
+    <p class="callout-title">¿Qué uso debo darle?</p>
+    <p>
+      La mensajería es para comunicación entre participantes de la app. No es un
+      canal de soporte: si necesitas ayuda con un fallo o una duda sobre el producto,
+      abre un ticket desde el dropdown de ayuda del navbar
+      (<strong>Soporte</strong>) o, si todavía no tienes cuenta, escríbenos a
+      <a href="mailto:no-reply@compapptition.com">no-reply@compapptition.com</a>.
+    </p>
+  </div>
+</section>
+
+<!-- 8. NOTIFICACIONES -->
+<section id="notificaciones">
+  <h2>Notificaciones</h2>
+
+  <h3>Qué notificamos</h3>
+  <p>Compapption te notifica de los hechos relevantes para tu actividad:</p>
+  <ul>
+    <li>Mensajes privados nuevos.</li>
+    <li>Invitaciones recibidas (a equipos o competiciones).</li>
+    <li>Aceptación o rechazo de tus invitaciones enviadas.</li>
+    <li>Partidos próximos (con 24h de antelación).</li>
+    <li>Resultados cargados en partidos donde participas.</li>
+    <li>Cambios de fecha o lugar en partidos donde participas.</li>
+  </ul>
+
+  <h3>Centro de notificaciones</h3>
+  <p>
+    El icono de la campana en la barra superior abre el centro de notificaciones,
+    donde verás las últimas notificaciones recibidas, marcadas como leídas o pendientes.
+    El número en el badge cuenta las pendientes.
+  </p>
+
+  <div class="screenshot">Captura: panel de notificaciones desplegado con varias entradas recientes.</div>
+
+  <h3>Tiempo real</h3>
+  <p>
+    Las notificaciones llegan al instante mientras tienes la app abierta, gracias a
+    una conexión persistente con el servidor. No tienes que recargar.
+  </p>
+
+  <h3>Notificaciones por email</h3>
+  <p>
+    Algunas notificaciones también se envían por email — actualmente, el aviso de
+    partido próximo a 24h, el email de invitación a equipo o competición, y el email
+    de recuperación de contraseña.
+  </p>
+</section>
+
+<!-- 9. PERFIL -->
+<section id="perfil">
+  <h2>Perfil y configuración</h2>
+
+  <h3>Editar perfil</h3>
+  <p>
+    Desde el menú del avatar (esquina superior derecha) → <strong>Mi perfil</strong>,
+    puedes editar:
+  </p>
+  <ul>
+    <li>Nombre y apellidos visibles.</li>
+    <li>Foto de perfil.</li>
+    <li>Email asociado a la cuenta.</li>
+    <li>Contraseña.</li>
+    <li>Datos opcionales como biografía o deporte preferido.</li>
+  </ul>
+
+  <h3>Cambiar contraseña</h3>
+  <ol class="steps">
+    <li>Entra a <strong>Mi perfil</strong>.</li>
+    <li>Pulsa <strong>Cambiar contraseña</strong>.</li>
+    <li>Introduce la contraseña actual y la nueva (8+ caracteres, mayúscula y dígito).</li>
+    <li>Confirma. Se cierran las sesiones abiertas en otros dispositivos.</li>
+  </ol>
+
+  <h3>Cerrar sesión</h3>
+  <p>
+    Desde el menú del avatar, pulsa <strong>Cerrar sesión</strong>. Si tienes la app
+    abierta en varias pestañas, todas se cerrarán a la vez en cuestión de segundos.
+  </p>
+
+  <h3>Eliminar cuenta</h3>
+  <p>
+    Si quieres ejercer tu derecho de supresión (RGPD), escríbenos a
+    <a href="mailto:contacto@marionaya.com">contacto@marionaya.com</a> desde el email
+    asociado a tu cuenta — esta dirección está reservada a comunicaciones legales y
+    de protección de datos. La eliminación implica que tu nombre se anonimiza pero las
+    estadísticas históricas de las competiciones donde hayas participado se mantienen
+    como "jugador anónimo" para no romper la integridad de los datos del resto de
+    participantes.
+  </p>
+</section>
+
+<!-- 10. FAQ -->
+<section id="faq">
+  <h2>Preguntas frecuentes</h2>
+
+  <details>
+    <summary>No me llega el email de recuperación, ¿qué hago?</summary>
+    <p>
+      Comprueba primero la carpeta de spam o promociones. Si en 5 minutos no aparece,
+      asegúrate de que el email que has introducido coincide exactamente con el que
+      usaste al registrarte. Si sigue sin llegar, escríbenos a
+      <a href="mailto:no-reply@compapptition.com">no-reply@compapptition.com</a>.
+    </p>
+  </details>
+
+  <details>
+    <summary>He intentado entrar varias veces y dice que mi cuenta está bloqueada</summary>
+    <p>
+      Tras 5 intentos de login fallidos, la cuenta se bloquea durante 15 minutos como
+      medida de seguridad. Espera ese tiempo y vuelve a intentarlo, o usa "He olvidado
+      mi contraseña" para resetearla.
+    </p>
+  </details>
+
+  <details>
+    <summary>¿Puedo participar en varias competiciones a la vez?</summary>
+    <p>
+      Sí, sin límite. Tu equipo puede estar inscrito en varias competiciones
+      simultáneamente y tú, como persona, puedes pertenecer a varios equipos en
+      competiciones distintas.
+    </p>
+  </details>
+
+  <details>
+    <summary>¿Cómo funciona la inscripción de equipos en mi competición?</summary>
+    <p>
+      Como admin de competición, decides el método: código compartido (cualquier
+      manager con el código se inscribe), invitación directa por email a managers
+      conocidos, o solicitud manual con validación tuya. Lo configuras al crear la
+      competición y puedes cambiarlo después.
+    </p>
+  </details>
+
+  <details>
+    <summary>El email de aviso de partido no llega 24h antes, ¿es un fallo?</summary>
+    <p>
+      El aviso se envía aproximadamente 24h antes del partido — la ventana de envío
+      es entre 23h y 25h antes. Si has movido el partido recientemente o el envío
+      automático ha pasado, puedes renotificar manualmente desde el detalle del partido.
+    </p>
+  </details>
+
+  <details>
+    <summary>Mi equipo aparece como inscrito pero no veo los partidos en el calendario</summary>
+    <p>
+      Es probable que el admin de competición todavía no haya programado el calendario.
+      Hasta que no lo haga, los partidos no existen como tales. Pregúntale al admin
+      o espera a que comparta el calendario.
+    </p>
+  </details>
+
+  <details>
+    <summary>¿Puedo subir cualquier imagen como escudo o foto?</summary>
+    <p>
+      Aceptamos PNG, JPG y WebP, hasta 5 MB orientativos. Verificamos que el archivo
+      sea realmente una imagen — no se aceptan archivos camuflados con extensión de
+      imagen pero contenido distinto.
+    </p>
+  </details>
+
+  <details>
+    <summary>¿Compapption tiene app móvil?</summary>
+    <p>
+      Por ahora no — es una webapp que funciona en el navegador del móvil con experiencia
+      adaptada. Una versión nativa para Android e iOS está en el roadmap post-defensa.
+    </p>
+  </details>
+
+  <details>
+    <summary>¿Mis datos están seguros?</summary>
+    <p>
+      Compapption usa contraseñas cifradas con BCrypt, sesiones con tokens firmados
+      y rotación de refresh, conexión cifrada HTTPS, cabeceras de seguridad estándar,
+      bloqueo temporal contra fuerza bruta y rate limiting. Las imágenes se almacenan
+      en Cloudinary (con DPA estándar) y los emails se envían vía Hostinger SMTP.
+      Para detalles legales, consulta la
+      <a href="/legal/privacidad" target="_blank" rel="noopener">Política de privacidad</a>.
+    </p>
+  </details>
+
+  <details>
+    <summary>¿Esto es un servicio comercial?</summary>
+    <p>
+      No. Compapption es un Trabajo Fin de Grado académico, ofrecido en fase beta
+      pública sin ánimo de lucro. No hay suscripciones ni cobros. Las limitaciones
+      de soporte y SLA reflejan esa naturaleza no comercial.
+    </p>
+  </details>
+
+  <details>
+    <summary>He encontrado un fallo, ¿cómo lo reporto?</summary>
+    <p>
+      Lo más rápido es abrir un ticket desde la app: en el navbar, abre el dropdown de
+      ayuda y elige <strong>Soporte</strong>. Te llevará al formulario de tickets, donde
+      describes qué hacías cuando ocurrió, qué esperabas que pasara y qué pasó en su
+      lugar (las capturas ayudan mucho). Si todavía no tienes cuenta, puedes escribirnos
+      a <a href="mailto:no-reply@compapptition.com">no-reply@compapptition.com</a>.
+      Como esto es una beta de TFG, agradecemos cualquier reporte.
+    </p>
+  </details>
+</section>
+
+<!-- 11. CONTACTO -->
+<section id="contacto">
+  <h2>Contacto y soporte</h2>
+
+  <p>
+    Compapption es desarrollado y mantenido por <strong>Mario Naya de Luis</strong>
+    como parte de su Trabajo Fin de Grado.
+  </p>
+
+  <table>
+    <tbody>
+      <tr>
+        <th>Soporte técnico (preferido)</th>
+        <td>Sistema de tickets in-app: dropdown de ayuda → <strong>Soporte</strong></td>
+      </tr>
+      <tr>
+        <th>Soporte por email (sin cuenta)</th>
+        <td><a href="mailto:no-reply@compapptition.com">no-reply@compapptition.com</a></td>
+      </tr>
+      <tr>
+        <th>Cuestiones legales / RGPD</th>
+        <td><a href="mailto:contacto@marionaya.com">contacto@marionaya.com</a></td>
+      </tr>
+      <tr><th>Web personal del autor</th><td><a href="https://www.marionaya.com" target="_blank" rel="noopener">marionaya.com</a></td></tr>
+      <tr><th>Aviso legal</th><td><a href="/legal/aviso-legal" target="_blank" rel="noopener">Aviso legal LSSI-CE</a></td></tr>
+      <tr><th>Privacidad</th><td><a href="/legal/privacidad" target="_blank" rel="noopener">Política de privacidad RGPD</a></td></tr>
+      <tr><th>Términos</th><td><a href="/legal/terminos" target="_blank" rel="noopener">Términos de uso</a></td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout info">
+    <p class="callout-title">Diferencia entre los dos canales</p>
+    <p>
+      Usa el sistema de tickets in-app (o el email <strong>no-reply&#64;compapptition.com</strong>)
+      para todo lo relacionado con el funcionamiento de la app: dudas de uso, fallos,
+      sugerencias de mejora. Reserva <strong>contacto&#64;marionaya.com</strong> para
+      ejercer derechos RGPD (acceso, rectificación, supresión) o asuntos jurídicos —
+      escribir ahí por una duda funcional ralentiza la respuesta.
+    </p>
+  </div>
+
+  <div class="callout info">
+    <p class="callout-title">Tiempos de respuesta orientativos</p>
+    <p>
+      Al ser un servicio no comercial gestionado por una sola persona, el soporte se
+      atiende cuando es posible. Habitualmente respondemos en 1-3 días hábiles.
+    </p>
+  </div>
+</section>
+
+</article>
+</div>
+
+<footer class="docfooter">
+  <p>
+    <strong>Compapption</strong> · Manual de usuario · v0.0.1 · Beta pública —
+    <a href="/app/dashboard">Volver a la aplicación</a>
+  </p>
+  <p class="small">
+    © Mario Naya de Luis · TFG académico, no comercial · Última actualización: mayo 2026
+  </p>
+</footer>
+
+</body>
+</html>

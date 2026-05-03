@@ -9,8 +9,17 @@
     <router-outlet />
   </main>
 
-  <footer class="legal mono">
-    © 2026 · Compapption · TFG
+  <footer class="legal">
+    <span class="mono">© {{ year }} · Compapption · TFG · No comercial</span>
+    <nav class="auth-legal-links" aria-label="Enlaces legales">
+      <a routerLink="/legal/privacidad">Privacidad</a>
+      <span aria-hidden="true">·</span>
+      <a routerLink="/legal/aviso-legal">Aviso legal</a>
+      <span aria-hidden="true">·</span>
+      <a routerLink="/legal/terminos">Términos</a>
+      <span aria-hidden="true">·</span>
+      <a [href]="supportMailto">Soporte</a>
+    </nav>
   </footer>
 </div>
 

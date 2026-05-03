@@ -99,4 +99,21 @@ export class EventoService {
       `${this.base}/${competicionId}/eventos/${eventoId}/estadisticas`,
     );
   }
+
+  /**
+   * Dispara la notificación manual a los jugadores activos de los dos equipos
+   * del evento. Pensado para que el admin de competición avise por email tras
+   * un cambio de fecha o lugar; el backend ignora el flag de "ya notificado"
+   * y vuelve a enviar (forzar=true). El email automático 24h antes lo
+   * gestiona un scheduler en backend, no requiere acción del frontend.
+   */
+  notificarJugadores$(
+    competicionId: number,
+    eventoId: number,
+  ): Observable<{ emailsEnviados: number }> {
+    return this.http.post<{ emailsEnviados: number }>(
+      `${this.base}/${competicionId}/eventos/${eventoId}/notificar-jugadores`,
+      null,
+    );
+  }
 }

@@ -1,0 +1,22 @@
+@if (visible()) {
+  <aside class="cookie-banner" role="region" aria-label="Aviso de cookies">
+    <div class="cookie-banner-inner">
+      <p class="cookie-banner-text">
+        <strong>Cookies necesarias.</strong> Compapption usa una cookie estrictamente
+        necesaria para mantener tu sesión iniciada y <code>localStorage</code> para
+        guardar tu token de acceso temporal. <strong>No usamos cookies de seguimiento,
+        analítica ni publicidad.</strong>
+        Más detalles en la
+        <a class="cookie-banner-link" routerLink="/legal/privacidad">Política de privacidad</a>.
+      </p>
+      <button
+        type="button"
+        class="cookie-banner-button"
+        (click)="acknowledge()"
+        aria-label="Aceptar aviso de cookies y cerrar el banner"
+      >
+        Entendido
+      </button>
+    </div>
+  </aside>
+}

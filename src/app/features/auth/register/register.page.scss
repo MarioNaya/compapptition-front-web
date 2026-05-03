@@ -55,6 +55,46 @@
   }
 }
 
+.legal-ack {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgba(255, 122, 26, 0.04);
+  border: 1px solid rgba(255, 122, 26, 0.18);
+  border-radius: var(--radius-sm, 8px);
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease;
+
+  &:hover {
+    background: rgba(255, 122, 26, 0.07);
+    border-color: rgba(255, 122, 26, 0.3);
+  }
+
+  input[type='checkbox'] {
+    accent-color: var(--accent);
+    width: 16px;
+    height: 16px;
+    margin: 2px 0 0;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+}
+
+.legal-ack-text {
+  color: var(--text-sec);
+  font-size: 13px;
+  line-height: 1.5;
+
+  a {
+    color: var(--accent-hi);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+
+    &:hover { color: var(--accent); }
+  }
+}
+
 .foot {
   margin-top: 28px;
   padding-top: 20px;

@@ -5,7 +5,6 @@ import { ApiError } from '@core/http/api-error.model';
 import { ButtonComponent } from '@shared/ui/button/button.component';
 import { IconComponent } from '@shared/ui/icon/icon.component';
 import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';
-import { TagComponent } from '@shared/ui/tag/tag.component';
 import { PageHeaderComponent } from '@shared/molecules/page-header/page-header.component';
 import { EmptyStateComponent } from '@shared/molecules/empty-state/empty-state.component';
 import { FormFieldComponent } from '@shared/molecules/form-field/form-field.component';
@@ -24,7 +23,6 @@ import { DeporteService, DeporteRequest } from './services/deporte.service';
     ButtonComponent,
     IconComponent,
     SpinnerComponent,
-    TagComponent,
     PageHeaderComponent,
     EmptyStateComponent,
     FormFieldComponent,

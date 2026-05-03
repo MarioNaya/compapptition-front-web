@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { authGuard } from '@core/guards/auth.guard';
-import { guestGuard } from '@core/guards/guest.guard';
 import { environment } from '@env/environment';
 
 /**
@@ -24,8 +23,11 @@ export const routes: Routes = [
   },
   ...UI_GALLERY_ROUTE,
   {
+    // El guestGuard se aplica solo a login/register en `auth.routes.ts`.
+    // forgot-password y reset-password deben ser accesibles incluso con
+    // sesión activa: si un usuario logueado clica el enlace del email de
+    // recuperación, debe poder resetear sin ser redirigido al dashboard.
     path: 'auth',
-    canActivate: [guestGuard],
     loadComponent: () =>
       import('@layout/auth-layout/auth-layout').then((m) => m.AuthLayout),
     loadChildren: () =>
@@ -38,6 +40,14 @@ export const routes: Routes = [
       import('@layout/main-layout/main-layout').then((m) => m.MainLayout),
     loadChildren: () =>
       import('./features/main/main.routes').then((m) => m.MAIN_ROUTES),
+  },
+  {
+    // Páginas legales (Privacidad, Aviso Legal, Términos). Sin guard:
+    // accesibles también sin sesión, para que un usuario potencial pueda
+    // consultarlas antes de registrarse y los enlaces del registro funcionen.
+    path: 'legal',
+    loadChildren: () =>
+      import('./features/legal/legal.routes').then((m) => m.LEGAL_ROUTES),
   },
   // Legacy redirects — rutas viejas sin prefijo /app/ seguían apuntando a la shell.
   // Se mantienen durante 1-2 semanas post-F9A para no romper enlaces externos/emails.

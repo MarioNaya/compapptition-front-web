@@ -5,7 +5,6 @@ import { forkJoin, of, switchMap } from 'rxjs';
 import { AuthService } from '@core/services/auth.service';
 import { Evento, EstadoEvento } from '@core/models/evento/evento.model';
 import { ApiError } from '@core/http/api-error.model';
-import { ButtonComponent } from '@shared/ui/button/button.component';
 import { IconComponent } from '@shared/ui/icon/icon.component';
 import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';
 import { PageHeaderComponent } from '@shared/molecules/page-header/page-header.component';
@@ -23,7 +22,6 @@ type Filter = 'PROXIMOS' | 'PASADOS' | 'TODOS';
   imports: [
     DatePipe,
     UpperCasePipe,
-    ButtonComponent,
     IconComponent,
     SpinnerComponent,
     PageHeaderComponent,

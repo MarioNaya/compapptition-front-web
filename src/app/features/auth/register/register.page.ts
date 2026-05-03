@@ -36,6 +36,10 @@ export class RegisterPage {
     password: ['', [Validators.required, Validators.minLength(8)]],
     nombre: [''],
     apellidos: [''],
+    // Aceptación legal obligatoria (RGPD/LSSI). Sin marcarla no se envía el
+    // formulario. La verificación adicional en submit() es defensa en
+    // profundidad: el botón ya queda deshabilitado mientras esté sin marcar.
+    aceptaLegal: [false, [Validators.requiredTrue]],
     // Honeypot anti-bot (cierra SF-14 parcial). Campo oculto a usuarios humanos
     // por CSS. Los bots que rellenan formularios automáticos sí lo poblarán.
     // Si llega no vacío, abortamos sin avisar (parecemos éxito desde fuera).
@@ -54,7 +58,13 @@ export class RegisterPage {
       return;
     }
     this.loading.set(true);
-    const { nombre, apellidos, hpField: _hp, ...rest } = this.form.getRawValue();
+    const {
+      nombre,
+      apellidos,
+      hpField: _hp,
+      aceptaLegal: _ack,
+      ...rest
+    } = this.form.getRawValue();
     const payload = {
       ...rest,
       nombre: nombre || undefined,

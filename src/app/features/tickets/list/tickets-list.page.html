@@ -1,0 +1,65 @@
+<app-page-header
+  [title]="isAdmin() ? 'Panel de soporte (admin)' : 'Mis tickets de soporte'"
+  [subtitle]="isAdmin()
+    ? 'Tickets abiertos por usuarios. Filtra por estado y abre el detalle para responder.'
+    : 'Aquí ves tus tickets enviados y su estado actual.'"
+>
+  <app-button variant="primary" (clicked)="irANuevo()">Nuevo ticket</app-button>
+</app-page-header>
+
+@if (isAdmin()) {
+  <nav class="tickets-filters" aria-label="Filtrar por estado">
+    <button
+      type="button"
+      class="filter-chip"
+      [class.active]="filtroEstado() === ''"
+      (click)="cambiarFiltro('')"
+    >Todos</button>
+    @for (e of estados; track e) {
+      <button
+        type="button"
+        class="filter-chip"
+        [class.active]="filtroEstado() === e"
+        (click)="cambiarFiltro(e)"
+      >{{ labels[e] }}</button>
+    }
+  </nav>
+}
+
+@if (loading()) {
+  <div class="tickets-loading"><app-spinner size="md" /></div>
+} @else if (tickets().length === 0) {
+  <app-empty-state
+    title="Sin tickets"
+    [subtitle]="isAdmin()
+      ? 'No hay tickets que coincidan con el filtro actual.'
+      : 'Todavía no has enviado ningún ticket. Si necesitas ayuda, abre uno nuevo.'"
+  />
+} @else {
+  <table class="tickets-table">
+    <thead>
+      <tr>
+        <th class="col-id">#</th>
+        <th class="col-asunto">Asunto</th>
+        @if (isAdmin()) { <th class="col-autor">Autor</th> }
+        <th class="col-estado">Estado</th>
+        <th class="col-fecha">Creado</th>
+        <th class="col-fecha">Actualizado</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (t of tickets(); track t.id) {
+        <tr [routerLink]="['/app/tickets', t.id]" class="row-link">
+          <td class="col-id mono">{{ t.id }}</td>
+          <td class="col-asunto">{{ t.asunto }}</td>
+          @if (isAdmin()) { <td class="col-autor">{{ t.usuarioUsername }}</td> }
+          <td class="col-estado">
+            <span class="estado-badge" [class]="estadoClass(t.estado)">{{ labels[t.estado] }}</span>
+          </td>
+          <td class="col-fecha mono">{{ t.fechaCreacion | date:'dd MMM yy, HH:mm' }}</td>
+          <td class="col-fecha mono">{{ t.fechaActualizacion | date:'dd MMM yy, HH:mm' }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

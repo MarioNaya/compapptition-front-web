@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
 import { Invitacion } from '@core/models/invitacion/invitacion.model';
 import { ApiError } from '@core/http/api-error.model';
@@ -23,6 +24,8 @@ export class InvitationsPage implements OnInit {
   private readonly service = inject(InvitacionService);
   private readonly auth = inject(AuthService);
   private readonly toast = inject(ToastService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   readonly activeTab = signal<InvitationTab>('received');
 
@@ -42,6 +45,27 @@ export class InvitationsPage implements OnInit {
     if (this.auth.currentUser()?.id == null) return;
     this.service.loadPendientes();
     this.service.loadEnviadas();
+
+    // Auto-aceptación al llegar desde el botón del email de invitación
+    // (URL: /app/invitations?accept=<token>). Tras consumir el token se
+    // limpia el query param para que un refresh no reintente aceptar.
+    const acceptToken = this.route.snapshot.queryParamMap.get('accept');
+    if (acceptToken) {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { accept: null },
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      });
+      this.service.aceptar$(acceptToken).subscribe({
+        next: () => {
+          this.toast.success('Invitación aceptada');
+          this.service.loadPendientes();
+          this.auth.refreshToken().subscribe({ error: () => {} });
+        },
+        error: (err: ApiError) => this.toast.error(err.message ?? 'No se pudo aceptar la invitación'),
+      });
+    }
   }
 
   accept(inv: Invitacion): void {

@@ -1,0 +1,50 @@
+<app-page-header
+  title="Nuevo ticket de soporte"
+  subtitle="Cuéntanos qué necesitas. Recibirás un aviso en la campana cuando lo atendamos."
+/>
+
+<form class="ticket-form" [formGroup]="form" (ngSubmit)="submit()">
+  <app-form-field
+    label="Asunto"
+    [control]="form.controls.asunto"
+    hint="Resumen breve (entre 3 y 160 caracteres)"
+  >
+    <input
+      class="input"
+      type="text"
+      formControlName="asunto"
+      maxlength="160"
+      placeholder="Ej: No me llega el email de invitación"
+      autocomplete="off"
+    />
+  </app-form-field>
+
+  <app-form-field
+    label="Descripción"
+    [control]="form.controls.descripcion"
+    hint="Cuanta más información mejor: pasos, qué esperabas y qué pasó. Si hay capturas, descríbelas (entre 10 y 4000 caracteres)."
+  >
+    <textarea
+      class="input textarea"
+      rows="10"
+      formControlName="descripcion"
+      maxlength="4000"
+      placeholder="Cuando intento aceptar la invitación al equipo X desde el email, el botón redirige a una página en blanco..."
+    ></textarea>
+  </app-form-field>
+
+  <div class="ticket-form-actions">
+    <a class="ticket-form-cancel" routerLink="/app/tickets">Cancelar</a>
+    <app-button
+      variant="primary"
+      type="submit"
+      [disabled]="loading() || form.invalid"
+    >
+      @if (loading()) {
+        <app-spinner size="sm" />
+      } @else {
+        Enviar ticket
+      }
+    </app-button>
+  </div>
+</form>

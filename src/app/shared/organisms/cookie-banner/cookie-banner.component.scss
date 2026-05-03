@@ -1,0 +1,98 @@
+:host {
+  display: contents;
+}
+
+.cookie-banner {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  z-index: 50;
+  background: var(--bg-2, #1a1414);
+  border: 1px solid rgba(255, 122, 26, 0.25);
+  border-radius: var(--radius-md, 12px);
+  padding: 14px 18px;
+  box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.55),
+              0 0 0 1px rgba(255, 122, 26, 0.06);
+  animation: cookieIn 240ms ease-out;
+}
+
+@keyframes cookieIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.cookie-banner-inner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: 1080px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
+
+.cookie-banner-text {
+  flex: 1 1 320px;
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--text-sec, #c4bcb1);
+
+  strong { color: var(--text-pri, #f3eee5); font-weight: 700; }
+
+  code {
+    background: rgba(255, 255, 255, 0.06);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.92em;
+    color: var(--text-pri, #f3eee5);
+  }
+}
+
+.cookie-banner-link {
+  color: var(--accent-hi, #ff9f4d);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+
+  &:hover { color: var(--accent, #ff7a1a); }
+}
+
+.cookie-banner-button {
+  flex: 0 0 auto;
+  background: var(--accent, #ff7a1a);
+  color: #1a0e07;
+  border: 0;
+  padding: 9px 18px;
+  font-weight: 700;
+  font-size: 13.5px;
+  letter-spacing: 0.02em;
+  border-radius: var(--radius-sm, 8px);
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+
+  &:hover {
+    background: var(--accent-hi, #ff9f4d);
+    transform: translateY(-1px);
+    box-shadow: 0 0 12px rgba(255, 122, 26, 0.45);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent-hi, #ff9f4d);
+    outline-offset: 3px;
+  }
+}
+
+@media (max-width: 540px) {
+  .cookie-banner {
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    padding: 12px 14px;
+  }
+
+  .cookie-banner-button {
+    width: 100%;
+  }
+
+  .cookie-banner-text { flex-basis: 100%; }
+}

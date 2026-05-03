@@ -4,7 +4,6 @@ import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { JugadorSimple } from '@core/models/equipo/jugador.model';
 import { ApiError } from '@core/http/api-error.model';
-import { IconComponent } from '@shared/ui/icon/icon.component';
 import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';
 import { PageHeaderComponent } from '@shared/molecules/page-header/page-header.component';
 import { SearchBarComponent } from '@shared/molecules/search-bar/search-bar.component';
@@ -18,7 +17,6 @@ import { JugadorService } from '@features/players/services/jugador.service';
   selector: 'app-players-list-page',
   standalone: true,
   imports: [
-    IconComponent,
     SpinnerComponent,
     PageHeaderComponent,
     SearchBarComponent,

@@ -28,6 +28,7 @@ import { CompeticionService } from '@features/competitions/services/competicion.
 import { EventoService } from '@features/events/services/evento.service';
 import { EquipoService } from '@features/teams/services/equipo.service';
 import { InvitacionService } from '@features/invitations/services/invitacion.service';
+import { dedupeEquipos } from './utils/dedupe-equipos.util';
 
 type RolKey = 'admin' | 'manager' | 'arbitro' | 'jugador';
 
@@ -143,18 +144,15 @@ export class DashboardPage implements OnInit {
   /**
    * Unión de equipos del usuario: creador + manager + jugador. Deduplica por
    * id y etiqueta con el rol principal (prioridad creador > manager > jugador).
+   * Lógica extraída a {@link dedupeEquipos} para tests unitarios aislados.
    */
-  readonly misEquipos = computed<readonly EquipoConRol[]>(() => {
-    const map = new Map<number, EquipoConRol>();
-    for (const e of this._equiposCreados()) map.set(e.id, { ...e, rol: 'Creador' });
-    for (const e of this._equiposManager()) {
-      if (!map.has(e.id)) map.set(e.id, { ...e, rol: 'Manager' });
-    }
-    for (const e of this._equiposJugador()) {
-      if (!map.has(e.id)) map.set(e.id, { ...e, rol: 'Jugador' });
-    }
-    return [...map.values()];
-  });
+  readonly misEquipos = computed<readonly EquipoConRol[]>(() =>
+    dedupeEquipos(
+      this._equiposCreados(),
+      this._equiposManager(),
+      this._equiposJugador(),
+    ),
+  );
 
   readonly loadingEquipos = computed(
     () =>
