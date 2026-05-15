@@ -1,15 +1,17 @@
-# Compapption · Frontend Web
+# Compapptition · Frontend Web
 
 [![Angular](https://img.shields.io/badge/Angular-21.2-DD0031?logo=angular&logoColor=white)](https://angular.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.2-38B2AC?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![SCSS](https://img.shields.io/badge/SCSS-design%20system%20propio-CC6699?logo=sass&logoColor=white)](https://sass-lang.com/)
 [![Karma](https://img.shields.io/badge/Karma-219%2F219-brightgreen)](#tests)
 [![Playwright](https://img.shields.io/badge/Playwright-14%2F14-2EAD33?logo=playwright)](#tests)
 [![License](https://img.shields.io/badge/license-academic-blue)](#licencia)
 
-Frontend web de **Compapption**, app para la gestión integral de competiciones deportivas amateur. Single Page Application construida con **Angular 21.2 zoneless + signals + Tailwind 4**, integrada 1-a-1 con el backend Spring Boot del repo `compapptition/api`.
+> 🚀 **Pruébala en producción:** la _beta_ de Compapptition está desplegada y abierta a feedback en **[https://compapptition.com](https://compapptition.com)**. Puedes registrarte y crear una competición de prueba en menos de un minuto.
 
-> Repositorio de código del Trabajo de Fin de Grado del autor. La documentación pública de Compapption (memoria, manual técnico, decisiones, auditorías, sistema agéntico) vive en el repo separado **[`compapptition-docs`](https://github.com/MarioNaya/compapptition-docs)**.
+Frontend web de **Compapptition**, app para la gestión integral de competiciones deportivas amateur. Single Page Application construida con **Angular 21.2 zoneless + signals** y un sistema de diseño propio en **SCSS** con tokens (variables CSS), integrada 1-a-1 con el backend Spring Boot del repo `compapptition/api`.
+
+> Repositorio de código del Trabajo de Fin de Grado del autor. La documentación pública de Compapptition (memoria, manual técnico, decisiones, auditorías, sistema agéntico) vive en el repo separado **[`compapptition-docs`](https://github.com/MarioNaya/compapptition-docs)**.
 
 ---
 
@@ -53,7 +55,7 @@ Frontend web de **Compapption**, app para la gestión integral de competiciones 
 |---|---|
 | Framework | **Angular 21.2** (standalone, signals, zoneless) |
 | Lenguaje | **TypeScript 5.9** |
-| Estilos | **Tailwind CSS 4.2** + SCSS (sin DaisyUI desde S013) |
+| Estilos | **SCSS** modular con design system propio (tokens via variables CSS) |
 | Routing | Angular Router con `loadChildren` por feature |
 | Estado | **Signals** primario; RxJS solo para HTTP / SSE / streams |
 | HTTP | `HttpClient` con interceptors `auth` + `error` + `refresh` |
@@ -122,7 +124,7 @@ src/app/
 
 - **Node.js 20.19+ / 22.12+ / ≥24** (lo que pide Angular 21).
 - **npm 11+**.
-- **Backend `compapption/api` corriendo en `http://localhost:8080`** para desarrollo integrado (login, datos reales).
+- **Backend `compapptition/api` corriendo en `http://localhost:8080`** para desarrollo integrado (login, datos reales).
 - Para los tests E2E adicionalmente:
   - **Docker Desktop** (levanta MySQL + Mailpit via `docker-compose.test.yml` del backend).
   - El backend arrancado con perfil `test` (`mvn spring-boot:run -Dspring-boot.run.profiles=test`).
@@ -241,7 +243,7 @@ front-web/
 │   │   ├── app.routes.ts
 │   │   └── app.ts
 │   ├── environments/          # environment.ts + environment.prod.ts
-│   ├── styles.scss            # tokens + Tailwind imports
+│   ├── styles.scss            # entry global: tokens + animations + utilities
 │   └── test.ts                # entry Karma (excluido de tsconfig.app.json)
 ├── e2e/
 │   ├── fixtures/              # ApiHelpers, MailpitClient, UiHelpers, fixtures combinadas
@@ -280,15 +282,15 @@ Variables que **el bundle ya tiene cocidas** en build (no se pueden cambiar en r
 
 ## Contexto
 
-Compapption es el proyecto de **Trabajo de Fin de Grado** del autor (curso 2025-26). Tres repos:
+Compapptition es el proyecto de **Trabajo de Fin de Grado** del autor (curso 2025-26). Tres repos:
 
 | Repo | Contenido | Licencia |
 |---|---|---|
 | [`compapptition/api`](https://github.com/MarioNaya/api) | Backend Spring Boot 4.0.2 + Java 21 + MySQL | Académica |
-| **`compapptition/front-web`** (este) | Frontend web Angular 21.2 + Tailwind 4 | Académica |
-| [`compapptition-docs`](https://github.com/MarioNaya/compapptition-docs) | Documentación pública (memoria, manual técnico, decisiones, auditorías, sistema agéntico) | CC BY 4.0 (docs) + MIT (plantilla agéntica) |
+| **`compapptition/front-web`** (este) | Frontend web Angular 21.2 + _design system_ propio en SCSS | Académica |
+| [`compapptition-docs`](https://github.com/MarioNaya/compapptition-docs) | Documentación pública (memoria, manual técnico, decisiones D01-D45, auditorías, sistema agéntico) | CC BY 4.0 (docs) + MIT (plantilla agéntica) |
 
-Para el detalle completo (arquitectura, decisiones D01-D41, auditorías de seguridad, manual técnico, estado de tests por release) consulta el repo `compapptition-docs`.
+Para el detalle completo (arquitectura, decisiones D01-D45, auditorías de seguridad, manual técnico, estado de tests por release) consulta el repo `compapptition-docs`.
 
 ---
 

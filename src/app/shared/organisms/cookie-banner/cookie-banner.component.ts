@@ -20,7 +20,7 @@ import { RouterLink } from '@angular/router';
   styleUrl: './cookie-banner.component.scss',
 })
 export class CookieBannerComponent {
-  private static readonly STORAGE_KEY = 'compapption.cookie-notice-ack';
+  private static readonly STORAGE_KEY = 'compapptition.cookie-notice-ack';
   private static readonly STORAGE_VALUE = '1';
 
   /** True mientras el banner debe mostrarse. */

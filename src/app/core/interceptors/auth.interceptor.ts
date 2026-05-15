@@ -5,7 +5,7 @@ import { AuthService } from '@core/services/auth.service';
 
 /**
  * Inyecta la cabecera {@code Authorization: Bearer <token>} solo en peticiones
- * dirigidas al backend de Compapption ({@code environment.apiUrl}). Cualquier
+ * dirigidas al backend de Compapptition ({@code environment.apiUrl}). Cualquier
  * petición a un dominio externo (Cloudinary, mapas, fuentes, terceros) sale
  * sin token; cierra AF-6 y SF-6.
  */

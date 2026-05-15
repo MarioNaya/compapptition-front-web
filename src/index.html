@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <title>Compapption</title>
+  <title>Compapptition</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=3">
@@ -19,11 +19,11 @@
     Restricciones:
       - script-src 'self' (no eval, no inline) — Angular bundle local.
       - style-src 'self' 'unsafe-inline' + Google Fonts (necesario para
-        styles inline que genera Angular Material/Tailwind).
+        styles inline que inyecta Angular en runtime).
       - img-src 'self' + data: (avatares default) + Cloudinary (escudos/fotos).
       - font-src 'self' + Google Fonts.
       - connect-src 'self' + dominios reales del backend para XHR/SSE
-        (`https://api.compapption.com` en prod, `http://localhost:8080` en dev).
+        (`https://api.compapptition.com` en prod, `http://localhost:8080` en dev).
         Cierra SF-24 (la versión inicial con sólo `'self'` rompía todo el XHR
         cuando frontend y API se sirven desde dominios distintos).
       - frame-ancestors 'none' (no embedible en iframes externos).
@@ -35,8 +35,8 @@
     img-src 'self' data: https://res.cloudinary.com;
     font-src 'self' https://fonts.gstatic.com data:;
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-    script-src 'self';
-    connect-src 'self' https://api.compapption.com http://localhost:8080;
+    script-src 'self' 'unsafe-inline';
+    connect-src 'self' https://api.compapptition.com https://www.compapptition.com http://localhost:8080;
     frame-ancestors 'none';
     base-uri 'self';
     form-action 'self'
@@ -50,5 +50,33 @@
 </head>
 <body>
   <app-root></app-root>
+
+  <!--
+    Error banner móvil — captura errores JS no manejados y los muestra en pantalla.
+    Útil para diagnosticar fallos en navegadores móviles sin DevTools accesible.
+    Inocuo en producción: sólo se renderiza si hay error o promise rejection sin handler.
+    TODO: retirar tras estabilizar el deploy en móvil (post-defensa).
+  -->
+  <script>
+    (function () {
+      function showErr(label, color, msg) {
+        var d = document.createElement('div');
+        d.style.cssText = 'position:fixed;left:0;right:0;bottom:0;background:' + color +
+          ';color:#fff;padding:10px 14px;font:12px/1.4 ui-monospace,monospace;' +
+          'z-index:99999;white-space:pre-wrap;word-break:break-word;max-height:50vh;overflow:auto;' +
+          'box-shadow:0 -2px 8px rgba(0,0,0,.4);border-top:2px solid #fff;';
+        d.textContent = '[' + label + '] ' + msg;
+        document.body.appendChild(d);
+      }
+      window.addEventListener('error', function (e) {
+        var loc = (e.filename || '?').split('/').pop() + ':' + (e.lineno || '?');
+        showErr('JS ERROR @ ' + loc, '#c62828', e.message || 'unknown error');
+      });
+      window.addEventListener('unhandledrejection', function (e) {
+        var msg = e.reason && (e.reason.stack || e.reason.message || String(e.reason)) || 'unknown rejection';
+        showErr('PROMISE REJ', '#ef6c00', String(msg).slice(0, 500));
+      });
+    })();
+  </script>
 </body>
 </html>

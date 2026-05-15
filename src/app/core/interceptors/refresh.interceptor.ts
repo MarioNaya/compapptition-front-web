@@ -29,7 +29,7 @@ const accessTokenSubject = new BehaviorSubject<string | null>(null);
 
 /**
  * Excluimos los propios endpoints de auth (login, refresh, logout, etc.) y
- * cualquier petición fuera del backend de Compapption: si /auth/login
+ * cualquier petición fuera del backend de Compapptition: si /auth/login
  * devuelve 401 es credenciales inválidas, no caducidad de sesión.
  */
 function shouldHandle(req: HttpRequest<unknown>): boolean {

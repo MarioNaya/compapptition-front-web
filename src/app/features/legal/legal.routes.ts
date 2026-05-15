@@ -16,18 +16,18 @@ export const LEGAL_ROUTES: Routes = [
     path: 'privacidad',
     loadComponent: () =>
       import('./privacidad/privacidad.page').then((m) => m.PrivacidadPage),
-    title: 'Política de privacidad · Compapption',
+    title: 'Política de privacidad · Compapptition',
   },
   {
     path: 'aviso-legal',
     loadComponent: () =>
       import('./aviso-legal/aviso-legal.page').then((m) => m.AvisoLegalPage),
-    title: 'Aviso legal · Compapption',
+    title: 'Aviso legal · Compapptition',
   },
   {
     path: 'terminos',
     loadComponent: () =>
       import('./terminos/terminos.page').then((m) => m.TerminosPage),
-    title: 'Términos de uso · Compapption',
+    title: 'Términos de uso · Compapptition',
   },
 ];

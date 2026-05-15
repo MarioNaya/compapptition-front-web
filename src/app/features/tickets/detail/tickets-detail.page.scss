@@ -117,6 +117,26 @@
   gap: 10px;
 }
 
+/**
+ * Bloque "Zona peligrosa" dentro de admin-actions: separado visualmente con
+ * borde superior y tono rojizo apagado para que el botón Eliminar no se
+ * confunda con los botones de cambio de estado.
+ */
+.danger-zone {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(220, 80, 60, 0.3);
+}
+
+.danger-title {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgb(220, 110, 90);
+}
+
 .user-hint p {
   margin: 0;
   color: var(--text-sec);

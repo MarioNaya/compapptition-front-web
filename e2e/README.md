@@ -9,7 +9,7 @@ verifica un resultado de negocio observable desde la UI (no estados internos).
 
 - **Playwright** (`@playwright/test`).
 - **Mailpit** vía Docker (SMTP local + API HTTP para leer emails).
-- **MySQL 8** vía Docker (BD `compapption_e2e`, aislada de dev).
+- **MySQL 8** vía Docker (BD `compapptition_e2e`, aislada de dev).
 - **Backend Spring Boot** corriendo con `--spring.profiles.active=test`.
 
 ## Pre-requisitos
@@ -87,7 +87,7 @@ e2e/
 - Frontend: http://localhost:4200
 - Backend API: http://localhost:8080
 - Mailpit UI (lectura manual de emails): http://localhost:8025
-- MySQL test: localhost:3307 (user `e2e_user` / pass `e2e_pass` / db `compapption_e2e`)
+- MySQL test: localhost:3307 (user `e2e_user` / pass `e2e_pass` / db `compapptition_e2e`)
 
 ## Filosofía
 

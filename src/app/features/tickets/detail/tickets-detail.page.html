@@ -50,6 +50,17 @@
           </app-button>
         }
       </div>
+      <div class="danger-zone">
+        <h4 class="danger-title">Zona peligrosa</h4>
+        <p class="admin-hint">Eliminar el ticket lo borra definitivamente. Úsalo sólo para spam o duplicados.</p>
+        <app-button
+          variant="ghost"
+          [disabled]="mutating()"
+          (clicked)="eliminar()"
+        >
+          Eliminar ticket
+        </app-button>
+      </div>
     </section>
   } @else {
     <section class="user-hint">

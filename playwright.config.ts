@@ -1,10 +1,10 @@
 import { defineConfig, devices } from '@playwright/test';
 
 /**
- * Playwright config for Compapption end-to-end tests.
+ * Playwright config for Compapptition end-to-end tests.
  *
  * Asume que el backend está corriendo con perfil `test` apuntando a la BD
- * `compapption_e2e` (ver `docker-compose.test.yml`) y que **Mailpit** captura
+ * `compapptition_e2e` (ver `docker-compose.test.yml`) y que **Mailpit** captura
  * todos los emails salientes en `http://localhost:8025`. Los tests E2E NO
  * mockean HTTP del backend ni saltan el flujo real de autenticación: hacen
  * login real, leen emails reales de Mailpit, y verifican resultados de

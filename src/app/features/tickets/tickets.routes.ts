@@ -15,18 +15,18 @@ export const TICKETS_ROUTES: Routes = [
     pathMatch: 'full',
     loadComponent: () =>
       import('./list/tickets-list.page').then((m) => m.TicketsListPage),
-    title: 'Tickets de soporte · Compapption',
+    title: 'Tickets de soporte · Compapptition',
   },
   {
     path: 'nuevo',
     loadComponent: () =>
       import('./new/tickets-new.page').then((m) => m.TicketsNewPage),
-    title: 'Nuevo ticket · Compapption',
+    title: 'Nuevo ticket · Compapptition',
   },
   {
     path: ':id',
     loadComponent: () =>
       import('./detail/tickets-detail.page').then((m) => m.TicketsDetailPage),
-    title: 'Detalle de ticket · Compapption',
+    title: 'Detalle de ticket · Compapptition',
   },
 ];

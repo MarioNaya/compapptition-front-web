@@ -1,9 +1,6 @@
 @use './scss/tokens';
 @use './scss/animations';
 
-@import 'tailwindcss';
-
-// Nuestras utilidades DESPUÉS de Tailwind para ganar en especificidad/orden
 @import './scss/utilities';
 
 * {

@@ -1,0 +1,133 @@
+# =============================================================================
+# .htaccess — Configuración Apache para SPA Angular en hosting compartido Hostinger.
+# =============================================================================
+#
+# Este fichero vive en public/ del repo y se copia automáticamente al bundle
+# durante `ng build`. Tras subir el contenido de dist/compapptition-front-web/
+# browser/ a public_html/ del Hostinger, Apache lo aplica.
+#
+# Cubre:
+#   1. Routing SPA: cualquier ruta que no sea fichero/directorio físico cae a
+#      index.html, donde Angular Router toma control.
+#   2. Cache: assets hasheados (chunk-XXXX.js, *.css con hash) cacheados un año;
+#      index.html y manual-usuario.html siempre revalidados.
+#   3. Compresión: gzip activado para texto (Hostinger suele tenerlo por
+#      defecto, pero por si acaso).
+#   4. Seguridad: HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy.
+#      CSP NO se define aquí para no duplicar el meta CSP del index.html
+#      (mantenido en una sola fuente de verdad).
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# 1. Routing SPA
+# -----------------------------------------------------------------------------
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # Si el request es un archivo o directorio existente, servirlo tal cual.
+    # Esto cubre: chunks JS/CSS, fonts, imágenes, manifest, robots, favicon
+    # y especialmente /manual-usuario.html (asset estático, NO routing Angular).
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Si la petición pinta a asset (.js, .css, .map, fuentes, imágenes) y aquí
+    # ya sabemos que el archivo NO existe físicamente, devolver 404 explícito
+    # en vez de caer al SPA fallback. Esto evita que un asset faltante se
+    # sirva como index.html y quede cacheado inmutable durante 1 año en el
+    # navegador del usuario. Cierra el riesgo "missing chunk poisoning cache".
+    RewriteRule \.(js|mjs|css|map|woff2?|ttf|otf|eot|svg|png|jpg|jpeg|gif|webp|ico|json|wasm)$ - [R=404,L]
+
+    # Para todo lo demás (rutas Angular como /app/dashboard, /auth/login,
+    # /legal/privacidad, etc.), servir index.html. Angular Router hace el resto.
+    RewriteRule ^ index.html [L]
+</IfModule>
+
+# -----------------------------------------------------------------------------
+# 2. Cache headers
+# -----------------------------------------------------------------------------
+<IfModule mod_expires.c>
+    ExpiresActive On
+
+    # Assets con hash en el nombre: cache muy largo (1 año, immutable). Cuando
+    # cambia el contenido, el hash cambia y el navegador descarga la versión
+    # nueva sin invalidación manual.
+    ExpiresByType text/css                   "access plus 1 year"
+    ExpiresByType application/javascript     "access plus 1 year"
+    ExpiresByType application/x-javascript   "access plus 1 year"
+    ExpiresByType image/png                  "access plus 1 year"
+    ExpiresByType image/jpeg                 "access plus 1 year"
+    ExpiresByType image/svg+xml              "access plus 1 year"
+    ExpiresByType image/webp                 "access plus 1 year"
+    ExpiresByType image/x-icon               "access plus 1 year"
+    ExpiresByType font/woff                  "access plus 1 year"
+    ExpiresByType font/woff2                 "access plus 1 year"
+
+    # HTML: siempre revalidar (es la puerta de entrada al bundle nuevo).
+    ExpiresByType text/html                  "access plus 0 seconds"
+</IfModule>
+
+<IfModule mod_headers.c>
+    # Reforzar inmutabilidad de los chunks hasheados que Angular genera con
+    # outputHashing=all. Si por algún motivo Apache no usa Expires, este
+    # Cache-Control igualmente lo cubre.
+    <FilesMatch "^chunk-[A-Z0-9]+\.(js|css)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+
+    # index.html y manual-usuario.html: nunca cachear agresivamente.
+    <FilesMatch "\.html$">
+        Header set Cache-Control "no-cache, must-revalidate, max-age=0"
+    </FilesMatch>
+</IfModule>
+
+# -----------------------------------------------------------------------------
+# 3. Compresión gzip
+# -----------------------------------------------------------------------------
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css
+    AddOutputFilterByType DEFLATE application/javascript application/x-javascript
+    AddOutputFilterByType DEFLATE application/json application/xml
+    AddOutputFilterByType DEFLATE image/svg+xml font/ttf font/otf
+</IfModule>
+
+# -----------------------------------------------------------------------------
+# 4. Headers de seguridad
+# -----------------------------------------------------------------------------
+<IfModule mod_headers.c>
+    # HSTS: fuerza HTTPS durante 1 año en todos los subdominios. Activar SOLO
+    # cuando SSL esté operativo y verificado en compapptition.com — añadirlo antes
+    # bloquea el acceso por HTTP si el SSL no está aún propagado.
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+
+    # Anti clickjacking: la app no debe poder embeberse en iframes.
+    Header always set X-Frame-Options "DENY"
+
+    # Anti MIME sniffing: el navegador respeta el Content-Type declarado.
+    Header always set X-Content-Type-Options "nosniff"
+
+    # Referrer policy: no filtrar URLs internas a sitios externos al hacer click.
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+    # Permissions-Policy: deshabilitar APIs que la app no usa (cierra superficie).
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=()"
+</IfModule>
+
+# -----------------------------------------------------------------------------
+# 5. MIME types adicionales (por si el hosting no los tiene configurados)
+# -----------------------------------------------------------------------------
+<IfModule mod_mime.c>
+    AddType application/javascript        .js .mjs
+    AddType application/json              .json
+    AddType image/svg+xml                 .svg
+    AddType font/woff                     .woff
+    AddType font/woff2                    .woff2
+</IfModule>
+
+# -----------------------------------------------------------------------------
+# 6. Bloquear acceso a ficheros de configuración por error
+# -----------------------------------------------------------------------------
+<FilesMatch "^(\.env|\.env\..*|.*\.bak|.*\.swp|\.gitignore|\.htaccess)$">
+    Require all denied
+</FilesMatch>
