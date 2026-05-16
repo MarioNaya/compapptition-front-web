@@ -5,7 +5,7 @@ import { DatePipe } from '@angular/common';
 import { interval, startWith, switchMap, Subject, takeUntil } from 'rxjs';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { Mensaje } from '@core/models/mensaje';
-import { ApiError } from '@core/http/api-error.model';
+import type { ApiError } from '@core/http/api-error.model';
 import { AuthService } from '@core/services/auth.service';
 import { ButtonComponent } from '@shared/ui/button/button.component';
 import { IconComponent } from '@shared/ui/icon/icon.component';

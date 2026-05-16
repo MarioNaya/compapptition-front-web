@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } 
 import { Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { AuthService } from '@core/services/auth.service';
-import { ApiError } from '@core/http/api-error.model';
+import type { ApiError } from '@core/http/api-error.model';
 import { ButtonComponent } from '@shared/ui/button/button.component';
 import { IconComponent } from '@shared/ui/icon/icon.component';
 import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';

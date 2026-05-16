@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ApiError } from '@core/http/api-error.model';
+import type { ApiError } from '@core/http/api-error.model';
 import { ButtonComponent } from '@shared/ui/button/button.component';
 import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';
 import { PageHeaderComponent } from '@shared/molecules/page-header/page-header.component';

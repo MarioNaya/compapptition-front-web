@@ -3,7 +3,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { NotificationService } from './notification.service';
 import { AuthService } from './auth.service';
-import { Notificacion, TipoNotificacion } from '@core/models/notificacion';
+import { type Notificacion, TipoNotificacion } from '@core/models/notificacion';
 import { PageResponse } from '@core/models/comun/page.model';
 import { environment } from '@env/environment';
 

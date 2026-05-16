@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } 
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Deporte } from '@core/models/deporte/deporte.model';
 import { TipoEstadistica, TipoValor } from '@core/models/estadistica/estadistica.model';
-import { ApiError } from '@core/http/api-error.model';
+import type { ApiError } from '@core/http/api-error.model';
 import { ButtonComponent } from '@shared/ui/button/button.component';
 import { IconComponent } from '@shared/ui/icon/icon.component';
 import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } 
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
-import { ApiError } from '@core/http/api-error.model';
+import type { ApiError } from '@core/http/api-error.model';
 import {
   ESTADOS_TICKET,
   ESTADO_TICKET_LABEL,

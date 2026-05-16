@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, inject, input, signal } fro
 import { Clasificacion } from '@core/models/competicion/clasificacion.model';
 import { DataTableComponent } from '@shared/components/data-table/data-table.component';
 import { ColumnDef } from '@shared/components/data-table/data-table.types';
-import { ApiError } from '@core/http/api-error.model';
+import type { ApiError } from '@core/http/api-error.model';
 import { ClasificacionService } from '@features/competitions/services/clasificacion.service';
 
 @Component({

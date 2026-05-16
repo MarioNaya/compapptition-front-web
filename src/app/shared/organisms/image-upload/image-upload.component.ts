@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
 import { ImageUploadService, UploadFolder } from '@core/services/image-upload.service';
-import { ApiError } from '@core/http/api-error.model';
+import type { ApiError } from '@core/http/api-error.model';
 import { IconComponent } from '@shared/ui/icon/icon.component';
 import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';
 import { ToastService } from '@shared/services/toast.service';

@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '@env/environment';
 import { PageResponse } from '@core/models/comun/page.model';
-import { Notificacion } from '@core/models/notificacion';
+import type { Notificacion } from '@core/models/notificacion';
 import { AuthService } from './auth.service';
 
 @Injectable({ providedIn: 'root' })

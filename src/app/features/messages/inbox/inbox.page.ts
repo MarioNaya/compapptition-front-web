@@ -3,7 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { interval, startWith, switchMap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ApiError } from '@core/http/api-error.model';
+import type { ApiError } from '@core/http/api-error.model';
 import { AuthService } from '@core/services/auth.service';
 import { PageHeaderComponent } from '@shared/molecules/page-header/page-header.component';
 import { EmptyStateComponent } from '@shared/molecules/empty-state/empty-state.component';

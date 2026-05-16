@@ -1,4 +1,4 @@
-import { Notificacion, TipoNotificacion } from '@core/models/notificacion';
+import { type Notificacion, TipoNotificacion } from '@core/models/notificacion';
 
 /**
  * Iconos disponibles para los distintos tipos de notificación.

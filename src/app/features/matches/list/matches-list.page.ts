@@ -4,7 +4,7 @@ import { DatePipe, UpperCasePipe } from '@angular/common';
 import { forkJoin, of, switchMap } from 'rxjs';
 import { AuthService } from '@core/services/auth.service';
 import { Evento, EstadoEvento } from '@core/models/evento/evento.model';
-import { ApiError } from '@core/http/api-error.model';
+import type { ApiError } from '@core/http/api-error.model';
 import { IconComponent } from '@shared/ui/icon/icon.component';
 import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';
 import { PageHeaderComponent } from '@shared/molecules/page-header/page-header.component';

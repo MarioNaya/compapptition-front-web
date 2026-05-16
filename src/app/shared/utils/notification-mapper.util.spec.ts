@@ -5,7 +5,7 @@ import {
   notificationLink,
   toNotificationView,
 } from './notification-mapper.util';
-import { Notificacion, TipoNotificacion } from '@core/models/notificacion';
+import { type Notificacion, TipoNotificacion } from '@core/models/notificacion';
 
 function build(tipo: TipoNotificacion, payload: Record<string, unknown> = {}): Notificacion {
   return {

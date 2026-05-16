@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormatoCompeticion } from '@core/models/competicion/competicion.model';
 import { Deporte } from '@core/models/deporte/deporte.model';
-import { ApiError } from '@core/http/api-error.model';
+import type { ApiError } from '@core/http/api-error.model';
 import { ButtonComponent } from '@shared/ui/button/button.component';
 import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';
 import { PageHeaderComponent } from '@shared/molecules/page-header/page-header.component';

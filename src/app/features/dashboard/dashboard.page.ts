@@ -13,7 +13,7 @@ import { Equipo } from '@core/models/equipo/equipo.model';
 import { EquipoConRol } from '@core/models/equipo/equipo-con-rol.model';
 import { Evento, EstadoEvento } from '@core/models/evento/evento.model';
 import { Invitacion, EstadoInvitacion } from '@core/models/invitacion/invitacion.model';
-import { ApiError } from '@core/http/api-error.model';
+import type { ApiError } from '@core/http/api-error.model';
 import { ButtonComponent } from '@shared/ui/button/button.component';
 import { IconComponent } from '@shared/ui/icon/icon.component';
 import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';

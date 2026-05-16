@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { AuthService } from '@core/services/auth.service';
 import { Competicion, FormatoCompeticion } from '@core/models/competicion/competicion.model';
-import { ApiError } from '@core/http/api-error.model';
+import type { ApiError } from '@core/http/api-error.model';
 import { ButtonComponent } from '@shared/ui/button/button.component';
 import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';
 import { PageHeaderComponent } from '@shared/molecules/page-header/page-header.component';

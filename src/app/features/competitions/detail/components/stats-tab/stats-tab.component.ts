@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, effec
 import { switchMap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EstadisticaAcumulada, TipoEstadistica } from '@core/models/estadistica/estadistica.model';
-import { ApiError } from '@core/http/api-error.model';
+import type { ApiError } from '@core/http/api-error.model';
 import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';
 import { EmptyStateComponent } from '@shared/molecules/empty-state/empty-state.component';
 import { DataTableComponent } from '@shared/components/data-table/data-table.component';

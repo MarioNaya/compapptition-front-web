@@ -8,7 +8,7 @@ import { Evento, EstadoEvento } from '@core/models/evento/evento.model';
 import { Competicion } from '@core/models/competicion/competicion.model';
 import { EstadisticaJugador, TipoEstadistica } from '@core/models/estadistica/estadistica.model';
 import { Jugador } from '@core/models/equipo/jugador.model';
-import { ApiError } from '@core/http/api-error.model';
+import type { ApiError } from '@core/http/api-error.model';
 import { AuthService } from '@core/services/auth.service';
 import { DeporteService } from '@features/admin/sports/services/deporte.service';
 import { EquipoService } from '@features/teams/services/equipo.service';

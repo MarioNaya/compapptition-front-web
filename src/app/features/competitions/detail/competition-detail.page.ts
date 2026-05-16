@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from '@core/services/auth.service';
 import { EstadoCompeticion, FormatoCompeticion } from '@core/models/competicion/competicion.model';
-import { ApiError } from '@core/http/api-error.model';
+import type { ApiError } from '@core/http/api-error.model';
 import { RolCompeticion } from '@core/models/rol';
 import { InvitacionService } from '@features/invitations/services/invitacion.service';
 import { ButtonComponent } from '@shared/ui/button/button.component';

@@ -1,16 +1,16 @@
+import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { DatePipe } from '@angular/common';
-import { Notificacion } from '@core/models/notificacion';
-import { ApiError } from '@core/http/api-error.model';
+import type { ApiError } from '@core/http/api-error.model';
+import type { Notificacion } from '@core/models/notificacion';
 import { NotificationService } from '@core/services/notification.service';
+import { EmptyStateComponent } from '@shared/molecules/empty-state/empty-state.component';
+import { PageHeaderComponent } from '@shared/molecules/page-header/page-header.component';
+import { ConfirmDialogService } from '@shared/services/confirm-dialog.service';
+import { ToastService } from '@shared/services/toast.service';
 import { ButtonComponent } from '@shared/ui/button/button.component';
 import { IconComponent } from '@shared/ui/icon/icon.component';
 import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';
-import { PageHeaderComponent } from '@shared/molecules/page-header/page-header.component';
-import { EmptyStateComponent } from '@shared/molecules/empty-state/empty-state.component';
-import { ToastService } from '@shared/services/toast.service';
-import { ConfirmDialogService } from '@shared/services/confirm-dialog.service';
 import {
   NOTIFICATION_ICONS,
   NOTIFICATION_TITLES,

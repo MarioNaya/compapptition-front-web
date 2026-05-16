@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { Subject, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from '@core/services/auth.service';
-import { ApiError } from '@core/http/api-error.model';
+import type { ApiError } from '@core/http/api-error.model';
 import { Equipo } from '@core/models/equipo/equipo.model';
 import { EstadoCompeticion } from '@core/models/competicion/competicion.model';
 import { RolCompeticion } from '@core/models/rol';

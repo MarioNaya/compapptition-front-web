@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnChanges, SimpleChanges, computed,
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { Evento } from '@core/models/evento/evento.model';
-import { ApiError } from '@core/http/api-error.model';
+import type { ApiError } from '@core/http/api-error.model';
 import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';
 import { EmptyStateComponent } from '@shared/molecules/empty-state/empty-state.component';
 import { PlayoffBracketComponent } from '@shared/organisms/playoff-bracket/playoff-bracket.component';

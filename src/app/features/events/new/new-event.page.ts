@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Equipo } from '@core/models/equipo/equipo.model';
-import { ApiError } from '@core/http/api-error.model';
+import type { ApiError } from '@core/http/api-error.model';
 import { ButtonComponent } from '@shared/ui/button/button.component';
 import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';
 import { PageHeaderComponent } from '@shared/molecules/page-header/page-header.component';

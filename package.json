@@ -15,6 +15,7 @@
     "compodoc:serve": "compodoc -p tsconfig.compodoc.json -s -d documentation"
   },
   "private": true,
+  "sideEffects": false,
   "packageManager": "npm@11.9.0",
   "dependencies": {
     "@angular/animations": "^21.2.9",

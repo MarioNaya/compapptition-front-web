@@ -4,7 +4,7 @@ import { Evento } from '@core/models/evento/evento.model';
 import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';
 import { EmptyStateComponent } from '@shared/molecules/empty-state/empty-state.component';
 import { MatchRowComponent } from '@shared/molecules/match-row/match-row.component';
-import { ApiError } from '@core/http/api-error.model';
+import type { ApiError } from '@core/http/api-error.model';
 import { EventoService } from '@features/events/services/evento.service';
 
 @Component({

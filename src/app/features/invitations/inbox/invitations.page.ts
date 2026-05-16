@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } 
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
 import { Invitacion } from '@core/models/invitacion/invitacion.model';
-import { ApiError } from '@core/http/api-error.model';
+import type { ApiError } from '@core/http/api-error.model';
 import { TabsComponent, TabOption } from '@shared/ui/tabs/tabs.component';
 import { PageHeaderComponent } from '@shared/molecules/page-header/page-header.component';
 import { EmptyStateComponent } from '@shared/molecules/empty-state/empty-state.component';

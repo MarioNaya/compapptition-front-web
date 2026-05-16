@@ -8,7 +8,7 @@ import {
   MisCompeticionesPorRol,
 } from '@core/models/competicion/competicion.model';
 import { EMPTY_POR_ROL } from '@core/models/competicion/empty-por-rol.const';
-import { ApiError } from '@core/http/api-error.model';
+import type { ApiError } from '@core/http/api-error.model';
 import { AuthService } from '@core/services/auth.service';
 import { ToastService } from '@shared/services/toast.service';
 import { ButtonComponent } from '@shared/ui/button/button.component';

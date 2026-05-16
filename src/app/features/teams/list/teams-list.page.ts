@@ -4,7 +4,7 @@ import { debounceTime, distinctUntilChanged, forkJoin, Subject } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Equipo } from '@core/models/equipo/equipo.model';
 import { EquipoConRol } from '@core/models/equipo/equipo-con-rol.model';
-import { ApiError } from '@core/http/api-error.model';
+import type { ApiError } from '@core/http/api-error.model';
 import { AuthService } from '@core/services/auth.service';
 import { ButtonComponent } from '@shared/ui/button/button.component';
 import { IconComponent } from '@shared/ui/icon/icon.component';

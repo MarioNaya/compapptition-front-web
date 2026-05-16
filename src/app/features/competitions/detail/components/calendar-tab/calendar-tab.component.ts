@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnChanges, SimpleChanges, computed,
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { Evento } from '@core/models/evento/evento.model';
-import { ApiError } from '@core/http/api-error.model';
+import type { ApiError } from '@core/http/api-error.model';
 import { IconComponent } from '@shared/ui/icon/icon.component';
 import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';
 import { ToastService } from '@shared/services/toast.service';
