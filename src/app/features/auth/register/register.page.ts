@@ -7,6 +7,7 @@ import { ButtonComponent } from '@shared/ui/button/button.component';
 import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';
 import { FormFieldComponent } from '@shared/molecules/form-field/form-field.component';
 import { ToastService } from '@shared/services/toast.service';
+import { passwordRequirementsValidator } from '@shared/validators/password-requirements.validator';
 
 @Component({
   selector: 'app-register-page',
@@ -33,7 +34,7 @@ export class RegisterPage {
   readonly form = this.fb.nonNullable.group({
     username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(30)]],
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(8)]],
+    password: ['', [Validators.required, passwordRequirementsValidator]],
     nombre: [''],
     apellidos: [''],
     // Aceptación legal obligatoria (RGPD/LSSI). Sin marcarla no se envía el

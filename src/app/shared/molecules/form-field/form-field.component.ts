@@ -1,5 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, effect, input, signal } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
+import {
+  PASSWORD_REQUIREMENT_LABELS,
+  type PasswordRequirementsError,
+} from '@shared/validators/password-requirements.validator';
 
 /**
  * Reactive-forms-aware wrapper. Renders label, projects the input, and shows
@@ -82,6 +86,11 @@ export class FormFieldComponent {
         return `Máximo ${(meta as { requiredLength?: number })?.requiredLength ?? ''} caracteres`;
       case 'pattern':
         return 'Formato no válido';
+      case 'passwordRequirements': {
+        const missing = (meta as PasswordRequirementsError)?.missing ?? [];
+        const parts = missing.map((m) => PASSWORD_REQUIREMENT_LABELS[m]);
+        return parts.length ? `La contraseña debe incluir ${parts.join(', ')}` : 'Contraseña inválida';
+      }
       default:
         return 'Valor inválido';
     }

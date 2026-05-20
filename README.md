@@ -3,7 +3,7 @@
 [![Angular](https://img.shields.io/badge/Angular-21.2-DD0031?logo=angular&logoColor=white)](https://angular.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![SCSS](https://img.shields.io/badge/SCSS-design%20system%20propio-CC6699?logo=sass&logoColor=white)](https://sass-lang.com/)
-[![Karma](https://img.shields.io/badge/Karma-219%2F219-brightgreen)](#tests)
+[![Karma](https://img.shields.io/badge/Karma-226%2F226-brightgreen)](#tests)
 [![Playwright](https://img.shields.io/badge/Playwright-14%2F14-2EAD33?logo=playwright)](#tests)
 [![License](https://img.shields.io/badge/license-academic-blue)](#licencia)
 
@@ -175,7 +175,7 @@ npm run watch
 
 ## Tests
 
-### Unit (Karma + Jasmine) — 219 / 219
+### Unit (Karma + Jasmine) — 226 / 226
 
 Cobertura unit con threshold bloqueante (`karma.conf.js`):
 
@@ -191,7 +191,7 @@ npm test                # watch mode (desarrollo)
 npm run test:ci         # single-run + ChromeHeadlessCI + cobertura
 ```
 
-Cubre **45 specs** sobre guards, interceptors, services (core + por feature), componentes shared (átomos/moléculas/organismos), directives y utils. Los componentes-página (`*.page.ts`) no están testeados unitariamente porque su valor está en E2E real.
+Cubre **46 specs** sobre guards, interceptors, services (core + por feature), validators compartidos, componentes shared (átomos/moléculas/organismos), directives y utils. Los componentes-página (`*.page.ts`) no están testeados unitariamente porque su valor está en E2E real.
 
 ### E2E (Playwright + Mailpit + BD test) — 14 / 14 ejecutables (3 skipped)
 
@@ -288,9 +288,9 @@ Compapptition es el proyecto de **Trabajo de Fin de Grado** del autor (curso 202
 |---|---|---|
 | [`compapptition/api`](https://github.com/MarioNaya/api) | Backend Spring Boot 4.0.2 + Java 21 + MySQL | Académica |
 | **`compapptition/front-web`** (este) | Frontend web Angular 21.2 + _design system_ propio en SCSS | Académica |
-| [`compapptition-docs`](https://github.com/MarioNaya/compapptition-docs) | Documentación pública (memoria, manual técnico, decisiones D01-D45, auditorías, sistema agéntico) | CC BY 4.0 (docs) + MIT (plantilla agéntica) |
+| [`compapptition-docs`](https://github.com/MarioNaya/compapptition-docs) | Documentación pública (memoria, manual técnico, decisiones D01-D50, auditorías, sistema agéntico) | CC BY 4.0 (docs) + MIT (plantilla agéntica) |
 
-Para el detalle completo (arquitectura, decisiones D01-D45, auditorías de seguridad, manual técnico, estado de tests por release) consulta el repo `compapptition-docs`.
+Para el detalle completo (arquitectura, decisiones D01-D50, auditorías de seguridad, manual técnico, estado de tests por release) consulta el repo `compapptition-docs`.
 
 ---
 
@@ -300,4 +300,4 @@ Proyecto académico. Uso personal, educativo y de evaluación permitido. Cualqui
 
 ---
 
-_Última actualización: mayo 2026 · v0.0.1 · Angular 21.2 · 219 unit + 14 E2E_
+_Última actualización: mayo 2026 · v0.0.1 · Angular 21.2 · 226 unit + 14 E2E_

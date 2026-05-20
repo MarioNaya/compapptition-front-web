@@ -7,6 +7,7 @@ import { ButtonComponent } from '@shared/ui/button/button.component';
 import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';
 import { FormFieldComponent } from '@shared/molecules/form-field/form-field.component';
 import { ToastService } from '@shared/services/toast.service';
+import { passwordRequirementsValidator } from '@shared/validators/password-requirements.validator';
 
 @Component({
   selector: 'app-reset-password-page',
@@ -49,7 +50,7 @@ export class ResetPasswordPage implements OnInit {
 
   readonly form = this.fb.nonNullable.group(
     {
-      password: ['', [Validators.required, Validators.minLength(8)]],
+      password: ['', [Validators.required, passwordRequirementsValidator]],
       confirmPassword: ['', [Validators.required]],
     },
     { validators: [this.matchValidator] },

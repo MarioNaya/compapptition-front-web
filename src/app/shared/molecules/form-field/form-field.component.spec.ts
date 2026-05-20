@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { FormControl, Validators } from '@angular/forms';
 import { FormFieldComponent } from './form-field.component';
+import { passwordRequirementsValidator } from '@shared/validators/password-requirements.validator';
 
 describe('FormFieldComponent', () => {
   beforeEach(() => {
@@ -73,6 +74,19 @@ describe('FormFieldComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.componentInstance.errorMessage()).toBe('Email no válido');
+  });
+
+  it('mensaje por defecto para passwordRequirements enumera los requisitos que faltan', () => {
+    const c = new FormControl('abc', [passwordRequirementsValidator]);
+    const fixture = setup(c);
+
+    c.markAsTouched();
+    c.updateValueAndValidity();
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.errorMessage()).toBe(
+      'La contraseña debe incluir 8 caracteres, una mayúscula, un dígito',
+    );
   });
 
   it('descriptionId único por instancia', () => {

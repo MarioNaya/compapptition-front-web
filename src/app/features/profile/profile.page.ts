@@ -12,6 +12,7 @@ import { FormFieldComponent } from '@shared/molecules/form-field/form-field.comp
 import { ToastService } from '@shared/services/toast.service';
 import { ConfirmDialogService } from '@shared/services/confirm-dialog.service';
 import { UsuarioService } from '@features/profile/services/usuario.service';
+import { passwordRequirementsValidator } from '@shared/validators/password-requirements.validator';
 
 @Component({
   selector: 'app-profile-page',
@@ -57,7 +58,7 @@ export class ProfilePage implements OnInit {
   readonly passwordForm = this.fb.nonNullable.group(
     {
       passwordActual: ['', [Validators.required]],
-      passwordNuevo: ['', [Validators.required, Validators.minLength(8)]],
+      passwordNuevo: ['', [Validators.required, passwordRequirementsValidator]],
       confirm: ['', [Validators.required]],
     },
     { validators: [this.matchValidator] },
