@@ -8,6 +8,7 @@ import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';
 import { FormFieldComponent } from '@shared/molecules/form-field/form-field.component';
 import { ToastService } from '@shared/services/toast.service';
 import { passwordRequirementsValidator } from '@shared/validators/password-requirements.validator';
+import { applyServerErrors } from '@shared/forms/apply-server-errors';
 
 @Component({
   selector: 'app-register-page',
@@ -32,11 +33,11 @@ export class RegisterPage {
   readonly loading = signal(false);
 
   readonly form = this.fb.nonNullable.group({
-    username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(30)]],
-    email: ['', [Validators.required, Validators.email]],
+    username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
+    email: ['', [Validators.required, Validators.email, Validators.maxLength(100)]],
     password: ['', [Validators.required, passwordRequirementsValidator]],
-    nombre: [''],
-    apellidos: [''],
+    nombre: ['', [Validators.maxLength(100)]],
+    apellidos: ['', [Validators.maxLength(100)]],
     // Aceptación legal obligatoria (RGPD/LSSI). Sin marcarla no se envía el
     // formulario. La verificación adicional en submit() es defensa en
     // profundidad: el botón ya queda deshabilitado mientras esté sin marcar.
@@ -78,7 +79,10 @@ export class RegisterPage {
       },
       error: (err: ApiError) => {
         this.loading.set(false);
-        this.toast.error(err.message || 'No se pudo completar el registro');
+        const mappedToField = applyServerErrors(this.form, err);
+        if (!mappedToField) {
+          this.toast.error(err.message || 'No se pudo completar el registro');
+        }
       },
     });
   }

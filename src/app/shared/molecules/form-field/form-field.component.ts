@@ -65,11 +65,18 @@ export class FormFieldComponent {
     return c.touched;
   });
 
+  // Errores del servidor (server, alreadyTaken) tienen prioridad explícita:
+  // si el backend rechazó con un mensaje concreto, ese es el que el usuario
+  // debe ver, no el sintáctico del cliente.
+  private static readonly PRIORITY_KEYS = ['server', 'alreadyTaken'];
+
   readonly errorMessage = computed(() => {
     this.tick();
     const c = this.control();
     if (!c || !c.errors) return null;
-    const first = Object.keys(c.errors)[0];
+    const keys = Object.keys(c.errors);
+    const first =
+      FormFieldComponent.PRIORITY_KEYS.find((k) => keys.includes(k)) ?? keys[0];
     const messages = this.errorMessages();
     return messages[first] ?? this.defaultMessage(first, c.errors[first]);
   });
@@ -91,6 +98,9 @@ export class FormFieldComponent {
         const parts = missing.map((m) => PASSWORD_REQUIREMENT_LABELS[m]);
         return parts.length ? `La contraseña debe incluir ${parts.join(', ')}` : 'Contraseña inválida';
       }
+      case 'server':
+      case 'alreadyTaken':
+        return typeof meta === 'string' ? meta : 'Valor inválido';
       default:
         return 'Valor inválido';
     }

@@ -6,7 +6,11 @@
   </header>
 
   <form class="form" [formGroup]="form" (ngSubmit)="submit()">
-    <app-form-field label="Usuario" [control]="form.controls.username">
+    <app-form-field
+      label="Usuario"
+      [control]="form.controls.username"
+      hint="Entre 3 y 50 caracteres. Debe ser único."
+    >
       <input
         class="input"
         type="text"
@@ -16,7 +20,11 @@
       />
     </app-form-field>
 
-    <app-form-field label="Email" [control]="form.controls.email">
+    <app-form-field
+      label="Email"
+      [control]="form.controls.email"
+      hint="Tu dirección de correo. Debe ser única."
+    >
       <input
         class="input"
         type="email"
