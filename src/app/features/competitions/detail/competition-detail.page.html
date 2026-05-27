@@ -131,7 +131,11 @@
           />
         }
         @case ('teams') {
-          <app-teams-tab [competicionId]="c.id" [estado]="c.estado" />
+          <app-teams-tab
+            [competicionId]="c.id"
+            [estado]="c.estado"
+            [competicionPublica]="c.publica"
+          />
         }
         @case ('stats') {
           <app-stats-tab [competicionId]="c.id" />

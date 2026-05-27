@@ -45,6 +45,7 @@ export class TeamsTabComponent implements OnInit {
 
   readonly competicionId = input.required<number>();
   readonly estado = input.required<EstadoCompeticion>();
+  readonly competicionPublica = input.required<boolean>();
 
   readonly loading = signal(true);
   readonly equipos = signal<readonly Equipo[]>([]);
@@ -241,8 +242,10 @@ export class TeamsTabComponent implements OnInit {
     // evita subscribes anidados y devuelve un único Observable suscribible
     // (cierra AF-2). Si el componente se destruye en mitad, la cadena se
     // cancela cleanly via takeUntilDestroyed.
+    // El equipo hereda la visibilidad de la competición: si la competición es
+    // privada, el equipo se crea privado (no aparece en el buscador público).
     let equipoCreado: Equipo;
-    this.service.create$({ nombre, publico: true }).pipe(
+    this.service.create$({ nombre, publico: this.competicionPublica() }).pipe(
       switchMap((equipo) => {
         equipoCreado = equipo;
         return this.service.inscribirEnCompeticion$(this.competicionId(), equipo.id);
