@@ -3,64 +3,83 @@
     [back]="true"
     eyebrow="Calendario"
     title="Generar calendario"
-    subtitle="Elige el formato y parámetros. El backend creará los partidos automáticamente."
+    subtitle="El formato lo determina la configuración de la competición."
   />
 
-  <div class="mode-switcher">
-    <button
-      class="mode-chip"
-      [class.active]="mode() === 'league'"
-      type="button"
-      (click)="setMode('league')"
-    >
-      <app-icon name="trophy" [size]="14" /> Liga round-robin
-    </button>
-    <button
-      class="mode-chip"
-      [class.active]="mode() === 'playoff'"
-      type="button"
-      (click)="setMode('playoff')"
-    >
-      <app-icon name="flag" [size]="14" /> Playoff seeded
-    </button>
-  </div>
-
-  <form class="form card" [formGroup]="form" (ngSubmit)="generate()">
-    <app-form-field
-      label="Fecha de inicio"
-      [control]="form.controls.fechaInicio"
-      hint="Cuándo se disputa la primera jornada"
-    >
-      <input class="input" type="datetime-local" formControlName="fechaInicio" />
-    </app-form-field>
-
-    <app-form-field
-      label="Días entre jornadas"
-      [control]="form.controls.diasJornada"
-      hint="7 = semanal · 3 = mitad de semana"
-    >
-      <input class="input" type="number" min="1" formControlName="diasJornada" />
-    </app-form-field>
-
-    @if (mode() === 'playoff') {
-      <app-form-field
-        label="Ronda inicial (opcional)"
-        [control]="form.controls.rondaInicial"
-        hint="Si se omite, se calcula como maxJornada + 1"
-      >
-        <input class="input" type="number" min="1" formControlName="rondaInicial" />
-      </app-form-field>
+  @if (loadingComp()) {
+    <div class="card form">
+      <app-spinner size="md" />
+    </div>
+  } @else if (!formatoSoportado()) {
+    <div class="card form">
+      <p>
+        La competición tiene formato <strong>Evento único</strong>: no se genera calendario
+        automáticamente. Crea el evento manualmente desde la pestaña de calendario.
+      </p>
+      <div class="actions">
+        <app-button variant="ghost" type="button" (clicked)="cancel()">Volver</app-button>
+      </div>
+    </div>
+  } @else {
+    @if (mostrarSwitcher()) {
+      <div class="mode-switcher">
+        @for (opt of availableModes(); track opt.value) {
+          <button
+            class="mode-chip"
+            [class.active]="mode() === opt.value"
+            type="button"
+            (click)="setMode(opt.value)"
+          >
+            <app-icon [name]="opt.icon" [size]="14" /> {{ opt.label }}
+          </button>
+        }
+      </div>
     }
 
-    <div class="actions">
-      <app-button variant="ghost" type="button" (clicked)="cancel()">Cancelar</app-button>
-      <app-button variant="primary" type="submit" [disabled]="saving()">
-        @if (saving()) {
-          <app-spinner size="sm" />
-        } @else {
-          <app-icon name="calendar" [size]="14" /> Generar
-        }
-      </app-button>
-    </div>
-  </form>
+    @if (!validacionEquipos().ok) {
+      <div class="card form validation-warning">
+        <app-icon name="flag" [size]="16" />
+        <p>{{ validacionEquipos().mensaje }}</p>
+      </div>
+    }
+
+    <form class="form card" [formGroup]="form" (ngSubmit)="generate()">
+      <app-form-field
+        label="Fecha de inicio"
+        [control]="form.controls.fechaInicio"
+        hint="Cuándo se disputa la primera jornada"
+      >
+        <input class="input" type="datetime-local" formControlName="fechaInicio" />
+      </app-form-field>
+
+      <app-form-field
+        label="Días entre jornadas"
+        [control]="form.controls.diasJornada"
+        hint="7 = semanal · 3 = mitad de semana"
+      >
+        <input class="input" type="number" min="1" formControlName="diasJornada" />
+      </app-form-field>
+
+      @if (esPlayoffSeeded()) {
+        <app-form-field
+          label="Ronda inicial (opcional)"
+          [control]="form.controls.rondaInicial"
+          hint="Si se omite, se calcula como maxJornada + 1"
+        >
+          <input class="input" type="number" min="1" formControlName="rondaInicial" />
+        </app-form-field>
+      }
+
+      <div class="actions">
+        <app-button variant="ghost" type="button" (clicked)="cancel()">Cancelar</app-button>
+        <app-button variant="primary" type="submit" [disabled]="!puedeGenerar()">
+          @if (saving()) {
+            <app-spinner size="sm" />
+          } @else {
+            <app-icon name="calendar" [size]="14" /> Generar
+          }
+        </app-button>
+      </div>
+    </form>
+  }
 </div>

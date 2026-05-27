@@ -57,3 +57,25 @@
   gap: 10px;
   margin-top: 8px;
 }
+
+.validation-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+  border-color: rgba(255, 122, 26, 0.45);
+  background: rgba(255, 122, 26, 0.08);
+  color: var(--text-pri);
+
+  app-icon {
+    color: var(--accent-hi);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+}
