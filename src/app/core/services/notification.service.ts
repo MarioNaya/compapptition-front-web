@@ -1,9 +1,9 @@
 import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, Subject, tap } from 'rxjs';
 import { environment } from '@env/environment';
 import { PageResponse } from '@core/models/comun/page.model';
-import type { Notificacion } from '@core/models/notificacion';
+import { TipoNotificacion, type Notificacion } from '@core/models/notificacion';
 import { AuthService } from './auth.service';
 
 @Injectable({ providedIn: 'root' })
@@ -18,6 +18,16 @@ export class NotificationService {
   readonly unreadCount = computed(
     () => this._items().filter((n) => !n.leida).length,
   );
+
+  /**
+   * Stream público de notificaciones recibidas vía SSE en tiempo real, sin filtrar.
+   * Sirve para que otros servicios reaccionen a tipos que NO entran al dropdown
+   * (p. ej. MensajeriaService consume {@link TipoNotificacion.MENSAJE_RECIBIDO}
+   * para refrescar el badge global del mail). El Subject vive lo que vive el
+   * singleton — no necesita cleanup en los suscriptores root.
+   */
+  private readonly _incoming$ = new Subject<Notificacion>();
+  readonly incoming$ = this._incoming$.asObservable();
 
   private eventSource: EventSource | null = null;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
@@ -51,6 +61,12 @@ export class NotificationService {
     this.eventSource.addEventListener('notification', (ev: MessageEvent) => {
       try {
         const n = JSON.parse(ev.data) as Notificacion;
+        // Bifurcación de canales: las de MENSAJE_RECIBIDO no entran al dropdown
+        // de la campana — tienen su propio badge en el topbar (mail) y duplicar
+        // el aviso confunde. Se emiten igualmente por {@link incoming$} para
+        // que MensajeriaService refresque su contador global.
+        this._incoming$.next(n);
+        if (n.tipo === TipoNotificacion.MENSAJE_RECIBIDO) return;
         this.prepend(n);
       } catch {
         // payload mal formado, ignorar

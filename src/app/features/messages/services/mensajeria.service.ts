@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { filter, Observable, tap } from 'rxjs';
 import { environment } from '@env/environment';
 import { PageResponse } from '@core/models/comun/page.model';
 import {
@@ -9,10 +9,15 @@ import {
   Mensaje,
   MensajeCreateRequest,
 } from '@core/models/mensaje';
+import { TipoNotificacion } from '@core/models/notificacion';
+import { AuthService } from '@core/services/auth.service';
+import { NotificationService } from '@core/services/notification.service';
 
 @Injectable({ providedIn: 'root' })
 export class MensajeriaService {
   private readonly http = inject(HttpClient);
+  private readonly auth = inject(AuthService);
+  private readonly notificationService = inject(NotificationService);
   private readonly base = `${environment.apiUrl}/conversaciones`;
 
   private readonly _conversaciones = signal<readonly ConversacionSimple[]>([]);
@@ -21,6 +26,19 @@ export class MensajeriaService {
   readonly unreadTotal = computed(() =>
     this._conversaciones().reduce((acc, c) => acc + (c.unreadCount ?? 0), 0),
   );
+
+  constructor() {
+    // Se suscribe al stream SSE bifurcado por NotificationService: cuando llega
+    // una notificación de tipo MENSAJE_RECIBIDO el contador del badge global
+    // (mail en el topbar) se refresca al momento sin esperar al polling de 30s
+    // del inbox. El servicio es root-singleton, así que el subject vive lo que
+    // vive la app y no necesita teardown explícito.
+    this.notificationService.incoming$
+      .pipe(filter((n) => n.tipo === TipoNotificacion.MENSAJE_RECIBIDO))
+      .subscribe(() => {
+        if (this.auth.isAuthenticated()) this.refresh();
+      });
+  }
 
   listar$(): Observable<ConversacionSimple[]> {
     return this.http

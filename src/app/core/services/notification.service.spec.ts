@@ -123,6 +123,11 @@ describe('NotificationService', () => {
     expect(svc.items()[0].id).toBe(1);
   });
 
+  it('expone incoming$ como Observable público para que otros servicios se suscriban', () => {
+    expect(svc.incoming$).toBeDefined();
+    expect(typeof svc.incoming$.subscribe).toBe('function');
+  });
+
   it('reset: limpia items y resetea contadores SSE', () => {
     svc.listar$().subscribe();
     controller.expectOne((r) => r.url === BASE).flush({
