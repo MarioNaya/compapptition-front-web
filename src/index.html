@@ -55,6 +55,9 @@
     Error banner móvil — captura errores JS no manejados y los muestra en pantalla.
     Útil para diagnosticar fallos en navegadores móviles sin DevTools accesible.
     Inocuo en producción: sólo se renderiza si hay error o promise rejection sin handler.
+    Solo muestra errores de scripts del propio origin: las extensiones del navegador
+    (p. ej. Angular DevTools con su backend_bundle.js) inyectan scripts en la página
+    cuyos errores no son nuestros y no deben pintarse.
     TODO: retirar tras estabilizar el deploy en móvil (post-defensa).
   -->
   <script>
@@ -69,11 +72,15 @@
         document.body.appendChild(d);
       }
       window.addEventListener('error', function (e) {
-        var loc = (e.filename || '?').split('/').pop() + ':' + (e.lineno || '?');
+        // Errores de scripts inyectados por extensiones (chrome-extension://…)
+        // llegan aquí igual que los propios; solo nos interesan los del bundle.
+        if (!e.filename || e.filename.indexOf(location.origin) !== 0) return;
+        var loc = e.filename.split('/').pop() + ':' + (e.lineno || '?');
         showErr('JS ERROR @ ' + loc, '#c62828', e.message || 'unknown error');
       });
       window.addEventListener('unhandledrejection', function (e) {
         var msg = e.reason && (e.reason.stack || e.reason.message || String(e.reason)) || 'unknown rejection';
+        if (/(chrome|moz|safari-web)-extension:\/\//.test(msg)) return;
         showErr('PROMISE REJ', '#ef6c00', String(msg).slice(0, 500));
       });
     })();
